@@ -442,6 +442,25 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                   </div>
                 </div>
               </div>
+              {sameSet && <p className="text-xs text-[#B8921F] font-semibold">These products already have a look: {sameSet.name || 'Look'}. You can still make another one (other model / pose).</p>}
+              <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} /> Show on the home page</label>
+              {msg && <p className={`text-xs ${msg.type === 'ok' ? 'text-green-600' : msg.type === 'err' ? 'text-red-500' : 'text-gray-500'}`}>{msg.text}</p>}
+              <div className="flex gap-2">
+                <button type="button" onClick={save} className="px-5 py-2.5 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase disabled:opacity-50">{busy === 'save' ? 'Saving…' : 'Save look'}</button>
+                <button type="button" onClick={() => setForm(null)} className="px-4 py-2.5 rounded border border-gray-400 text-xs font-semibold">Cancel</button>
+              </div>
+            </div>
+            <div className="space-y-3 w-full max-w-[420px] mx-auto">
+            <div className={`relative aspect-[2/3] max-h-[640px] mx-auto w-full max-w-[420px] rounded-lg overflow-hidden ${isDarkMode ? 'bg-[#0f0f0f]' : 'bg-[#f1f1f0]'}`}>
+              {form.image ? (
+                <div className="absolute inset-0 cursor-crosshair" onClick={place}>
+                  <img src={form.image} alt="" className="w-full h-full object-contain pointer-events-none select-none" />
+                  {form.items.map((it, i) => (
+                    <span key={it.id} style={{ left: `${it.x}%`, top: `${it.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow ${pinFor === i ? 'bg-[#D4AF37] text-black' : 'bg-white text-black'}`}>{i + 1}</span>
+                  ))}
+                </div>
+              ) : <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-gray-500">{busy === 'ai' ? `Making the picture… ${clock(secs)}` : 'The model picture shows here.'}</p>}
+            </div>
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={makeAi} className="px-4 py-2 rounded bg-gradient-to-b from-[#E9CB6B] to-[#B8921F] text-black text-xs font-bold uppercase flex items-center gap-1.5 disabled:opacity-50">
                   <Sparkles size={14} /> {busy === 'ai' ? 'Making…' : form.image ? 'Make again with AI' : 'Make with AI'}
@@ -459,23 +478,6 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
               </div>
               {qualityPick}
               {timer}
-              {sameSet && <p className="text-xs text-[#B8921F] font-semibold">These products already have a look: {sameSet.name || 'Look'}. You can still make another one (other model / pose).</p>}
-              <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} /> Show on the home page</label>
-              {msg && <p className={`text-xs ${msg.type === 'ok' ? 'text-green-600' : msg.type === 'err' ? 'text-red-500' : 'text-gray-500'}`}>{msg.text}</p>}
-              <div className="flex gap-2">
-                <button type="button" onClick={save} className="px-5 py-2.5 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase disabled:opacity-50">{busy === 'save' ? 'Saving…' : 'Save look'}</button>
-                <button type="button" onClick={() => setForm(null)} className="px-4 py-2.5 rounded border border-gray-400 text-xs font-semibold">Cancel</button>
-              </div>
-            </div>
-            <div className={`relative aspect-[2/3] max-h-[640px] mx-auto w-full max-w-[420px] rounded-lg overflow-hidden ${isDarkMode ? 'bg-[#0f0f0f]' : 'bg-[#f1f1f0]'}`}>
-              {form.image ? (
-                <div className="absolute inset-0 cursor-crosshair" onClick={place}>
-                  <img src={form.image} alt="" className="w-full h-full object-contain pointer-events-none select-none" />
-                  {form.items.map((it, i) => (
-                    <span key={it.id} style={{ left: `${it.x}%`, top: `${it.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow ${pinFor === i ? 'bg-[#D4AF37] text-black' : 'bg-white text-black'}`}>{i + 1}</span>
-                  ))}
-                </div>
-              ) : <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-gray-500">{busy === 'ai' ? `Making the picture… ${clock(secs)}` : 'The model picture shows here.'}</p>}
             </div>
           </fieldset>
         </div>
