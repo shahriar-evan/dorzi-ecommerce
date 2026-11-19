@@ -19,17 +19,17 @@ export const pieceKind = (p) => {
   if (/shirt|tee|polo|jacket|hoodie|sweat|blazer|sweater|coat|punjabi|katua|padding|puffer/i.test(t)) return 'top';
   return null;
 };
-// how many of each kind one look may have: one model can wear 2 clothes (e.g. shirt + blazer) and 1 shoes / watch / wallet / bag
+// how many of each kind one look may have: 2 tops (e.g. shirt + blazer), 1 bottom (pant / jeans / joggers) and 1 shoes / watch / wallet / bag
 export const lookSlot = (p) => {
   const c = `${p.gender || ''} ${p.category || ''}`;
   if (pieceKind(p) === 'shoes') return 'shoes';
   if (/watch/i.test(c)) return 'watch';
   if (/wallet/i.test(c)) return 'wallet';
   if (/bag/i.test(c)) return 'bag';
-  return 'clothes';
+  return pieceKind(p) === 'bottom' ? 'bottom' : 'top';
 };
-export const SLOT_MAX = { clothes: 2, shoes: 1, watch: 1, wallet: 1, bag: 1 };
-const SLOT_NAME = { clothes: '2 clothes', shoes: '1 pair of shoes', watch: '1 watch', wallet: '1 wallet', bag: '1 bag' };
+export const SLOT_MAX = { top: 2, bottom: 1, shoes: 1, watch: 1, wallet: 1, bag: 1 };
+const SLOT_NAME = { top: '2 tops', bottom: '1 pant', shoes: '1 pair of shoes', watch: '1 watch', wallet: '1 wallet', bag: '1 bag' };
 const PIN = { top: { x: 50, y: 33 }, bottom: { x: 50, y: 68 }, shoes: { x: 50, y: 95 } };
 const AUTO = [
   { name: 'Winter Street', top: /jacket|padding|puffer|coat/i },
@@ -158,7 +158,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     setForm(look ? { ...look, pos, items: look.items.map((it) => ({ ...it })) } : { ...EMPTY, pos });
     setMsg(null); setPinFor(0); setQ('');
   };
-  // a slot (clothes / shoes / watch / wallet / bag) is full when the look already has its maximum
+  // a slot (top / bottom / shoes / watch / wallet / bag) is full when the look already has its maximum
   const slotUsed = (items, slot) => items.filter((it) => { const q = byId[it.id]; return q && lookSlot(q) === slot; }).length;
   const slotFull = (items, p) => slotUsed(items, lookSlot(p)) >= SLOT_MAX[lookSlot(p)];
   const addItem = (p) => setForm((f) => (f.items.length >= LOOK_MAX_ITEMS || f.items.some((it) => it.id === String(p.id)) || slotFull(f.items, p) ? f
@@ -430,7 +430,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                     </div>
                   )}
                   <input className={`${input} w-full`} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Or search every product (shirt, jeans, sneakers…)" />
-                  <p className="text-[11px] text-gray-500">{form.items.length >= LOOK_MAX_ITEMS ? `This look is full (${LOOK_MAX_ITEMS}). Tap a ticked product to take it out.` : 'Tap a product to add it, tap again to take it out. One look: up to 2 clothes + 1 shoes, 1 watch, 1 wallet, 1 bag. 🔍 shows its photos big.'}</p>
+                  <p className="text-[11px] text-gray-500">{form.items.length >= LOOK_MAX_ITEMS ? `This look is full (${LOOK_MAX_ITEMS}). Tap a ticked product to take it out.` : 'Tap a product to add it, tap again to take it out. One look: up to 2 tops + 1 pant + 1 shoes, 1 watch, 1 wallet, 1 bag. 🔍 shows its photos big.'}</p>
                   <div className={`max-h-[420px] overflow-y-auto rounded border p-2 grid grid-cols-3 sm:grid-cols-4 gap-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                     {found.length === 0 && <p className="col-span-full p-4 text-center text-xs text-gray-500">No products here.</p>}
                     {found.map((p) => {
