@@ -15,7 +15,7 @@
 // Uses per day are counted in aiUsage/{YYYY-MM-DD} (server only; no client rule allows it).
 import { FS, accessToken, val } from '../_sslc.js';
 import { ownerEmails } from '../_owners.js';
-import { makeLook, lookColor } from './ailook.js';
+import { makeLook, lookColor, cutoutLook } from './ailook.js';
 import { quotaMsg } from '../_sslc.js';
 
 const GEMINI = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -186,13 +186,14 @@ export default async function aiPhoto(req, res) {
   if (who.error) return res.status(who.status).json({ error: who.error });
   const body0 = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   // Shop the Look: a model wearing several products (OpenAI), Owner / Manager only
-  if (body0.view === 'look') {
+  // (+ 'look-cutout': only remove the background of an uploaded model picture)
+  if (body0.view === 'look' || body0.view === 'look-cutout') {
     if (who.role === 'admin') return res.status(403).json({ error: 'Only the Owner or a Manager can make looks.' });
     const token = await accessToken();
     const day = new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10);
     const limit = dailyLimit();
     if ((await usage(token, day)) >= limit) return res.status(429).json({ error: `Today's AI photo limit (${limit}) is used up. Try again tomorrow.`, code: 'daily-limit' });
-    return makeLook(req, res, { body: body0, readSource, token, day, usage });
+    return (body0.view === 'look' ? makeLook : cutoutLook)(req, res, { body: body0, readSource, token, day, usage });
   }
   const orKey = process.env.OPENROUTER_API_KEY;
   const key = process.env.GEMINI_API_KEY;

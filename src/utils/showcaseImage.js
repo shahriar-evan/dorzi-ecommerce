@@ -209,24 +209,78 @@ const blobImage = async (src) => {
   return loadImage(new File([blob], 'look.png', { type: blob.type || 'image/png' }));
 };
 // the visible part (alpha) of a picture: { c (canvas), x, y, w, h }
+// A picture with a plain or checkerboard background (Gemini / ChatGPT / Canva downloads, JPG, a "fake transparent"
+// PNG): remove it in the browser. The background = the colours along the edges (1-2 main colours, e.g. white, or the
+// light / grey squares of a checkerboard); every pixel of those colours connected to the edge becomes transparent.
+// Returns false when the edge has no clear background colour (a busy photo), so the caller can ask for a cut-out.
+function knockOutEdgeBackground(data, width, height) {
+  const at = (x, y) => (y * width + x) * 4;
+  const bins = new Map();
+  const edge = [];
+  const add = (x, y) => { const i = at(x, y); edge.push(i); const k = ((data[i] >> 4) << 8) | ((data[i + 1] >> 4) << 4) | (data[i + 2] >> 4); bins.set(k, (bins.get(k) || 0) + 1); };
+  for (let x = 0; x < width; x += 1) { add(x, 0); add(x, height - 1); }
+  for (let y = 1; y < height - 1; y += 1) { add(0, y); add(width - 1, y); }
+  const top = [...bins.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2);
+  const share = top.reduce((n, [, c]) => n + c, 0) / edge.length;
+  if (share < 0.8) return false;
+  // average colour of each main bin
+  const cols = top.map(([k]) => {
+    let r = 0, g = 0, b = 0, n = 0;
+    edge.forEach((i) => { if ((((data[i] >> 4) << 8) | ((data[i + 1] >> 4) << 4) | (data[i + 2] >> 4)) === k) { r += data[i]; g += data[i + 1]; b += data[i + 2]; n += 1; } });
+    return [r / n, g / n, b / n];
+  });
+  const TOL = 38 * 38;
+  const isBg = (i) => cols.some(([r, g, b]) => { const dr = data[i] - r, dg = data[i + 1] - g, db = data[i + 2] - b; return dr * dr + dg * dg + db * db <= TOL; });
+  const seen = new Uint8Array(width * height);
+  const queue = new Int32Array(width * height);
+  let head = 0, tail = 0;
+  edge.forEach((i) => { const p = i / 4; if (!seen[p] && isBg(i)) { seen[p] = 1; queue[tail++] = p; } });
+  while (head < tail) {
+    const p = queue[head++];
+    data[p * 4 + 3] = 0;
+    const x = p % width, y = (p - x) / width;
+    const step = (q) => { if (!seen[q] && isBg(q * 4)) { seen[q] = 1; queue[tail++] = q; } };
+    if (x > 0) step(p - 1);
+    if (x < width - 1) step(p + 1);
+    if (y > 0) step(p - width);
+    if (y < height - 1) step(p + width);
+  }
+  return tail / (width * height) >= 0.03;
+}
+
 function visibleBox(img) {
   const c = document.createElement('canvas');
-  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  // very big downloads (6000 px) are made smaller first, so the checks stay quick
+  const k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+  c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
   const g = c.getContext('2d');
-  g.drawImage(img, 0, 0);
-  const { data, width, height } = g.getImageData(0, 0, c.width, c.height);
-  let clear = 0, minX = width, minY = height, maxX = -1, maxY = -1;
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      const a = data[(y * width + x) * 4 + 3];
-      if (a < 20) clear += 1;
-      else if (a > 40) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+  g.drawImage(img, 0, 0, c.width, c.height);
+  const pic = g.getImageData(0, 0, c.width, c.height);
+  const { data, width, height } = pic;
+  const scan = () => {
+    let clear = 0, minX = width, minY = height, maxX = -1, maxY = -1;
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const a = data[(y * width + x) * 4 + 3];
+        if (a < 20) clear += 1;
+        else if (a > 40) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+      }
     }
+    return { clear, minX, minY, maxX, maxY };
+  };
+  let r = scan();
+  if (r.clear / (width * height) < 0.03 || r.maxX < 0) {
+    // no transparent background yet: try removing a plain / checkerboard background here
+    if (!knockOutEdgeBackground(data, width, height)) {
+      const e = new Error('This picture has a busy background, so it could not be removed here. Tap ✨ Remove background with AI, or upload a picture on a plain background.');
+      e.code = 'busy-bg';
+      throw e;
+    }
+    g.putImageData(pic, 0, 0);
+    r = scan();
+    if (r.maxX < 0) throw new Error('Nothing was left after removing the background. Try another picture.');
   }
-  if (clear / (width * height) < 0.03 || maxX < 0) {
-    throw new Error('This picture still has its background. Remove the background first (Mac: right-click the photo in Finder → Quick Actions → Remove Background), then upload the new PNG.');
-  }
-  return { c, x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+  return { c, x: r.minX, y: r.minY, w: r.maxX - r.minX + 1, h: r.maxY - r.minY + 1 };
 }
 // draws the visible part into a 2:3 frame; returns { url, rect } (rect = where the person sits, as fractions of the frame)
 function frame(b) {
@@ -247,7 +301,8 @@ function frame(b) {
   throw new Error('This picture is too big even after making it smaller. Try a smaller file.');
 }
 export async function prepareLookImage(fileOrDataUrl) {
-  if (fileOrDataUrl instanceof File && !/^image\/(png|webp)$/.test(fileOrDataUrl.type)) throw new Error('Please upload a PNG or WebP picture with a transparent background.');
+  // PNG / WebP / JPG (some downloads have no type: the file name decides)
+  if (fileOrDataUrl instanceof File && !/^image\/(png|webp|jpe?g)$/.test(fileOrDataUrl.type) && !/\.(png|webp|jpe?g)$/i.test(fileOrDataUrl.name || '')) throw new Error('Please upload a PNG, WebP or JPG picture of the model.');
   return frame(visibleBox(await blobImage(fileOrDataUrl))).url;
 }
 // is a saved look picture already in the 2:3 frame?
@@ -271,4 +326,16 @@ export async function reframeLook(src, items) {
     return { ...it, x: c(rect.x + fx * rect.w), y: c(rect.y + fy * rect.h) };
   });
   return { image: url, items: moved };
+}
+
+// a picture as a JPEG data URL of at most `max` px (to send to the AI: small enough for the server, sharp enough for a person)
+export async function toSendableJpeg(fileOrDataUrl, max = 1536) {
+  const img = await blobImage(fileOrDataUrl);
+  const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+  const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.9);
 }

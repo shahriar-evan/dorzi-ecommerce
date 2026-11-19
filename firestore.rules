@@ -794,11 +794,13 @@ service cloud.firestore {
           && d.name is string && d.name.size() <= 40
           && d.who in ['men', 'women']
           && d.image is string && d.image.size() <= 450000 && d.image.matches('^data:image/(png|webp);base64,[A-Za-z0-9+/=]+$')
-          && d.items is list && d.items.size() >= 1 && d.items.size() <= 4
+          && d.items is list && d.items.size() >= 1 && d.items.size() <= 6
           && lookItemOk(d.items[0])
           && (d.items.size() < 2 || lookItemOk(d.items[1]))
           && (d.items.size() < 3 || lookItemOk(d.items[2]))
           && (d.items.size() < 4 || lookItemOk(d.items[3]))
+          && (d.items.size() < 5 || lookItemOk(d.items[4]))
+          && (d.items.size() < 6 || lookItemOk(d.items[5]))
           && d.order is int && d.order >= 0 && d.order <= 999
           && d.active is bool
           && d.updatedByName is string && d.updatedByName.size() <= 80;

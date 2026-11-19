@@ -5,9 +5,9 @@ import "./firebase"; // makes sure the default Firebase app exists
 const db = getFirestore(getApp());
 
 // Shop the Look (home page, between the Men's and Women's rails): looks/{id} = { name, who ('men' | 'women'),
-// image (transparent full-body model picture, data URL ≤ 450 KB), items [{ id (product id), x, y (pin, % of the picture) }] (1-4),
+// image (transparent full-body model picture, data URL ≤ 450 KB), items [{ id (product id), x, y (pin, % of the picture) }] (1-6),
 // order, active, updatedAt, updatedByName }. Public read; the Owner / a Manager write (Admin → Shop the Look).
-export const LOOK_MAX_ITEMS = 4;
+export const LOOK_MAX_ITEMS = 6; // shirt, pant, shoes + watch, bag, jacket … (firestore.rules looks: items ≤ 6)
 export const LOOK_MAX = 12;
 
 export function watchLooks(onData) {

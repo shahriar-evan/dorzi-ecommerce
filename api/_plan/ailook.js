@@ -79,7 +79,7 @@ async function callOpenAI(key, model, sources, prompt, q, fmt = 'png', fidelity 
 export async function makeLook(req, res, { body, readSource, token, day, usage }) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return res.status(503).json({ error: 'Shop the Look pictures need OPENAI_API_KEY in Vercel (Production).', code: 'no-key', provider: 'openai' });
-  const list = (Array.isArray(body.sources) ? body.sources : []).slice(0, 4);
+  const list = (Array.isArray(body.sources) ? body.sources : []).slice(0, 6);
   if (list.length < 1) return res.status(400).json({ error: 'Pick at least 2 products.', code: 'bad-source' });
   const sources = [];
   for (const s of list) {
@@ -92,6 +92,29 @@ export async function makeLook(req, res, { body, readSource, token, day, usage }
     // high input fidelity keeps the products' prints and text closer to the photos
     let out = await callOpenAI(key, model, sources, prompt, body.quality, 'png', 'high');
     if (out.retryPlain) out = await callOpenAI(key, model, sources, prompt, body.quality);
+    if (out.next) continue;
+    if (out.error) return res.status(out.code === 'no-credit' ? 402 : 502).json({ error: out.error, code: out.code, provider: 'openai' });
+    await usage(token, day, 1);
+    return res.status(200).json({ image: out.image, model, provider: 'openai' });
+  }
+  return res.status(502).json({ error: 'No OpenAI image model is available for this key. Set OPENAI_IMAGE_MODEL in Vercel.', code: 'failed', provider: 'openai' });
+}
+
+// ---- Remove the background of a model picture (Admin → Shop the Look → Upload picture → ✨ Remove background with AI) ----
+// { view: 'look-cutout', source: data URL } from the Owner / a Manager: the same person, clothes and text, only the background
+// goes (transparent PNG). Counts in the same daily AI limit as the looks.
+export async function cutoutLook(req, res, { body, readSource, token, day, usage }) {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return res.status(503).json({ error: 'This needs OPENAI_API_KEY in Vercel (Production).', code: 'no-key', provider: 'openai' });
+  const src = await readSource(body.source);
+  if (!src) return res.status(400).json({ error: 'This picture could not be opened. Use a JPG / PNG / WebP picture.', code: 'bad-source' });
+  const prompt = 'Remove the background of this photo and nothing else. Keep the person exactly as they are, pixel for pixel: the same face, '
+    + 'hair, skin, body, pose, hands and expression, and the same clothes, shoes and accessories with their exact colours, fabric, folds, '
+    + 'prints, logos and any text letter for letter. Do not redraw, restyle, retouch, crop or move anything. Keep the whole person from head '
+    + 'to feet. Everything that is not the person (walls, floor, furniture, other people, shadows on the ground) becomes fully TRANSPARENT.';
+  for (const model of models()) {
+    let out = await callOpenAI(key, model, [src], prompt, 'medium', 'png', 'high');
+    if (out.retryPlain) out = await callOpenAI(key, model, [src], prompt, 'medium');
     if (out.next) continue;
     if (out.error) return res.status(out.code === 'no-credit' ? 402 : 502).json({ error: out.error, code: out.code, provider: 'openai' });
     await usage(token, day, 1);
