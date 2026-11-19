@@ -61,6 +61,12 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
   const [switching, setSwitching] = useState(''); // slug of the shop whose ON / OFF is being saved
   const [openCat, setOpenCat] = useState(''); // the one category that is open in the product picker
   const [openSub, setOpenSub] = useState(null); // section inside the open collection (null = its first one, '*' = all)
+  // the Owner's own shop is plan-free (every feature: logo, banner, Website Name…). Mark it as soon as it is opened, not
+  // only on Save, so a new shop shows its logo / banner at once
+  useEffect(() => {
+    if (!isOwner || readOnly || sellerMode || !shop || !shop.slug || shop.planExempt === true || shop.kind === 'seller') return;
+    saveShopItems(shop.slug, null, shop.items || {}, { planExempt: true }).catch(() => {});
+  }, [isOwner, readOnly, sellerMode, shop && shop.slug, shop && shop.planExempt]); // eslint-disable-line react-hooks/exhaustive-deps
   const [plans, setPlans] = useState(() => normalizePlans(null));
   const [sub, setSub] = useState(null); // my plan (subscriptions/{uid}), written only by the server
   const [paying, setPaying] = useState(''); // the tier whose payment page is opening
