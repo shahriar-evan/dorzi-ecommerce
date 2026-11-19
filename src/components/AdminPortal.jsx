@@ -105,7 +105,16 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
     : stockFilter === 'none' ? products.filter(isNoStock) : null;
   const searched = stockMatched ? stockMatched : linkIds ? products.filter((p) => linkIds.has(String(p.id)))
     : psq ? products.filter((p) => [p.name, p.category, p.gender, p.brand, p.id, p.supplierName].some((v) => String(v || '').toLowerCase().includes(psq))) : products;
-  const shownProducts = catFilter === 'All' ? searched : searched.filter((p) => catLabel(p) === catFilter);
+  // products that wait for an Approve (pending, hidden, colours back in stock) come first; the rest keep their order
+  const needsApprove = (p) => (p.status || 'approved') !== 'approved' || backColours(p).length > 0;
+  const shownProducts = (catFilter === 'All' ? searched : searched.filter((p) => catLabel(p) === catFilter))
+    .map((p, i) => [p, i]).sort((a, b) => (needsApprove(b[0]) - needsApprove(a[0])) || (a[1] - b[1])).map(([p]) => p);
+  const [approving, setApproving] = React.useState('');
+  const approveNow = async (p) => {
+    if (approving) return;
+    setApproving(String(p.id));
+    try { await handleApproveProduct(p); } finally { setApproving(''); }
+  };
   const isOwner = adminRole === 'owner';
   // My Shop with unsaved ticks / prices: ask before switching to another tab
   const shopDirty = React.useRef(false);
@@ -489,7 +498,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                                 <p className="mt-1 text-[11px] font-semibold text-green-700 dark:text-green-400">
                                   Back in stock: {backColours(p).map(colourLabel).join(', ')}
                                   {canApproveProduct({ ...p, status: 'pending' }) && (
-                                    <button type="button" disabled={!!stockBusy} onClick={() => stockOp('approve', p)} className="ml-2 underline font-bold disabled:opacity-50">{stockBusy === `approve:${p.id}` ? 'Approving…' : p.status === 'hidden' ? 'Approve (show on website)' : 'Approve (sell again)'}</button>
+                                    <button type="button" disabled={!!stockBusy} onClick={() => stockOp('approve', p)} className="ml-2 underline font-bold disabled:opacity-50 disabled:no-underline">{stockBusy === `approve:${p.id}` ? 'Approving…' : p.status === 'hidden' ? 'Approve (show on website)' : 'Approve (sell again)'}</button>
                                   )}
                                 </p>
                               )}
@@ -547,7 +556,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                               </div>
                             )}
                             <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
-                            {canApproveProduct(p) && <button onClick={() => handleApproveProduct(p)} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition">Approve</button>}
+                            {canApproveProduct(p) && <button type="button" disabled={!!approving} onClick={() => approveNow(p)} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button>}
                             {canEditProduct(p)
                               ? <button onClick={() => startEditProduct(p)} className="px-3 py-1.5 rounded text-xs font-semibold border bg-white text-gray-900 border-gray-400 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600 transition">Edit</button>
                               : <span className="text-[10px] text-gray-500 font-semibold" title="Only the Owner or the person who added it can edit">View only</span>}

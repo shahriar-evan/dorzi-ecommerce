@@ -8,6 +8,8 @@
 // What a check writes on products/{id} (server only, never by the app):
 //   supplierOut  {colour: true}  this colour is out of stock at every supplier link it has ('*' = the whole product)
 //   backInStock  {colour: true}  was out, the supplier has it again: still not sold until someone approves it
+//   status 'hidden' + autoHidden  every colour is out (supplier, or 0 left on our side): taken off the website by itself;
+//                                 Approve puts it back (one or two colours out is fine: only those show "Out of stock")
 // The storefront treats supplierOut colours as stock 0 (src/data/catalog.js), and checkOrderPrices refuses them.
 //
 // Suppliers:
@@ -17,6 +19,7 @@
 // A link that cannot be read counts as "in stock", so a supplier hiccup never takes products down.
 import { FS, accessToken, val, quotaMsg } from '../_sslc.js';
 import { ownerEmails, emailOwners } from '../_owners.js';
+import { totalStock } from '../../src/data/catalog.js';
 
 const TIME_BUDGET_MS = 45000;
 const STATE = 'stockCheck/state'; // server-only collection (no rule lets the app read or write it)
@@ -201,7 +204,16 @@ async function runCheck(token, { manual = false } = {}) {
     }
     // colours that no longer exist on the product
     Object.keys(out).forEach((c) => { if (c !== '*' && !colours.includes(c)) { delete out[c]; delete back[c]; } });
-    if (JSON.stringify([out, back]) !== before) writes.push(patch(`products/${p.id}`, { supplierOut: out, backInStock: back, stockCheckedAt: new Date().toISOString() }));
+    // nothing left to sell (every colour out at the supplier, or 0 pieces on our side): off the website by itself
+    const allOut = out['*'] === true || colours.every((c) => out[c] === true) || totalStock({ ...p, supplierOut: out }) <= 0;
+    const autoHide = allOut && (p.status || 'approved') === 'approved';
+    if (autoHide) changes.push({ id: p.id, name: p.name, colour: '*', what: 'hidden' });
+    if (JSON.stringify([out, back]) !== before || autoHide) {
+      writes.push(patch(`products/${p.id}`, {
+        supplierOut: out, backInStock: back, stockCheckedAt: new Date().toISOString(),
+        ...(autoHide ? { status: 'hidden', autoHidden: true, hiddenBy: 'stock-check', hiddenByName: 'Stock check (all colours out)', hiddenAt: new Date().toISOString() } : {}),
+      }));
+    }
     last = String(p.id);
     done += 1;
   }
@@ -222,8 +234,9 @@ async function runCheck(token, { manual = false } = {}) {
       const line = (x) => `${x.name}${x.colour === '*' ? '' : ` (${x.colour})`}`;
       const outs = allChanges.filter((x) => x.what === 'out').map(line);
       const backs = allChanges.filter((x) => x.what === 'back').map(line);
-      const text = [outs.length ? `Out of stock at the supplier (shown as Stock out):\n- ${outs.join('\n- ')}` : '', backs.length ? `Back in stock (approve in Admin → Products to sell again):\n- ${backs.join('\n- ')}` : ''].filter(Boolean).join('\n\n');
-      await emailOwners(owners, `Kyvro supplier stock: ${outs.length} out, ${backs.length} back`, `<pre style="font:14px/1.5 sans-serif;white-space:pre-wrap">${text.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))}</pre>`, text);
+      const hid = allChanges.filter((x) => x.what === 'hidden').map((x) => x.name);
+      const text = [outs.length ? `Out of stock at the supplier (shown as Stock out):\n- ${outs.join('\n- ')}` : '', backs.length ? `Back in stock (approve in Admin → Products to sell again):\n- ${backs.join('\n- ')}` : '', hid.length ? `Taken off the website (every colour out, Approve puts it back):\n- ${hid.join('\n- ')}` : ''].filter(Boolean).join('\n\n');
+      await emailOwners(owners, `Kyvro supplier stock: ${outs.length} out, ${backs.length} back${hid.length ? `, ${hid.length} hidden` : ''}`, `<pre style="font:14px/1.5 sans-serif;white-space:pre-wrap">${text.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))}</pre>`, text);
     } catch (e) { console.error('stock email', e); }
   }
   return { done: finished, checked: done, left: finished ? 0 : todo.length - done, total: queue.length, changes, shopbase: sb ? 'ok' : (process.env.SHOPBASE_USERNAME ? 'login failed' : 'not set') };
