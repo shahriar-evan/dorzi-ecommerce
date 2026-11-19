@@ -19,6 +19,17 @@ export const pieceKind = (p) => {
   if (/shirt|tee|polo|jacket|hoodie|sweat|blazer|sweater|coat|punjabi|katua|padding|puffer/i.test(t)) return 'top';
   return null;
 };
+// how many of each kind one look may have: one model can wear 2 clothes (e.g. shirt + blazer) and 1 shoes / watch / wallet / bag
+export const lookSlot = (p) => {
+  const c = `${p.gender || ''} ${p.category || ''}`;
+  if (pieceKind(p) === 'shoes') return 'shoes';
+  if (/watch/i.test(c)) return 'watch';
+  if (/wallet/i.test(c)) return 'wallet';
+  if (/bag/i.test(c)) return 'bag';
+  return 'clothes';
+};
+export const SLOT_MAX = { clothes: 2, shoes: 1, watch: 1, wallet: 1, bag: 1 };
+const SLOT_NAME = { clothes: '2 clothes', shoes: '1 pair of shoes', watch: '1 watch', wallet: '1 wallet', bag: '1 bag' };
 const PIN = { top: { x: 50, y: 33 }, bottom: { x: 50, y: 68 }, shoes: { x: 50, y: 95 } };
 const AUTO = [
   { name: 'Winter Street', top: /jacket|padding|puffer|coat/i },
@@ -147,7 +158,10 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     setForm(look ? { ...look, pos, items: look.items.map((it) => ({ ...it })) } : { ...EMPTY, pos });
     setMsg(null); setPinFor(0); setQ('');
   };
-  const addItem = (p) => setForm((f) => (f.items.length >= LOOK_MAX_ITEMS || f.items.some((it) => it.id === String(p.id)) ? f
+  // a slot (clothes / shoes / watch / wallet / bag) is full when the look already has its maximum
+  const slotUsed = (items, slot) => items.filter((it) => { const q = byId[it.id]; return q && lookSlot(q) === slot; }).length;
+  const slotFull = (items, p) => slotUsed(items, lookSlot(p)) >= SLOT_MAX[lookSlot(p)];
+  const addItem = (p) => setForm((f) => (f.items.length >= LOOK_MAX_ITEMS || f.items.some((it) => it.id === String(p.id)) || slotFull(f.items, p) ? f
     : { ...f, items: [...f.items, { id: String(p.id), x: 50, y: 25 + f.items.length * 20 }] }));
   const removeItem = (i) => setForm((f) => ({ ...f, items: f.items.filter((_, k) => k !== i) }));
   // move a product up / down: its number (1-6) and pin number change with it, the pin stays where it was placed
@@ -416,13 +430,14 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                     </div>
                   )}
                   <input className={`${input} w-full`} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Or search every product (shirt, jeans, sneakers…)" />
-                  <p className="text-[11px] text-gray-500">{form.items.length >= LOOK_MAX_ITEMS ? `This look is full (${LOOK_MAX_ITEMS}). Tap a ticked product to take it out.` : 'Tap a product to add it, tap again to take it out. 🔍 shows its photos big.'}</p>
+                  <p className="text-[11px] text-gray-500">{form.items.length >= LOOK_MAX_ITEMS ? `This look is full (${LOOK_MAX_ITEMS}). Tap a ticked product to take it out.` : 'Tap a product to add it, tap again to take it out. One look: up to 2 clothes + 1 shoes, 1 watch, 1 wallet, 1 bag. 🔍 shows its photos big.'}</p>
                   <div className={`max-h-[420px] overflow-y-auto rounded border p-2 grid grid-cols-3 sm:grid-cols-4 gap-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                     {found.length === 0 && <p className="col-span-full p-4 text-center text-xs text-gray-500">No products here.</p>}
                     {found.map((p) => {
                       const idx = form.items.findIndex((it) => it.id === String(p.id));
                       const inLook = idx >= 0;
-                      const full = !inLook && form.items.length >= LOOK_MAX_ITEMS;
+                      const slotIsFull = !inLook && slotFull(form.items, p);
+                      const full = !inLook && (form.items.length >= LOOK_MAX_ITEMS || slotIsFull);
                       const out = totalStock(p) <= 0;
                       return (
                         <div key={p.id} className={`relative rounded-lg border overflow-hidden text-left ${inLook ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]' : isDarkMode ? 'border-gray-800' : 'border-gray-200'} ${full || out ? 'opacity-50' : ''}`}>
@@ -431,6 +446,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                             <span className="block p-1.5">
                               <span className="block text-[11px] font-semibold leading-tight line-clamp-2">{p.name}</span>
                               <span className="block text-[11px] text-gray-500">{formatPrice(p.price)}{out ? ' · Out of stock' : ''}</span>
+                              {slotIsFull && <span className="block text-[10px] text-red-500 font-semibold">Max {SLOT_NAME[lookSlot(p)]}</span>}
                               {usedIn[String(p.id)] && <span className="block text-[10px] text-[#B8921F] font-semibold">in {usedIn[String(p.id)].length} look{usedIn[String(p.id)].length > 1 ? 's' : ''}</span>}
                             </span>
                           </button>
