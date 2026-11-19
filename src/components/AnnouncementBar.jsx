@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 const SPEED_DESKTOP = 45;
 const SPEED_MOBILE = 32;
 
-export default function AnnouncementBar({ announcementText, speed = 100, isDarkMode }) {
+// support = false on a shop link: only the shop's own text scrolls (no Kyvro line)
+export default function AnnouncementBar({ announcementText, speed = 100, isDarkMode, support = true }) {
   const wrap = useRef(null);
   const unit = useRef(null);
   const [anim, setAnim] = useState({ copies: 2, seconds: 60 });
@@ -27,7 +28,7 @@ export default function AnnouncementBar({ announcementText, speed = 100, isDarkM
 
   const renderUnit = (refEl, key) => (
     <span key={key} ref={refEl} className="inline-block pr-12">
-      {announcementText} &nbsp;&nbsp;&bull;&nbsp;&nbsp; 24/7 Customer Support: kyvrofashion@gmail.com &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      {announcementText} &nbsp;&nbsp;&bull;&nbsp;&nbsp; {support && <>24/7 Customer Support: kyvrofashion@gmail.com &nbsp;&nbsp;&bull;&nbsp;&nbsp;</>}
     </span>
   );
 

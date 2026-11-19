@@ -1497,7 +1497,10 @@ export default function App() {
       )}
 
       {/* 1. ANNOUNCEMENT BAR */}
-      <AnnouncementBar announcementText={announcementText} speed={storeSettings.bannerSpeed} isDarkMode={isDarkMode} />
+      {/* the main store's scrolling text is Kyvro's own: a shop link shows the shop's announcement there instead (Premium
+          "announcement", set in the seller dashboard), or nothing */}
+      {!shopCtx ? <AnnouncementBar announcementText={announcementText} speed={storeSettings.bannerSpeed} isDarkMode={isDarkMode} />
+        : shopFeat.announcement && shopExtrasOf(shopCtx).announcement ? <AnnouncementBar announcementText={shopExtrasOf(shopCtx).announcement} support={false} speed={storeSettings.bannerSpeed} isDarkMode={isDarkMode} /> : null}
 
       {currentView !== 'home' && <BackButton onClick={goBack} />}
 
@@ -1561,17 +1564,15 @@ export default function App() {
         const picks = f.pinned ? ex.pinnedItems.map((id) => storefrontProducts.find((x) => String(x.id) === id)).filter(Boolean) : [];
         const showTagline = f.tagline && ex.tagline;
         const showAbout = f.about && ex.about;
-        const showAnn = f.announcement && ex.announcement;
         const showBanner = f.banner && shopCtx.banner;
         // seller shops: no "Sold by" line (the shop name is in the header); only a Verified (Premium) shop shows its name + badge
         const verified = seller && f.verified && !shopCtx.planExempt;
         const showName = !seller || verified;
         const showInfo = showName || showTagline || showAbout || showContact || socials.length > 0 || picks.length > 0;
-        if (!showInfo && !showAnn && !showBanner) return null;
+        if (!showInfo && !showBanner) return null;
         return (
           <>
             {showBanner && <img src={shopCtx.banner} alt={`${shopDisplayName(shopCtx, f)} banner`} className="w-full max-h-56 sm:max-h-72 object-cover" />}
-            {showAnn && <div className="px-4 py-2 text-center text-xs font-semibold text-white" style={{ background: accent }}>{ex.announcement}</div>}
             {showInfo && <div className={`border-b px-4 py-3 text-center text-xs space-y-1.5 ${isDarkMode ? 'bg-[#121212] border-gray-800 text-gray-300' : 'bg-[#D4AF37]/10 border-[#D4AF37]/30 text-gray-700'}`}>
               {showName && (
                 <p>

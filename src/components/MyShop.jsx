@@ -60,6 +60,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
   const [owners, setOwners] = useState({});
   const [switching, setSwitching] = useState(''); // slug of the shop whose ON / OFF is being saved
   const [openCat, setOpenCat] = useState(''); // the one category that is open in the product picker
+  const [openSub, setOpenSub] = useState(null); // section inside the open collection (null = its first one, '*' = all)
   const [plans, setPlans] = useState(() => normalizePlans(null));
   const [sub, setSub] = useState(null); // my plan (subscriptions/{uid}), written only by the server
   const [paying, setPaying] = useState(''); // the tier whose payment page is opening
@@ -628,7 +629,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
               const on = c.items.filter((p) => draft[p.id] !== undefined).length;
               const active = openCat === c.name;
               return (
-                <button key={c.name} type="button" aria-expanded={active} onClick={() => setOpenCat(active ? '' : c.name)}
+                <button key={c.name} type="button" aria-expanded={active} onClick={() => { setOpenCat(active ? '' : c.name); setOpenSub(null); }}
                   className={`text-left rounded-xl border p-3 transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] ${active ? 'border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_0_1px_rgba(212,175,55,0.4)]' : isDarkMode ? 'border-gray-800 bg-[#121212] hover:border-[#D4AF37]/50' : 'border-gray-200 bg-gray-50 hover:border-[#D4AF37]/60'}`}>
                   <p className="text-sm font-bold truncate">{c.label}</p>
                   <p className="mt-1 flex items-center justify-between gap-2 text-[11px]">
@@ -650,7 +651,19 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
                 <button type="button" onClick={() => clearAll(open.items)} className={`${GHOST_BTN} !px-3 !py-1.5 !text-[11px]`}>Clear</button>
               </div>
             </div>
-            {groupsOf(open).map((g) => (
+            {/* section buttons (Shirt, Polo, Saree …): one section at a time instead of one long list */}
+            {groupsOf(open).length > 1 && (() => {
+              const gs = groupsOf(open);
+              const cur = openSub == null ? (gs[0].sub || '_') : openSub;
+              const chip = (key, label, items) => (
+                <button key={key} type="button" onClick={() => setOpenSub(key)}
+                  className={`px-3 py-1.5 rounded-full border text-[11px] font-semibold ${cur === key ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : isDarkMode ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-700'}`}>
+                  {label} <span className="opacity-70">{items.filter((p) => draft[p.id] !== undefined).length}/{items.length}</span>
+                </button>
+              );
+              return <div className="flex flex-wrap gap-1.5">{gs.map((g) => chip(g.sub || '_', g.sub ? subLabel(g.sub) : 'Other', g.items))}{chip('*', 'All', open.items)}</div>;
+            })()}
+            {groupsOf(open).filter((g, i, gs) => gs.length < 2 || (openSub == null ? i === 0 : openSub === '*' || (g.sub || '_') === openSub)).map((g) => (
               <div key={g.sub || '_'}>
                 {(g.sub || groupsOf(open).length > 1) && (
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -695,7 +708,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
       {/* 3. the shop page: Pro / Premium parts first, Premium-only last */}
       {show('manage', 'theme') && <div className={section}>
         {goldLine}
-        {view === 'theme' ? sectionTitle('Theme', 'Saved with "Save my shop".') : sectionTitle('Shop page', 'Saved with "Save my shop" (logo and banner upload right away and wait for approval).')}
+        {view === 'theme' ? sectionTitle('Theme', 'Saved with "Save my shop".') : sectionTitle('Shop page', 'Saved with "Save my shop" (logo and banner go live as soon as you upload them).')}
         <ShopExtrasEditor only={view === 'theme' ? 'theme' : ''} extras={extras} setExtras={setExtras} feat={feat} shop={shop} tier={isOwner ? 'premium' : effectiveTier(shop)} shopName={name} link={link}
           pinChoices={live.filter((p) => draft[p.id] !== undefined)} isDarkMode={isDarkMode} inputCls={inputCls} />
       </div>}
