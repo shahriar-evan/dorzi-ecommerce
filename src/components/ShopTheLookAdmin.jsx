@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Sparkles, Upload, Trash2, Pencil, Plus, X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft, Check, ZoomIn } from 'lucide-react';
 import { askConfirm } from './AlertCenter';
+import { lookNameIdeas } from '../data/lookNames';
 import { watchLooks, saveLook, deleteLook, LOOK_MAX_ITEMS, LOOK_MAX } from '../looks';
 import { makeAiLook, aiCutoutLook } from '../aiPhoto';
 import { prepareLookImage, lookFramed, reframeLook, toSendableJpeg } from '../utils/showcaseImage';
@@ -173,6 +174,9 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     const taken = new Set(items.flatMap((it) => (byId[it.id] ? lookSlots(byId[it.id]) : [])));
     return lookSlots(p).find((sl) => taken.has(sl)) || null;
   };
+  const [nameSeed, setNameSeed] = useState(0);
+  const nameIdeas = useMemo(() => (form ? lookNameIdeas(form.items.map((it) => byId[it.id]).filter(Boolean), form.who, nameSeed,
+    (looks || []).filter((l) => l.id !== form.id).map((l) => l.name)) : []), [form, byId, nameSeed, looks]);
   const addItem = (p) => setForm((f) => (f.items.length >= LOOK_MAX_ITEMS || f.items.some((it) => it.id === String(p.id)) || slotFull(f.items, p) ? f
     : { ...f, items: [...f.items, { id: String(p.id), x: 50, y: 25 + f.items.length * 20 }] }));
   const removeItem = (i) => setForm((f) => ({ ...f, items: f.items.filter((_, k) => k !== i) }));
@@ -390,6 +394,16 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                   <input type="number" min="1" max={Math.max(1, (looks || []).length + (form.id ? 0 : 1))} className={`${input} w-full mt-1`} value={form.pos ?? ''} onChange={(e) => setForm((f) => ({ ...f, pos: e.target.value }))} />
                 </label>
               </div>
+              {form.items.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5 -mt-1">
+                  <span className="text-[11px] font-semibold text-gray-500">Name ideas:</span>
+                  {nameIdeas.map((n) => (
+                    <button key={n} type="button" onClick={() => setForm((f) => ({ ...f, name: n }))}
+                      className={`px-2.5 py-1 rounded-full border text-[11px] font-semibold ${form.name === n ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : isDarkMode ? 'border-gray-700' : 'border-gray-300'}`}>{n}</button>
+                  ))}
+                  <button type="button" onClick={() => setNameSeed((x) => x + 1)} className="px-2 py-1 text-[11px] font-semibold text-[#B8921F]">↻ More</button>
+                </div>
+              )}
               <div className="flex gap-2 text-xs">
                 {[['men', 'Man'], ['women', 'Woman']].map(([k, label]) => (
                   <button key={k} type="button" onClick={() => setForm((f) => ({ ...f, who: k }))} className={`px-3 py-1.5 rounded-full border font-semibold ${form.who === k ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'border-gray-400'}`}>{label}</button>
