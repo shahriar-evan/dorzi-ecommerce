@@ -99,7 +99,7 @@ export default function App() {
   // Customers only see approved products (an Admin's new product waits for Owner / Manager approval)
   const isApproved = (p) => (p.status || 'approved') === 'approved';
   const shopProducts = products.filter(isApproved);
-  const pendingCount = products.filter(p => !isApproved(p)).length;
+  const pendingCount = products.filter(p => p.status === 'pending').length; // waiting for approval only (hidden = stock out at the supplier, not counted)
 
   // ---- Admin shop link: kyvro.store/?shop=name shows only that shop's products, at that shop's prices ----
   // kyvro.store/<key> (or the old kyvro.store/?shop=<key>): the shop's link name, an old alias or its id; shopSlug below

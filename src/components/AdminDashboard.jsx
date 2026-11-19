@@ -102,7 +102,7 @@ export function AdminDashboard({ orders = [], products = [], adminRole, adminNam
       pending: orders.filter((o) => o.status === 'Pending').length,
       cancelReq: orders.filter((o) => o.cancelRequest && o.cancelRequest.status === 'pending' && o.status !== 'Cancelled').length,
       live: products.filter((p) => (p.status || 'approved') === 'approved').length,
-      waiting: products.filter((p) => (p.status || 'approved') !== 'approved').length,
+      waiting: products.filter((p) => p.status === 'pending').length,
       customers: phones.size,
       low: products.filter(isLowStock).length,
       none: products.filter(isNoStock).length,
