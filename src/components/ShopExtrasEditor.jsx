@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { auth } from '../firebase';
 import qrcode from 'qrcode-generator';
 import { BRAND_COLORS, SOCIALS } from '../data/shopBrand';
 import { imageFileToDataURL } from '../utils/imageUpload';
@@ -14,9 +15,15 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
   const [copied, setCopied] = useState('');
   const [logoMsg, setLogoMsg] = useState(null);
   const [logoBusy, setLogoBusy] = useState(false);
+  // a logo / banner sent before approval was dropped (20 Nov 2026) goes live when its own owner opens this page
+  useEffect(() => {
+    if (!shop || !auth.currentUser || auth.currentUser.uid !== shop.ownerUid) return;
+    if (feat.logo && shop.logoPending) uploadLogo(shop.slug, shop.logoPending, shop).catch(() => {});
+    if (feat.banner && shop.bannerPending) uploadBanner(shop.slug, shop.bannerPending, shop).catch(() => {});
+  }, [shop && shop.slug, shop && shop.logoPending, shop && shop.bannerPending, feat.logo, feat.banner]); // eslint-disable-line react-hooks/exhaustive-deps
   const proOn = feat.tagline || feat.about; // the "Shop page" box (tagline, contact button, about)
   const premiumOn = feat.brandColor || feat.announcement || feat.pinned;
-  // logo: png / jpg / webp up to 500 KB, made into a small square picture that waits for approval
+  // logo: png / jpg / webp up to 500 KB, made into a small square picture, live at once
   const pickLogo = async (file) => {
     setLogoMsg(null);
     if (!file) return;
@@ -25,8 +32,8 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
     setLogoBusy(true);
     try {
       const url = await imageFileToDataURL(file, { maxSize: 256, quality: 0.85 });
-      await uploadLogo(shop.slug, url);
-      setLogoMsg({ type: 'ok', text: 'Logo sent. It shows on your shop after Kyvro approves it.' });
+      await uploadLogo(shop.slug, url, shop);
+      setLogoMsg({ type: 'ok', text: 'Logo saved. It shows on your shop now.' });
     } catch (e) { setLogoMsg({ type: 'err', text: e.code === 'permission-denied' ? 'Logo upload is not on for your shop.' : e.message }); }
     setLogoBusy(false);
   };
@@ -35,7 +42,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
   // take the live logo / banner off the shop (a new one can be uploaded any time and goes through approval again)
   const takeOff = async (what) => {
     const isLogo = what === 'logo';
-    if (!(await askConfirm(`Remove your ${what} from the shop? You can upload a new one any time (Kyvro approves it first).`, { confirmText: 'Remove', danger: true }))) return;
+    if (!(await askConfirm(`Remove your ${what} from the shop? You can upload a new one any time.`, { confirmText: 'Remove', danger: true }))) return;
     try {
       await (isLogo ? removeLogo : removeBanner)(shop.slug);
       (isLogo ? setLogoMsg : setBannerMsg)({ type: 'ok', text: `${isLogo ? 'Logo' : 'Banner'} removed.` });
@@ -55,8 +62,8 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
       let url = await imageFileToDataURL(file, { maxSize: 1200, quality: 0.78 });
       if (url.length > 300000) url = await imageFileToDataURL(file, { maxSize: 900, quality: 0.65 });
       if (url.length > 300000) throw new Error('This picture is too detailed. Try a simpler or smaller one.');
-      await uploadBanner(shop.slug, url);
-      setBannerMsg({ type: 'ok', text: 'Banner sent. It shows on your shop after Kyvro approves it.' });
+      await uploadBanner(shop.slug, url, shop);
+      setBannerMsg({ type: 'ok', text: 'Banner saved. It shows on your shop now.' });
     } catch (e) { setBannerMsg({ type: 'err', text: e.code === 'permission-denied' ? 'Banner upload is not on for your shop.' : e.message }); }
     setBannerBusy(false);
   };
@@ -174,7 +181,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
           {feat.logo ? (
             <>
               {uploadBtn(logoBusy, shop.logo || shop.logoPending ? 'Upload a new logo' : 'Upload logo', pickLogo)}
-              <p className="text-[11px] text-gray-500">PNG / JPG / WebP, max 500 KB, shown square. Kyvro approves it first.</p>
+              <p className="text-[11px] text-gray-500">PNG / JPG / WebP, max 500 KB, shown square. It shows on your shop at once.</p>
             </>
           ) : lockNote(false, 'Your own logo on your shop page.')}
           {logoMsg && <p className={`text-xs ${logoMsg.type === 'ok' ? 'text-green-600' : 'text-red-500'}`}>{logoMsg.text}</p>}
@@ -190,7 +197,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
           {feat.banner ? (
             <>
               {uploadBtn(bannerBusy, shop.banner || shop.bannerPending ? 'Upload a new banner' : 'Upload banner', pickBanner)}
-              <p className="text-[11px] text-gray-500">Wide picture (about 3:1), PNG / JPG / WebP, max 2 MB. Kyvro approves it first.</p>
+              <p className="text-[11px] text-gray-500">Wide picture (about 3:1), PNG / JPG / WebP, max 2 MB. It shows on your shop at once.</p>
             </>
           ) : lockNote(false, 'A wide picture on top of your shop.')}
           {bannerMsg && <p className={`text-xs ${bannerMsg.type === 'ok' ? 'text-green-600' : 'text-red-500'}`}>{bannerMsg.text}</p>}

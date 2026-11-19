@@ -177,9 +177,11 @@ export const setShopActive = (slug, on) => updateDoc(doc(db, "shops", slug), { a
 // ---- Shop logo: a Pro shop asks for permission; with the logo feature on, the owner uploads one that waits for the
 // Owner / a Manager to approve. The picture is a small data URL inside the shop document (same way product photos are kept).
 export const requestLogo = (slug) => updateDoc(doc(db, "shops", slug), { logoRequest: { at: new Date().toISOString() }, updatedAt: new Date().toISOString() });
-export async function uploadLogo(slug, dataUrl) {
-  await updateDoc(doc(db, "shops", slug), { logoPending: dataUrl, logoPendingAt: new Date().toISOString(), logoReject: deleteField(), updatedAt: new Date().toISOString() });
-  try { await fetch("/api/shop-request-notify?action=logo", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug }) }); } catch (e) { /* ignore */ }
+// a paid plan with the logo feature: the logo goes live at once (no approval since 20 Nov 2026)
+// (two small writes: the rules stop at 1000 checks per request, so the old pending fields are cleared on their own)
+export async function uploadLogo(slug, dataUrl, old = {}) {
+  await updateDoc(doc(db, "shops", slug), { logo: dataUrl, updatedAt: new Date().toISOString() });
+  if (old.logoPending || old.logoPendingAt || old.logoReject) await updateDoc(doc(db, "shops", slug), { logoPending: deleteField(), logoPendingAt: deleteField(), logoReject: deleteField() });
 }
 // Owner / Manager (Plan Members)
 export const setShopFeatures = (slug, features) => updateDoc(doc(db, "shops", slug), { features, updatedAt: new Date().toISOString() });
@@ -198,10 +200,10 @@ export const setMyShopLive = (slug, on) => updateDoc(doc(db, "shops", slug), { a
 export const noteShopVisit = (slug) => updateDoc(doc(db, "shops", slug), { lastVisitAt: serverTimestamp() });
 export const setShopOn = (slug, on) => updateDoc(doc(db, "shops", slug), { active: !!on, updatedAt: new Date().toISOString() });
 
-// ---- Shop banner (Premium): uploaded banners wait for the Owner / a Manager like the logo ----
-export async function uploadBanner(slug, dataUrl) {
-  await updateDoc(doc(db, "shops", slug), { bannerPending: dataUrl, bannerPendingAt: new Date().toISOString(), bannerReject: deleteField(), updatedAt: new Date().toISOString() });
-  try { await fetch("/api/shop-request-notify?action=logo", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, kind: "banner" }) }); } catch (e) { /* ignore */ }
+// ---- Shop banner (Premium): live at once like the logo ----
+export async function uploadBanner(slug, dataUrl, old = {}) {
+  await updateDoc(doc(db, "shops", slug), { banner: dataUrl, updatedAt: new Date().toISOString() });
+  if (old.bannerPending || old.bannerPendingAt || old.bannerReject) await updateDoc(doc(db, "shops", slug), { bannerPending: deleteField(), bannerPendingAt: deleteField(), bannerReject: deleteField() });
 }
 export const approveBanner = (shop) => updateDoc(doc(db, "shops", shop.slug), { banner: shop.bannerPending, bannerPending: deleteField(), bannerPendingAt: deleteField(), updatedAt: new Date().toISOString() });
 export const rejectBanner = (slug, note) => updateDoc(doc(db, "shops", slug), { bannerPending: deleteField(), bannerPendingAt: deleteField(), bannerReject: { note: String(note || "").slice(0, 200), at: new Date().toISOString() }, updatedAt: new Date().toISOString() });
