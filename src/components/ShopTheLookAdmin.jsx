@@ -166,6 +166,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     const list = looks || [];
     const pos = look ? list.findIndex((l) => l.id === look.id) + 1 : list.length + 1;
     setForm(look ? { ...look, pos, items: look.items.map((it) => ({ ...it })) } : { ...EMPTY, pos });
+    setLockedPic(!!(look && look.image)); // a saved look keeps its picture: no new AI / upload, only Delete
     setMsg(null); setPinFor(0); setQ('');
   };
   // a slot (top / bottom / shoes / watch / wallet / bag) is full when the look already has its maximum
@@ -175,6 +176,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     return lookSlots(p).find((sl) => taken.has(sl)) || null;
   };
   const [nameSeed, setNameSeed] = useState(0);
+  const [lockedPic, setLockedPic] = useState(false);
   const nameIdeas = useMemo(() => (form ? lookNameIdeas(form.items.map((it) => byId[it.id]).filter(Boolean), form.who, nameSeed,
     (looks || []).filter((l) => l.id !== form.id).map((l) => l.name)) : []), [form, byId, nameSeed, looks]);
   const addItem = (p) => setForm((f) => (f.items.length >= LOOK_MAX_ITEMS || f.items.some((it) => it.id === String(p.id)) || slotFull(f.items, p) ? f
@@ -198,6 +200,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
   };
 
   const makeAi = async () => {
+    if (lockedPic) return;
     if (form.items.length < 2) { setMsg({ type: 'err', text: 'Pick at least 2 products first.' }); return; }
     setBusy('ai'); setMsg(null); setStartedAt(Date.now());
     try {
@@ -287,6 +290,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
     </div>
   );
   const upload = async (file) => {
+    if (lockedPic) return;
     if (!file) return;
     setBusy('up'); setMsg(null); setBgFix(null);
     try { const image = await prepareLookImage(file); setForm((f) => ({ ...f, image })); } catch (e) {
@@ -485,12 +489,6 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                 </div>
               </div>
               {sameSet && <p className="text-xs text-[#B8921F] font-semibold">These products already have a look: {sameSet.name || 'Look'}. You can still make another one (other model / pose).</p>}
-              <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} /> Show on the home page</label>
-              {msg && <p className={`text-xs ${msg.type === 'ok' ? 'text-green-600' : msg.type === 'err' ? 'text-red-500' : 'text-gray-500'}`}>{msg.text}</p>}
-              <div className="flex gap-2">
-                <button type="button" onClick={save} className="px-5 py-2.5 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase disabled:opacity-50">{busy === 'save' ? 'Saving…' : 'Save look'}</button>
-                <button type="button" onClick={() => setForm(null)} className="px-4 py-2.5 rounded border border-gray-400 text-xs font-semibold">Cancel</button>
-              </div>
             </div>
             <div className="space-y-3 w-full max-w-[420px] mx-auto">
             <div className={`relative aspect-[2/3] max-h-[640px] mx-auto w-full max-w-[420px] rounded-lg overflow-hidden ${isDarkMode ? 'bg-[#0f0f0f]' : 'bg-[#f1f1f0]'}`}>
@@ -503,6 +501,13 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                 </div>
               ) : <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-gray-500">{busy === 'ai' ? `Making the picture… ${clock(secs)}` : 'The model picture shows here.'}</p>}
             </div>
+              {lockedPic ? (
+                <div className={`rounded border p-3 text-xs space-y-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+                  <p className="text-gray-500">This look is saved, so its picture stays as it is. Want a new picture? Delete this look and make a new one.</p>
+                  <button type="button" onClick={async () => { const l = (looks || []).find((x) => x.id === form.id); if (!l) return; if (!(await askConfirm(`Delete the look "${l.name || 'Look'}"?`, { danger: true, confirmText: 'Delete' }))) return; try { await deleteLook(l.id); setForm(null); } catch (e) { alert(e.message); } }}
+                    className="px-4 py-2 rounded border border-red-400 text-red-500 text-xs font-bold uppercase">Delete this look</button>
+                </div>
+              ) : (<>
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={makeAi} className="px-4 py-2 rounded bg-gradient-to-b from-[#E9CB6B] to-[#B8921F] text-black text-xs font-bold uppercase flex items-center gap-1.5 disabled:opacity-50">
                   <Sparkles size={14} /> {busy === 'ai' ? 'Making…' : form.image ? 'Make again with AI' : 'Make with AI'}
@@ -520,6 +525,13 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
               </div>
               {qualityPick}
               {timer}
+              </>)}
+              <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} /> Show on the home page</label>
+              {msg && <p className={`text-xs ${msg.type === 'ok' ? 'text-green-600' : msg.type === 'err' ? 'text-red-500' : 'text-gray-500'}`}>{msg.text}</p>}
+              <div className="flex gap-2">
+                <button type="button" onClick={save} className="px-5 py-2.5 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase disabled:opacity-50">{busy === 'save' ? 'Saving…' : 'Save look'}</button>
+                <button type="button" onClick={() => setForm(null)} className="px-4 py-2.5 rounded border border-gray-400 text-xs font-semibold">Cancel</button>
+              </div>
             </div>
           </fieldset>
         </div>
