@@ -21,7 +21,9 @@ import { FS, accessToken, val, quotaMsg } from '../_sslc.js';
 import { ownerEmails, emailOwners } from '../_owners.js';
 import { totalStock } from '../../src/data/catalog.js';
 
+// the Admin button calls again until done, so 45 s a call; the nightly cron runs once, so it gets 4 min (plan.js maxDuration 300)
 const TIME_BUDGET_MS = 45000;
+const CRON_BUDGET_MS = 240000;
 const STATE = 'stockCheck/state'; // server-only collection (no rule lets the app read or write it)
 
 // ---------- Firestore (service account) ----------
@@ -179,7 +181,7 @@ async function runCheck(token, { manual = false } = {}) {
   let last = state.cursor || '';
   let done = 0;
   for (const p of todo) {
-    if (Date.now() - started > TIME_BUDGET_MS) break;
+    if (Date.now() - started > (manual ? TIME_BUDGET_MS : CRON_BUDGET_MS)) break;
     const cost = costById[p.id];
     const colours = Array.isArray(p.colors) && p.colors.length ? p.colors : ['*'];
     const results = await Promise.all(colours.map(async (c) => {
