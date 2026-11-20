@@ -32,6 +32,32 @@ import ShowcasePhotoField, { addAutoShowcase } from './ShowcasePhotoField';
 import { COLLECTION_LABELS, SUB_CATEGORIES, allPlaces, hasColorStock, hasSizeStock, hasSubCategories, orderedSizes, stockForSize, subLabel, supplierOutFor, totalStock, isLowStock, isNoStock, LOW_STOCK_ADMIN } from '../data/catalog';
 
 // Owner: the main site's theme (settings/theme), every theme allowed
+// Products row buttons: on a computer, hovering a button shows what it will do (a small box, fixed so the table never
+// cuts it off); on a phone (no hover) the same text comes up as a confirm box after the tap (see actHint below).
+const noHover = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none)').matches;
+function Hint({ text, children }) {
+  const [pos, setPos] = React.useState(null);
+  const ref = React.useRef(null);
+  const show = () => {
+    if (!text || noHover() || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const w = 260;
+    const left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    setPos(r.top > 140 ? { left, bottom: window.innerHeight - r.top + 8, w } : { left, top: r.bottom + 8, w });
+  };
+  return (
+    <span ref={ref} className="inline-flex" onMouseEnter={show} onMouseLeave={() => setPos(null)} onFocus={show} onBlur={() => setPos(null)}>
+      {children}
+      {pos && (
+        <span role="tooltip" style={{ position: 'fixed', left: pos.left, top: pos.top, bottom: pos.bottom, width: pos.w, zIndex: 9999 }}
+          className="pointer-events-none whitespace-normal text-left rounded-lg bg-gray-900 text-white text-[11px] leading-snug font-medium px-3 py-2 shadow-xl">
+          {text}
+        </span>
+      )}
+    </span>
+  );
+}
+
 function SiteThemePage({ isDarkMode, staff }) {
   const [cur, setCur] = React.useState(null);
   React.useEffect(() => watchSiteTheme(setCur), []);
@@ -114,6 +140,30 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
     if (approving) return;
     setApproving(String(p.id));
     try { await handleApproveProduct(p); } finally { setApproving(''); }
+  };
+  // what each Products row button will do, in plain words (Hint on hover; confirm box on phones)
+  const whatHappens = (p, kind) => {
+    const out = outColours(p).filter((c) => !backColours(p).includes(c));
+    const allOut = outColours(p).includes('*') || totalStock(p) <= 0;
+    const stillOut = out.length && !out.includes('*') ? ` These colours still show "Out of stock": ${out.map(colourLabel).join(', ')}.` : '';
+    if (kind === 'back') return `${backColours(p).map(colourLabel).join(', ')} can be bought again.${p.status === 'hidden' ? ' The product shows on the website again.' : ''}${stillOut}`;
+    if (kind === 'approve') {
+      if (p.status === 'hidden' && allOut) return 'Shows on the website again, but every colour is still out of stock, so customers see "Out of stock" and cannot buy it. Tonight\'s stock check will hide it again. Better to wait until it is "Back in stock".';
+      if (p.status === 'hidden') return `Shows on the website again and customers can buy it.${stillOut}`;
+      return 'Goes live now: customers can see it on the website and buy it.';
+    }
+    if (kind === 'hide') return 'Taken off the website (not deleted). Approve brings it back.';
+    if (kind === 'delete') {
+      if (p.status === 'pending') return 'Rejects it: the product is deleted and never goes on the website. This cannot be undone.';
+      if (adminRole === 'owner') return 'Deletes the product for good: gone from the website and from this list. This cannot be undone. Old orders keep their details.';
+      return 'Sends a delete request to the Owner. It stays on the website until the Owner confirms.';
+    }
+    return '';
+  };
+  // phones: show what will happen first, then do it
+  const actHint = async (p, kind, run) => {
+    if (noHover() && !(await askConfirm(whatHappens(p, kind), { confirmText: kind === 'hide' ? 'Hide' : 'Approve', danger: false }))) return;
+    run();
   };
   const isOwner = adminRole === 'owner';
   // My Shop with unsaved ticks / prices: ask before switching to another tab
@@ -548,18 +598,18 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                             {partOut(p) && <p className="mb-2 text-center text-[10px] text-gray-500 max-w-[11rem] mx-auto">Only the out colours show &quot;Out of stock&quot;; the other colours still sell. No need to hide.</p>}
                             {backColours(p).length > 0 && canApproveProduct({ ...p, status: 'pending' }) && (
                               <div className="mb-2 flex justify-center">
-                                <button type="button" disabled={!!stockBusy} onClick={() => stockOp('approve', p)}
-                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition whitespace-nowrap disabled:opacity-60 inline-flex items-center gap-1.5">{stockBusy === `approve:${p.id}` ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : p.status === 'hidden' ? 'Approve · show on website' : 'Approve · sell again'}</button>
+                                <Hint text={whatHappens(p, 'back')}><button type="button" disabled={!!stockBusy} onClick={() => actHint(p, 'back', () => stockOp('approve', p))}
+                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition whitespace-nowrap disabled:opacity-60 inline-flex items-center gap-1.5">{stockBusy === `approve:${p.id}` ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : p.status === 'hidden' ? 'Approve · show on website' : 'Approve · sell again'}</button></Hint>
                               </div>
                             )}
                             {canHide(p) && (
                               <div className="mb-2 flex justify-center">
-                                <button type="button" disabled={!!stockBusy} onClick={() => stockOp('hide', p)}
-                                  className="px-3 py-1.5 rounded text-xs font-semibold border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition whitespace-nowrap disabled:opacity-50">{stockBusy === `hide:${p.id}` ? 'Hiding…' : 'Hide from website'}</button>
+                                <Hint text={whatHappens(p, 'hide')}><button type="button" disabled={!!stockBusy} onClick={() => stockOp('hide', p)}
+                                  className="px-3 py-1.5 rounded text-xs font-semibold border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition whitespace-nowrap disabled:opacity-50">{stockBusy === `hide:${p.id}` ? 'Hiding…' : 'Hide from website'}</button></Hint>
                               </div>
                             )}
                             <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
-                            {canApproveProduct(p) && !backColours(p).length && <button type="button" disabled={!!approving} onClick={() => approveNow(p)} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button>}
+                            {canApproveProduct(p) && !backColours(p).length && <Hint text={whatHappens(p, 'approve')}><button type="button" disabled={!!approving} onClick={() => actHint(p, 'approve', () => approveNow(p))} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button></Hint>}
                             {canEditProduct(p)
                               ? <button onClick={() => startEditProduct(p)} className="px-3 py-1.5 rounded text-xs font-semibold border bg-white text-gray-900 border-gray-400 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600 transition">Edit</button>
                               : <span className="text-[10px] text-gray-500 font-semibold" title="Only the Owner or the person who added it can edit">View only</span>}
@@ -570,7 +620,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                               </>
                             )}
                             {p.deleteRequested && adminRole !== 'owner' && <span className="text-[10px] font-bold text-red-500">Waiting for Owner</span>}
-                            {!p.deleteRequested && canDeleteProduct(p) && <button onClick={() => deleteProduct(p.id)} className="px-3 py-1.5 rounded text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition">{p.status === 'pending' ? 'Reject' : (adminRole === 'owner' ? 'Delete' : 'Request delete')}</button>}
+                            {!p.deleteRequested && canDeleteProduct(p) && <Hint text={whatHappens(p, 'delete')}><button onClick={() => deleteProduct(p.id)} className="px-3 py-1.5 rounded text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition">{p.status === 'pending' ? 'Reject' : (adminRole === 'owner' ? 'Delete' : 'Request delete')}</button></Hint>}
                             </div>
                           </td>
                         </tr>

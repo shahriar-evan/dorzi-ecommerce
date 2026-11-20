@@ -1427,7 +1427,7 @@ export default function App() {
       }
       return false;
     }
-    if ((await askConfirm('Are you sure you want to delete this product?'))) {
+    if ((await askConfirm(target.status === 'pending' ? `Reject "${target.name}"? The product is deleted and never goes on the website. This cannot be undone.` : `Delete "${target.name}" for good? It goes away from the website and the Admin list. This cannot be undone. Old orders keep their details.`))) {
       try {
         if (isCloud) await removeProduct(id);
         else setLocalProducts(localProducts.filter(p => p.id !== id));
