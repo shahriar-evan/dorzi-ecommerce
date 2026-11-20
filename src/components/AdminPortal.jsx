@@ -497,9 +497,6 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                               {backColours(p).length > 0 && (
                                 <p className="mt-1 text-[11px] font-semibold text-green-700 dark:text-green-400">
                                   Back in stock: {backColours(p).map(colourLabel).join(', ')}
-                                  {canApproveProduct({ ...p, status: 'pending' }) && (
-                                    <button type="button" disabled={!!stockBusy} onClick={() => stockOp('approve', p)} className="ml-2 underline font-bold disabled:opacity-50 disabled:no-underline">{stockBusy === `approve:${p.id}` ? 'Approving…' : p.status === 'hidden' ? 'Approve (show on website)' : 'Approve (sell again)'}</button>
-                                  )}
                                 </p>
                               )}
                               {p.deleteRequested && <span className="ml-2 bg-red-500/20 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-0.5 rounded">DELETE REQUESTED{(p.deleteRequestedByName || p.deleteRequestedBy) ? ` BY ${String(p.deleteRequestedByName || p.deleteRequestedBy).toUpperCase()}` : ''}</span>}
@@ -549,6 +546,12 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                           <td className="p-4 align-middle">
                             {/* stock sync: any team member can take a product that is out of stock at the supplier off the website */}
                             {partOut(p) && <p className="mb-2 text-center text-[10px] text-gray-500 max-w-[11rem] mx-auto">Only the out colours show &quot;Out of stock&quot;; the other colours still sell. No need to hide.</p>}
+                            {backColours(p).length > 0 && canApproveProduct({ ...p, status: 'pending' }) && (
+                              <div className="mb-2 flex justify-center">
+                                <button type="button" disabled={!!stockBusy} onClick={() => stockOp('approve', p)}
+                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition whitespace-nowrap disabled:opacity-60 inline-flex items-center gap-1.5">{stockBusy === `approve:${p.id}` ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : p.status === 'hidden' ? 'Approve · show on website' : 'Approve · sell again'}</button>
+                              </div>
+                            )}
                             {canHide(p) && (
                               <div className="mb-2 flex justify-center">
                                 <button type="button" disabled={!!stockBusy} onClick={() => stockOp('hide', p)}
@@ -556,7 +559,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                               </div>
                             )}
                             <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
-                            {canApproveProduct(p) && <button type="button" disabled={!!approving} onClick={() => approveNow(p)} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button>}
+                            {canApproveProduct(p) && !backColours(p).length && <button type="button" disabled={!!approving} onClick={() => approveNow(p)} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button>}
                             {canEditProduct(p)
                               ? <button onClick={() => startEditProduct(p)} className="px-3 py-1.5 rounded text-xs font-semibold border bg-white text-gray-900 border-gray-400 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600 transition">Edit</button>
                               : <span className="text-[10px] text-gray-500 font-semibold" title="Only the Owner or the person who added it can edit">View only</span>}
