@@ -2,7 +2,7 @@
 
 Fashion dropshipping store for Bangladesh, prices in BDT. Owner: Evan (shahriarevan545@gmail.com).
 
-**Brand: Dorzi · দর্জি** (renamed from Kyvro on 25 Nov 2026). Shown name and logo are Dorzi everywhere; the domain is still kyvro.store until Evan buys dorzi.store (then: Vercel domain, `SITE_URL`, Firebase authorized domain, email domain, kyvro.store → dorzi.store redirect). Internal ids keep the old name on purpose: Firebase project `kyvro-admin-auth`, `kyvro_*` storage keys, `KyvroMark` component, repo name. Logo files: `public/brand/dorzi-logo-*.svg` (full) and `dorzi-mark-*.svg` (needle D); sources in untracked `.claude/logo-export/dorzi/`.
+**Brand: Dorzi · দর্জি** (renamed from Kyvro on 25 Nov 2026). Shown name and logo are Dorzi everywhere; the domain is still kyvro.store until Evan buys dorzi.store (then: Vercel domain, `SITE_URL`, Firebase authorized domain, email domain, kyvro.store → dorzi.store redirect). Internal ids keep the old name on purpose: Firebase project `kyvro-admin-auth`, `kyvro_*` storage keys, `KyvroMark` component, repo name. Logo files: `public/brand/dorzi-logo-*.webp` (full) and `dorzi-mark-*.webp` (needle D), cut out of Evan's own flat logo picture (black made transparent; light copy has white turned black); sources in untracked `.claude/logo-export/dorzi/traced/`.
 
 - **Stack**: React 18 + Vite + Tailwind; Firebase Auth (Google for customers/sellers, email+password or Google for staff) + Firestore; Vercel serverless functions in `api/`.
 - **Payments**: UddoktaPay (bKash / Nagad) for orders and shop plans; Manual bKash / Nagad for orders. SSLCommerz code exists but UddoktaPay is the live provider. No recurring charge exists: plans are renewed by hand.
