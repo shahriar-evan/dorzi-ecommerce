@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ChevronRight, Home, Footprints, Wallet, Watch } from 'lucide-react';
+import { X, Home, Footprints, Wallet, Watch } from 'lucide-react';
 import KyvroMark from './KyvroMark';
 
 // Custom line icons: a man, a woman and a jacket (lucide has no icon for them)
@@ -63,22 +63,16 @@ export default function MobileMenu({ navHas = () => true, isDarkMode, setIsDarkM
                 </button>
               </div>
             )}
-            <nav className="px-4 py-4 flex flex-col gap-1">
-              {items.map(({ label, sub, icon: Icon, go }) => (
+            {/* simple list: line icon + name, no coloured circles */}
+            <nav className="px-3 py-3 flex flex-col">
+              {items.map(({ label, icon: Icon, go }) => (
                 <button
                   key={label}
                   onClick={() => { go(); close(); }}
-                  className={`group flex items-center gap-4 text-left rounded-xl px-3 py-3.5 transition active:scale-[0.99] ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-[#D4AF37]/10'}`}
+                  className={`flex items-center gap-4 text-left rounded-lg px-3 py-3.5 transition ${isDarkMode ? 'text-gray-100 hover:bg-white/5 active:bg-white/10' : 'text-gray-900 hover:bg-gray-100 active:bg-gray-200'}`}
                 >
-                  <span className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-[#8A6A12] group-hover:text-black group-active:text-black transition-all duration-200 group-hover:scale-105"
-                    style={{ background: 'linear-gradient(145deg, #FBF1CF 0%, #EBCF74 55%, #D4AF37 100%)', boxShadow: '0 6px 14px -4px rgba(212,175,55,.55), inset 0 1px 0 rgba(255,255,255,.7), inset 0 0 0 1px rgba(184,146,31,.45)' }}>
-                    <Icon size={22} />
-                  </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold uppercase tracking-wider">{label}</span>
-                    <span className="block text-xs text-gray-500 mt-0.5 truncate">{sub}</span>
-                  </span>
-                  <ChevronRight size={18} className="text-gray-400 group-hover:text-[#D4AF37] transition" />
+                  <Icon size={22} />
+                  <span className="text-base">{label}</span>
                 </button>
               ))}
             </nav>
