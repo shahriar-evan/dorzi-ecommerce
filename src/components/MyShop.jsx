@@ -745,7 +745,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
             <p className="text-xs text-gray-500">{paid ? `All products · paid until ${fmtDate(paidUntil)}` : basicNeed && !basicLate && basicUntil ? `Basic paid until ${fmtDate(basicUntil)} · ${count} / ${plans.freeLimit} products` : `${count} / ${plans.freeLimit} products · ${catsOf(Object.keys(draft)).size} / ${plans.freeCategoryLimit} categories`}</p>
           </div>
           <PlanCards plans={plans} formatPrice={formatPrice} isDarkMode={isDarkMode} mode="upgrade" currentTier={tier} busy={paying === 'basic' ? 'free' : paying} basicPay={basicNeed ? (basicUntil ? 'Renew Basic' : 'Pay Basic') : ''} onChoose={(t) => (t === 'free' ? basicNeed && buyPlan('basic') : buyPlan(t))} />
-          {tier !== 'free' && <p className="text-[11px] text-gray-500 text-center">Renewing or upgrading adds {plans.periodDays} days to your current end date.</p>}
+          {tier !== 'free' && <p className="text-[11px] text-gray-500 text-center">Each payment adds its plan's time to your current end date (Pro {normalizePlans(plans).pro.days} days, Premium {normalizePlans(plans).premium.days} days).</p>}
           {/* under every Pay / Renew button of this page (plan cards and the renew notices above) */}
           <p className="text-[11px] text-gray-500 text-center">Plan fees are non-refundable. · <span lang="bn">প্ল্যানের ফি ফেরতযোগ্য নয়।</span></p>
         </div>

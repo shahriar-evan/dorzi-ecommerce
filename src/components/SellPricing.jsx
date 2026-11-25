@@ -9,10 +9,10 @@ import { normalizePlans } from '../data/priceCheck';
 // Public: "Start selling" opens it without a login; choosing a plan asks for Google sign-in (App) and then opens the
 // application form. SellerDashboard shows the same page to a signed-in customer who has not applied yet.
 export default function SellPricing({ formatPrice, isDarkMode, onChoose, busy = '' }) {
-  // language: remembered on this device; first time, Bangla when the browser is in Bangla
+  // language: English first; the EN / বাংলা switch is remembered on this device
   const [lang, setLangState] = useState(() => {
     try { const v = localStorage.getItem('kyvro_plan_lang'); if (v === 'en' || v === 'bn') return v; } catch (e) { /* no storage */ }
-    return /^bn/i.test((typeof navigator !== 'undefined' && navigator.language) || '') ? 'bn' : 'en';
+    return 'en';
   });
   const setLang = (v) => { setLangState(v); try { localStorage.setItem('kyvro_plan_lang', v); } catch (e) { /* no storage */ } };
   const [plans, setPlans] = useState(() => normalizePlans(null));

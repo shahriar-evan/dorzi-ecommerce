@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { watchPlans, savePlans } from '../storeSettings';
-import { normalizePlans, planPrice, basicPrice } from '../data/priceCheck';
+import { normalizePlans, planPrice, basicPrice, periodText } from '../data/priceCheck';
 import { FEATURES, featureDefault, featureLockedFree } from '../data/shopBrand';
 
 // Owner: the shop plan numbers (settings/plans). Basic (internal tier 'free') = freeLimit products, plus the card's
@@ -37,6 +37,7 @@ export default function PlanSettings({ isDarkMode, staff, formatPrice }) {
       <div className="grid grid-cols-2 gap-3">
         {num(draft[t].price, (v) => setTier(t, 'price', v), 'Price (৳)')}
         {num(draft[t].discount, (v) => setTier(t, 'discount', v), 'Discount %', '0 to 90')}
+        {num(draft[t].days ?? preview[t].days, (v) => setTier(t, 'days', v), 'One payment lasts (days)', '30 = 1 month, 180 = 6 months, 365 = 1 year')}
         <label className="text-xs font-semibold text-gray-500">Label
           <input className={input} maxLength={40} value={draft[t].label ?? ''} onChange={(e) => setTier(t, 'label', e.target.value)} placeholder="Launch offer" />
         </label>
@@ -49,7 +50,7 @@ export default function PlanSettings({ isDarkMode, staff, formatPrice }) {
         {preview[t].discount > 0 && <span className="text-gray-500 line-through">{formatPrice(preview[t].price)}</span>}
         <strong className="text-lg text-[#D4AF37]">{formatPrice(planPrice(preview, t))}</strong>
         {preview[t].discount > 0 && <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold">{preview[t].discount}% OFF</span>}
-        <span className="text-xs text-gray-500">/ {preview.periodDays} days</span>
+        <span className="text-xs text-gray-500">{periodText(preview[t].days)}</span>
         {preview[t].discount > 0 && preview[t].label && <span className="text-xs text-gray-500">{preview[t].label}</span>}
       </p>
     </div>
@@ -142,7 +143,7 @@ export default function PlanSettings({ isDarkMode, staff, formatPrice }) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {num(draft.periodDays, (v) => set('periodDays', v), 'Paid period (days)')}
+        {num(draft.periodDays, (v) => set('periodDays', v), 'Basic period (days)', 'Pro / Premium: set in their boxes above')}
         {num(draft.reminderDays, (v) => set('reminderDays', v), 'Reminder before end (days)')}
         <label className="text-xs font-semibold text-gray-500">Priority support WhatsApp
           <input className={input} value={draft.supportWhatsapp || ''} onChange={(e) => set('supportWhatsapp', e.target.value)} placeholder="01712345678" />

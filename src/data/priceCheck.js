@@ -34,8 +34,9 @@ export const DEFAULT_PLANS = {
   enabled: true, freeLimit: 10, freeCategoryLimit: 3, periodDays: 30, reminderDays: 3,
   // how many shops one seller account may have, by its plan (also checked in firestore.rules: shopLimitFor)
   shopLimits: { free: 1, pro: 2, premium: 3 },
-  pro: { price: 999, discount: 40 },
-  premium: { price: 2999, discount: 40 },
+  // days = how long one payment of that plan lasts (Pro 30 = a month, Premium 180 = 6 months); Basic uses periodDays
+  pro: { price: 999, discount: 40, days: 30 },
+  premium: { price: 2999, discount: 40, days: 30 },
   // Basic (internal tier id 'free'). While it costs ৳0 (100% off) nobody pays. When the Owner removes the discount, only
   // sellers who open their store after that pay (every periodDays); sellers who opened their store while it was ৳0 keep
   // Basic free (basicFree on shops/sellers, set when the store opens). Back to 100% off = nobody pays.
@@ -56,6 +57,7 @@ const tierCfg = (t, def, legacy) => ({
   discount: num(t && t.discount !== undefined ? t.discount : legacy.discount, def.discount, 0, 90),
   label: cardLabel(t && t.label, ''),
   endsAt: cardDate(t && t.endsAt),
+  days: num(t && t.days, def.days || 30, 1, 366),
 });
 // Basic card: list price, discount 0 to 100, a short label and an optional end date (YYYY-MM-DD, shown only)
 const basicCfg = (b) => {
@@ -105,6 +107,20 @@ export const shopLimitFor = (plans, tier) => normalizePlans(plans).shopLimits[ti
 export const planPrice = (plans, tier = 'pro') => {
   const c = normalizePlans(plans)[tier === 'premium' ? 'premium' : 'pro'];
   return Math.round((c.price * (100 - c.discount)) / 100);
+};
+// how many days one payment of Pro / Premium lasts (Basic: periodDays)
+export const planDays = (plans, tier = 'pro') => {
+  const p = normalizePlans(plans);
+  return tier === 'premium' || tier === 'pro' ? p[tier].days : p.periodDays;
+};
+// "per month", "per 6 months", "per year", else "per 45 days" (bn: প্রতি মাসে …)
+export const periodText = (days, lang = 'en') => {
+  const d = Number(days) || 30;
+  const bn = lang === 'bn';
+  const n = (x) => (bn ? String(x).replace(/[0-9]/g, (c) => '০১২৩৪৫৬৭৮৯'[c]) : String(x));
+  if (d === 365 || d === 360) return bn ? 'প্রতি বছরে' : 'per year';
+  if (d % 30 === 0) { const m = d / 30; return bn ? (m === 1 ? 'প্রতি মাসে' : `প্রতি ${n(m)} মাসে`) : (m === 1 ? 'per month' : `per ${m} months`); }
+  return bn ? `প্রতি ${n(d)} দিনে` : `per ${d} days`;
 };
 // what Basic costs for one period (৳0 while the launch offer runs)
 export const basicPrice = (plans) => {

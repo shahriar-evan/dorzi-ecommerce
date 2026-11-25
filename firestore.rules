@@ -684,7 +684,9 @@ service cloud.firestore {
           && b.get('link', '') is string && b.get('link', '').size() <= 300 && (b.get('link', '') == '' || b.get('link', '').matches('^https://[^ <>"]+$'));
       }
       function tierOk(t) {
-        return t is map && t.keys().hasOnly(['price', 'discount', 'label', 'endsAt'])
+        return t is map && t.keys().hasOnly(['price', 'discount', 'label', 'endsAt', 'days'])
+          // days: how long one payment lasts (Pro 30, Premium 180 …); the server reads it when the payment opens
+          && (!('days' in t) || (t.days is int && t.days >= 1 && t.days <= 366))
           && t.price is number && t.price >= 1 && t.price <= 1000000
           && t.discount is number && t.discount >= 0 && t.discount <= 90
           // card label + offer end date: shown on the plan card only
