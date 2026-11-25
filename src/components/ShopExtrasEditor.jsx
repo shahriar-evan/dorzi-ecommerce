@@ -80,7 +80,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
     q.make();
     return q.createDataURL(6, 2);
   }, [link]);
-  const caption = `🛍️ ${shopName || 'My shop'}${extras.tagline ? ` — ${extras.tagline}` : ''}\nOrder here: ${link}\n✅ Cash on delivery · Kyvro delivers all over Bangladesh`;
+  const caption = `🛍️ ${shopName || 'My shop'}${extras.tagline ? ` — ${extras.tagline}` : ''}\nOrder here: ${link}\n✅ Cash on delivery · Dorzi delivers all over Bangladesh`;
   const copy = async (text, what) => { try { await navigator.clipboard.writeText(text); setCopied(what); setTimeout(() => setCopied(''), 1500); } catch { setCopied(''); } };
 
   const togglePin = (id) => setExtras((e) => {
@@ -176,7 +176,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
         <div className={`${box} ${feat.logo ? '' : 'opacity-60'}`}>
           {head('Shop logo', 'Premium', feat.logo)}
           {shop.logo && <div className="flex items-center gap-3 text-xs"><img src={shop.logo} alt="" className="w-14 h-14 rounded-xl object-cover border" /><span className="text-green-600 font-semibold">Approved logo (shown on your shop)</span>{removeBtn('logo')}</div>}
-          {shop.logoPending && <div className="flex items-center gap-3 text-xs"><img src={shop.logoPending} alt="" className="w-14 h-14 rounded-xl object-cover border" /><span className="text-amber-600 font-semibold">Waiting for Kyvro's approval</span></div>}
+          {shop.logoPending && <div className="flex items-center gap-3 text-xs"><img src={shop.logoPending} alt="" className="w-14 h-14 rounded-xl object-cover border" /><span className="text-amber-600 font-semibold">Waiting for Dorzi's approval</span></div>}
           {shop.logoReject && <p className="text-xs text-red-500">{shop.logoReject.kind === 'request' ? 'Logo request rejected' : 'Logo rejected'}{shop.logoReject.note ? `: ${shop.logoReject.note}` : ''}</p>}
           {feat.logo ? (
             <>
@@ -192,7 +192,7 @@ export default function ShopExtrasEditor({ only = '', extras, setExtras, feat, s
         <div className={`${box} ${feat.banner ? '' : 'opacity-60'}`}>
           {head('Shop banner', 'Premium', feat.banner)}
           {shop.banner && <div className="space-y-1 text-xs"><img src={shop.banner} alt="" className="w-full max-h-36 object-cover rounded-xl border" /><span className="text-green-600 font-semibold">Approved banner (shown on top of your shop)</span> {removeBtn('banner')}</div>}
-          {shop.bannerPending && <div className="space-y-1 text-xs"><img src={shop.bannerPending} alt="" className="w-full max-h-36 object-cover rounded-xl border" /><span className="text-amber-600 font-semibold">Waiting for Kyvro's approval</span></div>}
+          {shop.bannerPending && <div className="space-y-1 text-xs"><img src={shop.bannerPending} alt="" className="w-full max-h-36 object-cover rounded-xl border" /><span className="text-amber-600 font-semibold">Waiting for Dorzi's approval</span></div>}
           {shop.bannerReject && <p className="text-xs text-red-500">Banner rejected{shop.bannerReject.note ? `: ${shop.bannerReject.note}` : ''}</p>}
           {feat.banner ? (
             <>

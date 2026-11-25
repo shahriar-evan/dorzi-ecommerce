@@ -19,7 +19,7 @@ import sneakersImg from '../assets/Snekers.webp';
 const HERO_IMAGES = [heroBannerImg, heroBanner1Img, heroBanner2Img];
 const HERO_SECONDS = 15;
 
-export default function HomeView({ theme = 'classic', brandName = 'Kyvro', hideEmptyCategories = false, lookBundle = true, requestAdd, addToCart, banners, calculateDiscountPercent, currentBannerIndex, formatPrice, isDarkMode, products, setCurrentBannerIndex, setCurrentView, setSelectedCategory, setSelectedProduct, savedIds = [], toggleSaved = () => {}, openCollection }) {
+export default function HomeView({ theme = 'classic', brandName = 'Dorzi', hideEmptyCategories = false, lookBundle = true, requestAdd, addToCart, banners, calculateDiscountPercent, currentBannerIndex, formatPrice, isDarkMode, products, setCurrentBannerIndex, setCurrentView, setSelectedCategory, setSelectedProduct, savedIds = [], toggleSaved = () => {}, openCollection }) {
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
     if (HERO_IMAGES.length < 2) return undefined;
@@ -41,10 +41,10 @@ export default function HomeView({ theme = 'classic', brandName = 'Kyvro', hideE
           <section className="relative w-full overflow-hidden select-none">
             {/* the box takes the shape of the photo: nothing is cropped and there is no blurred space */}
             <SlideTrack index={heroIdx} onIndex={setHeroIdx}
-              items={HERO_IMAGES.map((src, i) => <img key={i} src={src} alt={`Kyvro hero ${i + 1}`} draggable={false} className="block w-full h-auto" />)} />
+              items={HERO_IMAGES.map((src, i) => <img key={i} src={src} alt={`Dorzi hero ${i + 1}`} draggable={false} className="block w-full h-auto" />)} />
             <div className="absolute inset-x-0 top-2 sm:top-4 z-10 flex justify-center px-4">
               <span className={`text-[8px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] font-semibold px-3 sm:px-6 py-1 sm:py-2 rounded-full border shadow-xl ${isDarkMode ? 'bg-black/70 text-[#D4AF37] border-[#D4AF37]/50' : 'bg-white/90 text-black border-black/20'}`}>
-                KYVRO &bull; কাইভ্রো LUXURY COLLECTION
+                DORZI &bull; দর্জি LUXURY COLLECTION
               </span>
             </div>
             <div className="absolute inset-x-0 bottom-3 sm:bottom-8 z-10 flex justify-center">
@@ -211,7 +211,7 @@ export default function HomeView({ theme = 'classic', brandName = 'Kyvro', hideE
             </div>
           </section>
 
-          {/* Why Choose Kyvro */}
+          {/* Why Choose Dorzi */}
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
               {[
@@ -238,7 +238,7 @@ export default function HomeView({ theme = 'classic', brandName = 'Kyvro', hideE
                 items={banners.map((img, idx) => (
                   <div key={idx}>
                     {/* the box takes the photo's own shape: nothing is cropped and there is no empty space */}
-                  <img src={img} alt={`Kyvro Banner ${idx + 1}`} className="block w-full h-auto" />
+                  <img src={img} alt={`Dorzi Banner ${idx + 1}`} className="block w-full h-auto" />
                   <div className="absolute inset-x-0 bottom-1.5 sm:bottom-5 z-20 flex justify-center">
                     <button
                       onClick={() => setCurrentView('shop')}

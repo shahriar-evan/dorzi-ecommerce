@@ -7,7 +7,7 @@ import { cleanCouponCode, COUPON_MAX, COUPON_MAX_PERCENT } from '../data/priceCh
 
 // Seller dashboard -> Promo Codes (Premium "coupons"): up to 5 codes per shop. A code gives the shop's customers
 // percent % off the products (1-50), with an optional minimum order and end date. The discount comes out of the
-// seller's own markup (never more than it), so Kyvro's store price never changes. Saved on shops/{slug}.coupons.
+// seller's own markup (never more than it), so Dorzi's store price never changes. Saved on shops/{slug}.coupons.
 export default function PromoCodesEditor({ shops = [], products = [], isDarkMode, readOnly = false, formatPrice }) {
   const [slug, setSlug] = useState(shops[0] ? shops[0].slug : '');
   useEffect(() => { if (!shops.find((s) => s.slug === slug) && shops[0]) setSlug(shops[0].slug); }, [shops]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -64,7 +64,7 @@ export default function PromoCodesEditor({ shops = [], products = [], isDarkMode
         <div>
           <h3 className="text-lg font-bold flex items-center gap-2"><TicketPercent size={20} className="text-[#D4AF37]" />Promo Codes</h3>
           <p className="text-xs text-gray-500 mt-1">Give your customers a code like <strong>EID10</strong> for % off. The discount comes out of your markup (never more than it), so share codes your markup can cover. Up to {COUPON_MAX} codes per shop.</p>
-          <p className="text-xs text-gray-500">কাস্টমাররা চেকআউটে কোড দিলে ছাড় পাবে। ছাড়টা আপনার মার্কআপ থেকে কাটা হবে, Kyvro-র দাম থেকে না।</p>
+          <p className="text-xs text-gray-500">কাস্টমাররা চেকআউটে কোড দিলে ছাড় পাবে। ছাড়টা আপনার মার্কআপ থেকে কাটা হবে, Dorzi-র দাম থেকে না।</p>
         </div>
         {shops.length > 1 && (
           <select value={slug} onChange={(e) => setSlug(e.target.value)} className={input} aria-label="Shop">

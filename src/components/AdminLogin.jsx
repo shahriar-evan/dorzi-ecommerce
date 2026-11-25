@@ -17,8 +17,8 @@ export default function AdminLogin({ isDarkMode, handleEmailSignIn, handleGoogle
   return (
             <div className={`max-w-md mx-auto p-8 rounded-xl border shadow-2xl space-y-6 ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200'}`}>
               <div className="text-center space-y-2">
-                <KyvroMark dark={isDarkMode} title="Kyvro logo" className="h-12 w-auto mx-auto" />
-                <h2 className="text-2xl font-serif font-bold">KYVRO ADMIN PORTAL</h2>
+                <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-12 w-auto mx-auto" />
+                <h2 className="text-2xl font-serif font-bold">DORZI ADMIN PORTAL</h2>
                 <p className="text-xs text-gray-500">Sign in with your admin email and password, or Google.</p>
               </div>
 

@@ -21,7 +21,7 @@ export default function PaymentResult({ result, isDarkMode, setCurrentView }) {
   const copy = async () => {
     try { await navigator.clipboard.writeText(order); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (e) { /* ignore */ }
   };
-  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro, I could not complete the online payment${order ? ` for my order ${order}` : ''}. I would like to order through WhatsApp.`)}`;
+  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi, I could not complete the online payment${order ? ` for my order ${order}` : ''}. I would like to order through WhatsApp.`)}`;
 
   const title = ok ? (adv ? 'Delivery charge paid' : 'Payment received') : check ? 'We are checking your payment' : due ? 'Payment pending' : status === 'cancel' ? 'Payment cancelled' : 'Payment not completed';
   const titleBn = ok ? (adv ? 'ডেলিভারি চার্জ পরিশোধ হয়েছে' : 'পেমেন্ট সফল হয়েছে') : check ? 'পেমেন্ট যাচাই করা হচ্ছে' : due ? 'পেমেন্ট বাকি আছে' : status === 'cancel' ? 'পেমেন্ট বাতিল হয়েছে' : 'পেমেন্ট সম্পন্ন হয়নি';

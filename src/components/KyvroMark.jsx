@@ -1,17 +1,20 @@
 import React from 'react';
 
-// The Kyvro logo: the K emblem (public/brand/kyvro-emblem-*.png, made by scripts/emblem-assets.py from Evan's logo).
-// Light mode: black (with black text). Dark mode: gold (with gold text). The same on every store theme.
-// Both pictures are always on the page (one hidden), so switching light / dark shows the right one at once instead
-// of keeping the old picture until the new one loads.
-// Size it with a height class (h-8, h-10 ...); the width follows. The favicon stays the hexagon (too small for this).
+// The Dorzi logo (was Kyvro until Nov 2026; the component keeps its old name so nothing else has to change).
+//   default : the full logo — needle "D", button "O", "RZ", needle "I" and the stitched thread (public/brand/dorzi-logo-*.svg)
+//   icon    : only the needle "D" (public/brand/dorzi-mark-*.svg), for tight spots and next to a Premium shop's own name
+// Light mode: black letters. Dark mode: gold letters / white needles. The same on every store theme.
+// Both pictures are always on the page (one hidden), so switching light / dark shows the right one at once.
+// Size it with a height class (h-8, h-10 ...); the width follows. Files are made by .claude/logo-export/dorzi (scratch
+// generator dorzi_final.py: letters outlined from Playfair Display Bold, so no font is needed).
 // ?v= changes when the pictures are redrawn, so browsers never keep an old copy.
-const V = '3';
-export default function KyvroMark({ dark = false, className = '', title = 'Kyvro' }) {
+const V = '1';
+export default function KyvroMark({ dark = false, className = '', title = 'Dorzi', icon = false }) {
+  const kind = icon ? 'mark' : 'logo';
   return (
     <span className={`kyvro-mark inline-flex items-center ${className}`} role="img" aria-label={title}>
-      <img src={`/brand/kyvro-emblem-black.png?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? 'hidden' : ''}`} />
-      <img src={`/brand/kyvro-emblem-gold.png?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? '' : 'hidden'}`} />
+      <img src={`/brand/dorzi-${kind}-black.svg?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? 'hidden' : ''}`} />
+      <img src={`/brand/dorzi-${kind}-gold.svg?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? '' : 'hidden'}`} />
     </span>
   );
 }

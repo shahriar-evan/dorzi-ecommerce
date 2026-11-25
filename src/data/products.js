@@ -5,7 +5,7 @@ import sneakersImg from '../assets/Snekers.webp';
 export const INITIAL_PRODUCTS = [
   {
     id: 1,
-    name: "Kyvro Signature Executive Watch",
+    name: "Dorzi Signature Executive Watch",
     category: "Watches",
     gender: "Watches",
     price: 3490,

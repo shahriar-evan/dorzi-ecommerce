@@ -22,7 +22,7 @@ const TABS = [
   { key: 'orders', label: 'My Orders', icon: Package },
   { key: 'saved', label: 'Saved Items', icon: Heart },
   { key: 'settings', label: 'Account Settings', icon: Settings },
-  { key: 'sell', label: 'Sell on Kyvro', icon: Store },
+  { key: 'sell', label: 'Sell on Dorzi', icon: Store },
   { key: 'wallet', label: 'My Wallet', icon: Wallet },
 ];
 
@@ -137,7 +137,7 @@ export default function AccountView({
     return (
       <div className="flex-1 max-w-md mx-auto px-4 py-16 w-full text-center">
         <User size={40} className="mx-auto text-[#D4AF37] mb-4" />
-        <h1 className="text-2xl font-serif font-bold mb-2">Sign in to Kyvro</h1>
+        <h1 className="text-2xl font-serif font-bold mb-2">Sign in to Dorzi</h1>
         <p className="text-sm text-gray-500 mb-6">See your orders, save the products you love and manage your account.</p>
         <button onClick={onSignIn} className="w-full bg-[#D4AF37] text-black font-bold py-3 rounded text-xs uppercase tracking-widest hover:opacity-90 transition">
           Continue with Google
@@ -300,12 +300,12 @@ export default function AccountView({
           </div>
           <div>
             <label className="block text-xs font-semibold mb-1.5">Password</label>
-            <p className="text-xs text-gray-500">You sign in with Google, so there is no Kyvro password. To change your password, update your Google account password at myaccount.google.com.</p>
+            <p className="text-xs text-gray-500">You sign in with Google, so there is no Dorzi password. To change your password, update your Google account password at myaccount.google.com.</p>
           </div>
           <div className="flex items-start justify-between gap-4 border-t border-gray-500/20 pt-4">
             <div>
               <p className="text-xs font-semibold">Offer emails</p>
-              <p className="text-xs text-gray-500 mt-1">Get discounts and new-arrival news at {customerUser.email}. Only when Kyvro has a real offer.</p>
+              <p className="text-xs text-gray-500 mt-1">Get discounts and new-arrival news at {customerUser.email}. Only when Dorzi has a real offer.</p>
             </div>
             <button type="button" onClick={toggleOffers} disabled={subBusy} aria-pressed={sub.on}
               className={`shrink-0 w-14 h-7 rounded-full relative transition-colors disabled:opacity-50 ${sub.on ? 'bg-[#D4AF37]' : 'bg-gray-500/40'}`}>
@@ -317,7 +317,7 @@ export default function AccountView({
             <div className="flex items-start justify-between gap-4 border-t border-gray-500/20 pt-4">
               <div>
                 <p className="text-xs font-semibold">Notifications on this device</p>
-                <p className="text-xs text-gray-500 mt-1">{push.blocked ? 'Notifications are blocked in your browser settings. Allow them for kyvro.store there, then come back.' : 'A pop-up alert when Kyvro has a new offer.'}</p>
+                <p className="text-xs text-gray-500 mt-1">{push.blocked ? 'Notifications are blocked in your browser settings. Allow them for kyvro.store there, then come back.' : 'A pop-up alert when Dorzi has a new offer.'}</p>
               </div>
               <button type="button" onClick={togglePush} disabled={pushBusy || push.blocked} aria-pressed={push.on}
                 className={`shrink-0 w-14 h-7 rounded-full relative transition-colors disabled:opacity-50 ${push.on ? 'bg-[#D4AF37]' : 'bg-gray-500/40'}`}>

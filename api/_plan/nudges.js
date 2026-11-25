@@ -61,12 +61,12 @@ async function pushToUid(token, project, uid, title, body, link) {
 function payEmail(orderNumber, part, link, last) {
   const what = part.kind === 'advance' ? 'delivery charge' : 'payment';
   const whatBn = part.kind === 'advance' ? 'ডেলিভারি চার্জ' : 'পেমেন্ট';
-  const subject = `Payment pending for your Kyvro order ${orderNumber}`;
+  const subject = `Payment pending for your Dorzi order ${orderNumber}`;
   const lineEn = `Your order ${orderNumber} is saved, but the ${what} of ৳${part.amount} is still due. ${last ? 'This is the last reminder: ' : ''}orders not paid within ${CANCEL_DAY} days are cancelled automatically.`;
   const lineBn = `আপনার অর্ডার ${orderNumber} সেভ করা আছে, কিন্তু ${whatBn} ৳${part.amount} এখনও বাকি। ${CANCEL_DAY} দিনের মধ্যে পেমেন্ট না হলে অর্ডারটি নিজে থেকে বাতিল হয়ে যাবে।`;
   const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>${esc(lineBn)}</p><p>${esc(lineEn)}</p>
     <p><a href="${esc(link)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Pay now</a></p>
@@ -99,7 +99,7 @@ export async function unpaidOrders(token, project, now) {
           { fieldPath: 'updatedAt', setToServerValue: 'REQUEST_TIME' },
           { fieldPath: 'history', appendMissingElements: { values: [{ mapValue: { fields: {
             status: { stringValue: `Auto-cancelled: not paid in ${CANCEL_DAY} days` },
-            by: { stringValue: 'system' }, byName: { stringValue: 'Kyvro (automatic)' }, at: { stringValue: new Date(now).toISOString() },
+            by: { stringValue: 'system' }, byName: { stringValue: 'Dorzi (automatic)' }, at: { stringValue: new Date(now).toISOString() },
           } } }] } },
         ],
       }]);

@@ -5,7 +5,7 @@ import { releaseShopHandle, prettyHandle } from "./shops";
 
 const db = getFirestore(getApp());
 
-// ---- Public sellers ("Sell on Kyvro") ----
+// ---- Public sellers ("Sell on Dorzi") ----
 // A signed-in customer (not on the team) opens ONE shop. The shop is public (shops/{slug}, kind 'seller'); who owns it
 // is private (sellers/{uid}: the seller and the Owner read it). Where the markup is paid (bKash) is in sellerPayout/{uid}:
 // the seller writes it, only the Owner reads it. Sellers never see supplier data or customers' details.

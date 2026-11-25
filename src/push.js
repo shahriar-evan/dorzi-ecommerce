@@ -106,7 +106,7 @@ export function listenForeground() {
   try {
     return onMessage(getMessaging(getApp()), (payload) => {
       const d = (payload && payload.data) || {};
-      navigator.serviceWorker.ready.then((reg) => reg.showNotification(d.title || "Kyvro", {
+      navigator.serviceWorker.ready.then((reg) => reg.showNotification(d.title || "Dorzi", {
         body: d.body || "", icon: d.icon || "/kyvro-icon.png", data: { link: d.link || "/" },
       }));
     });

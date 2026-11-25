@@ -77,7 +77,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
   useEffect(() => (isOwner ? undefined : watchSellerRules(setSellerRules)), [isOwner]);
 
   const uid = asUid || (auth.currentUser ? auth.currentUser.uid : '');
-  // a public seller's application: on the Free plan they pick products only from the categories Kyvro approved
+  // a public seller's application: on the Free plan they pick products only from the categories Dorzi approved
   const [mySeller, setMySeller] = useState(null);
   useEffect(() => (sellerMode && uid ? watchMySeller(uid, setMySeller) : undefined), [sellerMode, uid]);
   useEffect(() => {
@@ -478,7 +478,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
     return wrap(
       <div className={card}>
         <h3 className="text-lg font-bold">Create my shop</h3>
-        <p className="text-xs text-gray-500">You get your own link, and you earn the markup. Customers who open it see the same Kyvro store, but only the products you choose, at the price you set (within the allowed limit). Everything above the store price is your earning.{!isOwner && adminRole === 'admin' ? ' Orders from your own shop earn the markup, not commission. Your shop starts switched off: the Owner gets a notification and turns it on when they accept it.' : ' Admins can share your link and confirm its orders; they earn commission, not the markup.'}</p>
+        <p className="text-xs text-gray-500">You get your own link, and you earn the markup. Customers who open it see the same Dorzi store, but only the products you choose, at the price you set (within the allowed limit). Everything above the store price is your earning.{!isOwner && adminRole === 'admin' ? ' Orders from your own shop earn the markup, not commission. Your shop starts switched off: the Owner gets a notification and turns it on when they accept it.' : ' Admins can share your link and confirm its orders; they earn commission, not the markup.'}</p>
         <div className="flex flex-wrap gap-2 items-center">
           <input className={`${inputCls} w-64`} placeholder="Shop name, e.g. Zayra Fashion" maxLength={60} value={newName} onChange={(e) => setNewName(e.target.value)} />
           <button type="button" disabled={busy} onClick={doCreate} className="bg-[#D4AF37] text-black font-bold px-5 py-2 rounded text-xs uppercase tracking-wider disabled:opacity-50">{busy ? 'Creating...' : 'Create shop'}</button>
@@ -535,23 +535,23 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
       )}
       {show('products', 'manage') && shop.warning && shop.warning.note && (
         <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4 text-xs text-red-500">
-          <p className="font-bold uppercase tracking-wider">Warning from Kyvro</p>
+          <p className="font-bold uppercase tracking-wider">Warning from Dorzi</p>
           <p className="mt-1 font-semibold">{shop.warning.note}</p>
           <p className="mt-1 text-[11px] opacity-80">Please fix this soon, otherwise the shop may be removed. Questions: kyvrofashion@gmail.com</p>
         </div>
       )}
-      {/* seller: switch the shop ON / OFF themselves (also after Kyvro switched it off or hid it for inactivity).
-          A killed shop (Page off) or one waiting for approval stays with Kyvro. */}
+      {/* seller: switch the shop ON / OFF themselves (also after Dorzi switched it off or hid it for inactivity).
+          A killed shop (Page off) or one waiting for approval stays with Dorzi. */}
       {/* removed by the Owner: the reason, the last day to ask for it back, and a WhatsApp button */}
       {show('products', 'manage') && shop.removed && shop.removed.at && (() => {
         const last = new Date(Date.parse(shop.removed.at) + 30 * 86400000);
-        const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro, my shop ${shop.name || ''} (kyvro.store/${shopLinkKey(shop)}) was removed. Please restore it. / আমার শপটি ফিরিয়ে দিন।`)}`;
+        const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi, my shop ${shop.name || ''} (kyvro.store/${shopLinkKey(shop)}) was removed. Please restore it. / আমার শপটি ফিরিয়ে দিন।`)}`;
         return (
           <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4 text-xs text-red-600 space-y-1.5">
-            <p className="font-bold text-sm">This shop was removed by Kyvro · শপটি Kyvro সরিয়ে দিয়েছে</p>
+            <p className="font-bold text-sm">This shop was removed by Dorzi · শপটি Dorzi সরিয়ে দিয়েছে</p>
             {shop.removed.note && <p>Reason · কারণ: <strong>{shop.removed.note}</strong></p>}
-            <p className="font-normal">To get it back, message Kyvro on WhatsApp before {last.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}. After that it is deleted for good. · ফেরত পেতে এই তারিখের আগে WhatsApp-এ জানান।</p>
-            <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-1 px-4 py-2 rounded-full bg-green-600 text-white font-bold">Ask Kyvro on WhatsApp</a>
+            <p className="font-normal">To get it back, message Dorzi on WhatsApp before {last.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}. After that it is deleted for good. · ফেরত পেতে এই তারিখের আগে WhatsApp-এ জানান।</p>
+            <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-1 px-4 py-2 rounded-full bg-green-600 text-white font-bold">Ask Dorzi on WhatsApp</a>
           </div>
         );
       })()}
@@ -564,7 +564,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
               : 'Customers can open your shop. Switch it off to close it for a while (nothing is deleted). · দরকার হলে সাময়িক বন্ধ রাখুন, কিছু মুছবে না।'}</p>
           </div>
           <ShopSwitch on={shop.active !== false} busy={busy} isDarkMode={isDarkMode} label="Shop on or off"
-            onToggle={async () => { if (readOnly) return; setBusy(true); try { await setMyShopLive(shop.slug, shop.active === false); setMsg({ type: 'ok', text: shop.active === false ? 'Your shop is live again.' : 'Your shop is switched off.' }); } catch (e) { setMsg({ type: 'err', text: e.code === 'permission-denied' ? 'Could not change it. Please contact Kyvro.' : e.message }); } setBusy(false); }} />
+            onToggle={async () => { if (readOnly) return; setBusy(true); try { await setMyShopLive(shop.slug, shop.active === false); setMsg({ type: 'ok', text: shop.active === false ? 'Your shop is live again.' : 'Your shop is switched off.' }); } catch (e) { setMsg({ type: 'err', text: e.code === 'permission-denied' ? 'Could not change it. Please contact Dorzi.' : e.message }); } setBusy(false); }} />
         </div>
       )}
       {/* 1. the shop: link + name */}
@@ -574,7 +574,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
           <div className="min-w-0">
             <h3 className="text-xl font-bold">My Shop{isPendingShop(shop) ? ' (waiting for the Owner)' : shop.active === false ? ' (switched off by the Owner)' : ''}</h3>
             {isPendingShop(shop) && <p className="text-xs text-amber-600 mt-1">The Owner was notified. You can already choose products and prices; the link starts working when the Owner accepts your shop.</p>}
-            {shop.killed && <p className="text-xs text-red-500 mt-1 font-semibold">Kyvro switched this shop off{shop.killNote ? `: ${shop.killNote}` : ''}. It cannot be changed or switched on again. Contact kyvrofashion@gmail.com if you think this is a mistake.</p>}
+            {shop.killed && <p className="text-xs text-red-500 mt-1 font-semibold">Dorzi switched this shop off{shop.killNote ? `: ${shop.killNote}` : ''}. It cannot be changed or switched on again. Contact kyvrofashion@gmail.com if you think this is a mistake.</p>}
             <p className="text-xs text-gray-500 break-all mt-1">{link}</p>
           </div>
           <div className="grid grid-cols-2 sm:flex gap-2 shrink-0">{linkButtons(shopLinkKey(shop), GOLD_BTN)}</div>

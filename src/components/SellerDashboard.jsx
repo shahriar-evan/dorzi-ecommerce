@@ -33,7 +33,7 @@ const APPLY_SOCIALS = [
 ];
 const NO_SOCIALS = { facebook: '', instagram: '', tiktok: '' };
 
-// "Sell on Kyvro": a signed-in customer's own shop. The shop editor is the same as the team's (My Shop, plan,
+// "Sell on Dorzi": a signed-in customer's own shop. The shop editor is the same as the team's (My Shop, plan,
 // markup cap). Earnings come from the server without any customer details; payouts are what the Owner already paid.
 // viewAs = { uid, email, name, onExit }: the Owner looking at this seller's dashboard (Sellers > View dashboard). READ-ONLY:
 // nothing can be saved (every control is disabled) and the Owner's own login reads the data; no seller login is used.
@@ -131,8 +131,8 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   if (!customerUser) {
     return (
       <div className={card}>
-        <h3 className="text-lg font-bold">Sell on Kyvro</h3>
-        <p className="text-xs text-gray-500">Open your own shop link with Kyvro products, set your price (within the limit) and earn the markup. Sign in with Google to start.</p>
+        <h3 className="text-lg font-bold">Sell on Dorzi</h3>
+        <p className="text-xs text-gray-500">Open your own shop link with Dorzi products, set your price (within the limit) and earn the markup. Sign in with Google to start.</p>
         <button type="button" onClick={onSignIn} className="bg-[#D4AF37] text-black font-bold px-5 py-2 rounded text-xs uppercase tracking-wider">Continue with Google</button>
       </div>
     );
@@ -140,7 +140,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   if (!ro && (isStaff || teamMember)) {
     return (
       <div className={card}>
-        <h3 className="text-lg font-bold">Sell on Kyvro</h3>
+        <h3 className="text-lg font-bold">Sell on Dorzi</h3>
         <p className="text-sm text-gray-500">Team members cannot become sellers. Your shop is in the Admin Portal (My Shop).</p>
       </div>
     );
@@ -154,7 +154,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   const apply = async () => {
     setFormMsg('');
     const f = form;
-    if (rules && !rules.open) return setFormMsg('Kyvro is not taking new sellers right now. Please try again later.');
+    if (rules && !rules.open) return setFormMsg('Dorzi is not taking new sellers right now. Please try again later.');
     // shop link name: kyvro.store/<handle> (3 to 30 letters a-z, 0-9, "-"; free; can be changed later)
     const handle = cleanHandle(f.handle);
     if (!HANDLE_RE.test(handle)) return setFormMsg('Write a shop link name: 3 to 30 letters (a-z, 0-9 and -), e.g. zayra-fashion.');
@@ -181,7 +181,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   if ((!seller || status === 'rejected') && rules && !rules.open) {
     return (
       <div className={card}>
-        <h3 className="text-lg font-bold">Sell on Kyvro</h3>
+        <h3 className="text-lg font-bold">Sell on Dorzi</h3>
         {status === 'rejected' && <p className="text-xs p-3 rounded border border-red-500/40 text-red-500 bg-red-500/10"><strong>Rejected</strong>{seller.rejectNote ? `: ${seller.rejectNote}` : ''}.</p>}
         <p className="text-sm text-gray-500">Seller sign-up is closed right now. It is coming back soon, please check again later.</p>
       </div>
@@ -269,7 +269,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
     );
     return (
       <div className={card}>
-        <h3 className="text-lg font-bold">Sell on Kyvro</h3>
+        <h3 className="text-lg font-bold">Sell on Dorzi</h3>
         {status === 'rejected' && (
           <p className="text-xs p-3 rounded border border-red-500/40 text-red-500 bg-red-500/10"><strong>Rejected</strong>{seller.rejectNote ? `: ${seller.rejectNote}` : ''}. You can fix it and apply again below.</p>
         )}
@@ -280,7 +280,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
           </div>
         )}
         {(plan === 'pro' || plan === 'premium') && !seller && <p className="text-xs p-3 rounded border border-[#D4AF37]/50 text-[#D4AF37] bg-[#D4AF37]/10 font-semibold">{TIER_LABEL[plan]} plan: your shop opens on the Basic plan; pay right after from the plan card in My Shop to switch on {TIER_LABEL[plan]}.</p>}
-        <p className="text-xs text-gray-500">Open your own shop link with Kyvro products, set your price (within the limit) and earn the markup on delivered orders. Kyvro takes the payment and delivers every order. Your shop goes live right away (Pro: 2 shops, Premium: 3, each live at once). Shops not visited for 30 days are removed. We never ask for NID, passport or bank details.</p>
+        <p className="text-xs text-gray-500">Open your own shop link with Dorzi products, set your price (within the limit) and earn the markup on delivered orders. Dorzi takes the payment and delivers every order. Your shop goes live right away (Pro: 2 shops, Premium: 3, each live at once). Shops not visited for 30 days are removed. We never ask for NID, passport or bank details.</p>
         <div className="grid sm:grid-cols-2 gap-3">
           {/* shop link name (any plan) + the shop name shown on the website (Premium) */}
           <label className="block text-xs font-semibold text-gray-500">Shop link *
@@ -319,7 +319,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
         </div>
         <label className="flex items-start gap-2 text-xs cursor-pointer">
           <input type="checkbox" checked={form.agreed} onChange={(e) => set('agreed', e.target.checked)} className="mt-0.5 accent-[#D4AF37]" />
-          <span>I understand that I am an independent seller, not official Kyvro, and that I am responsible for my own shop. *</span>
+          <span>I understand that I am an independent seller, not official Dorzi, and that I am responsible for my own shop. *</span>
         </label>
         {formMsg && <p className="text-xs text-red-500">{formMsg}</p>}
         <button type="button" disabled={applying} onClick={apply} className="bg-[#D4AF37] text-black font-bold px-6 py-2.5 rounded text-xs uppercase tracking-wider disabled:opacity-50">{applying ? 'Sending...' : status === 'rejected' ? 'Apply again' : 'Apply to sell'}</button>
@@ -380,7 +380,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
       {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
     </div>
   );
-  const notYet = <div className={card}><p className="text-sm text-gray-500">This opens after Kyvro approves your shop.</p></div>;
+  const notYet = <div className={card}><p className="text-sm text-gray-500">This opens after Dorzi approves your shop.</p></div>;
   // a page this plan does not have: what it does and the plan that unlocks it
   const locked = (name, plan, what) => (
     <div className={`${card} text-center !py-12`}>
@@ -446,7 +446,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
           {list.map((x) => (
             <div key={x.slug} className="py-2 flex flex-wrap items-center justify-between gap-2">
               <span className="font-semibold">{x.missing ? x.slug : (x.handle ? prettyHandle(x.handle) : x.name)} <a href={`/${x.handle || x.slug}`} target="_blank" rel="noopener noreferrer" className="font-normal text-gray-500 hover:underline">· kyvro.store/{x.handle || x.slug}</a></span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${x.removed && x.removed.at ? 'bg-red-500/15 text-red-600' : x.status === 'pending' ? 'bg-amber-500/15 text-amber-600' : x.active === false ? 'bg-gray-500/15 text-gray-500' : 'bg-green-600/15 text-green-600'}`}>{x.removed && x.removed.at ? 'Removed' : x.status === 'pending' ? 'Waiting for Kyvro' : x.active === false ? 'Off' : 'Live'}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${x.removed && x.removed.at ? 'bg-red-500/15 text-red-600' : x.status === 'pending' ? 'bg-amber-500/15 text-amber-600' : x.active === false ? 'bg-gray-500/15 text-gray-500' : 'bg-green-600/15 text-green-600'}`}>{x.removed && x.removed.at ? 'Removed' : x.status === 'pending' ? 'Waiting for Dorzi' : x.active === false ? 'Off' : 'Live'}</span>
             </div>
           ))}
         </div>
@@ -486,7 +486,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
         <div className={`${card} !space-y-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4`}>
           <div className="space-y-1 min-w-0">
             <h2 className="text-xl sm:text-2xl font-bold">Hello, {(customerUser.displayName || 'Seller').split(' ')[0]}!</h2>
-            <p className="text-xs text-gray-500">{approved ? (basicDue(myShop, plans) ? 'Your shop is ready. Pay the Basic plan to open it to customers.' : 'Your shop is live. Choose products, share your link and earn on every delivered order.') : 'Kyvro is checking your application. You can already choose products; your link starts working after approval.'}</p>
+            <p className="text-xs text-gray-500">{approved ? (basicDue(myShop, plans) ? 'Your shop is ready. Pay the Basic plan to open it to customers.' : 'Your shop is live. Choose products, share your link and earn on every delivered order.') : 'Dorzi is checking your application. You can already choose products; your link starts working after approval.'}</p>
           </div>
           {/* the shop's public link, right next to the greeting: open it or copy it to share */}
           {myShop && shopLinkKey(myShop) && (() => {
@@ -529,7 +529,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
         {earnErr && <p className="text-xs text-red-500">{earnErr}</p>}
         {!approved && (
           <div className={card}>
-            <p className="text-xs font-semibold text-gray-500">Categories you want to sell * <span className="font-normal">(you can change them while Kyvro checks your application)</span></p>
+            <p className="text-xs font-semibold text-gray-500">Categories you want to sell * <span className="font-normal">(you can change them while Dorzi checks your application)</span></p>
             {catPicker}
             <div className="flex flex-wrap items-center gap-3">
               <button type="button" onClick={saveCats} className="bg-[#D4AF37] text-black font-bold px-5 py-2 rounded text-xs uppercase tracking-wider">Save categories</button>
@@ -559,7 +559,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   } else if (s === 'orders') {
     before = !approved ? notYet : (
       <>
-        <div className="flex flex-wrap items-end justify-between gap-2">{title('Orders', 'Orders from your shop links. Kyvro confirms and delivers every order; customer details stay with Kyvro.')}{refreshBtn}</div>
+        <div className="flex flex-wrap items-end justify-between gap-2">{title('Orders', 'Orders from your shop links. Dorzi confirms and delivers every order; customer details stay with Dorzi.')}{refreshBtn}</div>
         <div className={card}>{earnErr ? <p className="text-xs text-red-500">{earnErr}</p> : !earn ? <p className="text-sm text-gray-500">Loading...</p> : orderRows}</div>
       </>
     );
@@ -682,7 +682,7 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
   } else if (s === 'sub-billing') {
     before = (
       <>
-        {title('Billing History', 'Your plan payments. Comp plans given by Kyvro are not listed here.')}
+        {title('Billing History', 'Your plan payments. Comp plans given by Dorzi are not listed here.')}
         <div className={card}>
           {billing === null ? <p className="text-sm text-gray-500">Loading...</p>
             : billing.error ? <p className="text-xs text-red-500">{billing.error}</p>

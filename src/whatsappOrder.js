@@ -30,7 +30,7 @@ const productUrl = (id) => (id ? `${waShop ? waShop.url : (typeof window !== 'un
 
 // One product (card or detail page). color / size / id are optional.
 export const waProductLines = ({ id, name, color, size, qty = 1, price }) => [
-  'Hello Kyvro, I want to order:',
+  'Hello Dorzi, I want to order:',
   '',
   ...shopLines(),
   `* Name: ${name}`,
@@ -46,7 +46,7 @@ export const waCartLines = (items) => {
   const list = (items || []).slice(0, 30);
   const total = list.reduce((a, it) => a + (Number(it.price) || 0) * (Number(it.quantity) || 0), 0);
   return [
-    'Hello Kyvro, I want to order these items:',
+    'Hello Dorzi, I want to order these items:',
     '',
     ...shopLines(),
     ...(waShop ? [''] : []),

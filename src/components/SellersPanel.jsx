@@ -15,7 +15,7 @@ import SellerDashboard from './SellerDashboard';
 // a shop's markup on one order = (price the customer paid - store price) x pieces
 const markupOf = (o) => orderMarkup(o); // minus the shop's own promo code
 
-// Owner: every public seller ("Sell on Kyvro") with their shop, plan, earnings (markup on delivered orders), what was
+// Owner: every public seller ("Sell on Dorzi") with their shop, plan, earnings (markup on delivered orders), what was
 // paid, what is due, their bKash, Mark as paid. Plus who may open a shop and the blocked names.
 // the seller's payout details (sellerPayout/{uid}) as lines: bKash numbers and bank accounts
 const payoutLines = (p) => {
@@ -124,7 +124,7 @@ export default function SellersPanel({ orders = [], products = [], isDarkMode, f
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold">Sellers</h3>
-            <p className="text-xs text-gray-500 mt-1">Customers who opened a shop with "Sell on Kyvro". They earn only the markup on delivered orders; you confirm and deliver every order. They never see supplier details or customers' details.</p>
+            <p className="text-xs text-gray-500 mt-1">Customers who opened a shop with "Sell on Dorzi". They earn only the markup on delivered orders; you confirm and deliver every order. They never see supplier details or customers' details.</p>
           </div>
           {rules && (
             <label className="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">

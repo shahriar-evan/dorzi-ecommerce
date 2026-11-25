@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const SPEED_DESKTOP = 45;
 const SPEED_MOBILE = 32;
 
-// support = false on a shop link: only the shop's own text scrolls (no Kyvro line)
+// support = false on a shop link: only the shop's own text scrolls (no Dorzi line)
 export default function AnnouncementBar({ announcementText, speed = 100, isDarkMode, support = true }) {
   const wrap = useRef(null);
   const unit = useRef(null);

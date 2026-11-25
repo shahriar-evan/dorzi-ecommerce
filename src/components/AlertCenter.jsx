@@ -152,7 +152,7 @@ export default function AlertCenter({ isDarkMode }) {
     const main = parts[0];
     const rest = parts.slice(1).join('\n\n');
     const waFor = waLinkFor;
-    const wa = waFor(waOrderText(['Hello Kyvro, I want to place an order manually.']));
+    const wa = waFor(waOrderText(['Hello Dorzi, I want to place an order manually.']));
     const gold = '#D4AF37';
     return (
       <div className="fixed inset-0 z-[300] flex items-center justify-center px-4" role="alertdialog" aria-live="polite" onClick={close}

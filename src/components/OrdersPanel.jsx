@@ -160,7 +160,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
     const money = (n) => `${Number(n || 0).toLocaleString('en-US')} BDT`;
     const a = parseAddress(o.customer?.address);
     const lines = [
-      `${g.name.toUpperCase()} ORDER (Kyvro ${o.orderNumber})`,
+      `${g.name.toUpperCase()} ORDER (Dorzi ${o.orderNumber})`,
       '',
       `Customer name: ${o.customer?.name || ''}`,
       `Customer phone: ${o.customer?.phone || ''}`,
@@ -181,7 +181,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
     });
     lines.push('', `Selling price (items): ${money(g.sell)}`);
     if (o.discount > 0) lines.push(`Order discount given to customer: -${money(o.discount)}`);
-    lines.push(`Delivery charge taken by Kyvro: ${o.shipping === 0 ? 'FREE' : money(o.shipping)}`);
+    lines.push(`Delivery charge taken by Dorzi: ${o.shipping === 0 ? 'FREE' : money(o.shipping)}`);
     lines.push(`Customer pays in total: ${money(o.total)}${o.paymentStatus === 'Paid' ? ' (already paid)' : ''}`);
     return lines.join('\n');
   };

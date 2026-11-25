@@ -7,7 +7,7 @@ const FS = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(d
 
 const page = (title, text) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;color:#222"><div style="max-width:480px;margin:60px auto;background:#fff;padding:32px;border-radius:8px;text-align:center">
-<div style="color:#D4AF37;font-size:22px;letter-spacing:4px;font-weight:bold">KYVRO</div><h2>${title}</h2><p style="line-height:1.6">${text}</p>
+<div style="color:#D4AF37;font-size:22px;letter-spacing:4px;font-weight:bold">DORZI</div><h2>${title}</h2><p style="line-height:1.6">${text}</p>
 <p><a href="${SITE}" style="color:#000">Back to kyvro.store</a></p></div></body></html>`;
 
 export default async function handler(req, res) {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     });
     if (r.ok) {
       if (req.method === 'POST') return res.status(200).send('ok');
-      return res.status(200).send(page('You are unsubscribed', 'You will not get offer emails from Kyvro any more. You can turn them back on any time in your account settings on kyvro.store.'));
+      return res.status(200).send(page('You are unsubscribed', 'You will not get offer emails from Dorzi any more. You can turn them back on any time in your account settings on kyvro.store.'));
     }
     return res.status(400).send(page('Invalid link', 'This unsubscribe link is not valid or has expired.'));
   } catch (e) {

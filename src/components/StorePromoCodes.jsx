@@ -5,8 +5,8 @@ import { watchPromos, savePromos } from '../storeSettings';
 import { cleanCouponCode, COUPON_MAX_PERCENT, STORE_COUPON_MAX } from '../data/priceCheck';
 
 // Owner: Admin > Settings > Promo codes for the MAIN store (kyvro.store, not shop links; shops have their own).
-// A code like KYVRO10 gives percent % off the products (after the automatic discount), with an optional minimum
-// order, a ৳ cap (maxOff) and an end date. It comes out of Kyvro's own price. Saved in settings/promos.codes.
+// A code like DORZI10 gives percent % off the products (after the automatic discount), with an optional minimum
+// order, a ৳ cap (maxOff) and an end date. It comes out of Dorzi's own price. Saved in settings/promos.codes.
 export default function StorePromoCodes({ isDarkMode, formatPrice, staff }) {
   const [codes, setCodes] = useState(null);
   const [form, setForm] = useState({ code: '', percent: '10', minOrder: '', maxOff: '', endsAt: '' });
@@ -29,7 +29,7 @@ export default function StorePromoCodes({ isDarkMode, formatPrice, staff }) {
     const percent = parseInt(form.percent, 10);
     const minOrder = Math.max(0, parseInt(form.minOrder, 10) || 0);
     const maxOff = Math.max(0, parseInt(form.maxOff, 10) || 0);
-    if (code.length < 3) { setMsg({ type: 'err', text: 'Code: 3 to 15 letters or numbers, e.g. KYVRO10.' }); return; }
+    if (code.length < 3) { setMsg({ type: 'err', text: 'Code: 3 to 15 letters or numbers, e.g. DORZI10.' }); return; }
     if (!(percent >= 1 && percent <= COUPON_MAX_PERCENT)) { setMsg({ type: 'err', text: `Discount: 1 to ${COUPON_MAX_PERCENT}%.` }); return; }
     if (form.endsAt && !/^\d{4}-\d{2}-\d{2}$/.test(form.endsAt)) { setMsg({ type: 'err', text: 'End date is not valid.' }); return; }
     if (!codes[code] && Object.keys(codes).length >= STORE_COUPON_MAX) { setMsg({ type: 'err', text: `At most ${STORE_COUPON_MAX} codes. Delete one first.` }); return; }
@@ -49,7 +49,7 @@ export default function StorePromoCodes({ isDarkMode, formatPrice, staff }) {
     <div className={card}>
       <div>
         <h3 className="text-lg font-bold flex items-center gap-2"><TicketPercent size={20} className="text-[#D4AF37]" />Promo codes (main store)</h3>
-        <p className="text-xs text-gray-500 mt-1">Codes like <strong>KYVRO10</strong> for your ads and posts. Customers type it at checkout on kyvro.store and get % off the products (after the automatic discount, delivery not included). It comes out of Kyvro&apos;s price, so set a ৳ cap for big orders. Shop links do not take these codes (sellers have their own). Up to {STORE_COUPON_MAX} codes.</p>
+        <p className="text-xs text-gray-500 mt-1">Codes like <strong>DORZI10</strong> for your ads and posts. Customers type it at checkout on kyvro.store and get % off the products (after the automatic discount, delivery not included). It comes out of Dorzi&apos;s price, so set a ৳ cap for big orders. Shop links do not take these codes (sellers have their own). Up to {STORE_COUPON_MAX} codes.</p>
       </div>
       <fieldset disabled={busy} className="space-y-4">
         {Object.keys(codes).length === 0 ? <p className="text-sm text-gray-500">No codes yet.</p> : (
@@ -71,7 +71,7 @@ export default function StorePromoCodes({ isDarkMode, formatPrice, staff }) {
         )}
         <div className={`rounded-lg border p-3 grid grid-cols-2 sm:grid-cols-6 gap-2 items-end ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <label className="text-xs font-semibold text-gray-500 col-span-2 sm:col-span-1">Code
-            <input className={`${input} w-full mt-1 uppercase`} maxLength={15} value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: cleanCouponCode(e.target.value) }))} placeholder="KYVRO10" />
+            <input className={`${input} w-full mt-1 uppercase`} maxLength={15} value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: cleanCouponCode(e.target.value) }))} placeholder="DORZI10" />
           </label>
           <label className="text-xs font-semibold text-gray-500">% off
             <input type="number" min="1" max={COUPON_MAX_PERCENT} className={`${input} w-full mt-1`} value={form.percent} onChange={(e) => setForm((f) => ({ ...f, percent: e.target.value }))} />

@@ -36,20 +36,15 @@ export default function Header({ shopBrand = null, onStartSelling, sellLabel = '
               onClick={() => { setCurrentView('home'); setSelectedCategory('All'); }}
               className="cursor-pointer flex items-center gap-1 min-w-0"
             >
-              {/* the Kyvro logo is always there; a Premium shop shows its own name as a wordmark next to it; otherwise "KYVRO" (English only) next to the logo; under 320px only the logo */}
+              {/* the full Dorzi logo (the name is part of it); a Premium shop shows only the needle-D mark next to its own name */}
               {shopBrand && shopBrand.logo && <img src={shopBrand.logo} alt="" className="h-9 w-9 sm:h-11 sm:w-11 rounded object-cover border border-gray-300/40" />}
-              <KyvroMark dark={isDarkMode} title="Kyvro logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-7 min-[400px]:h-8 sm:h-9'} w-auto shrink-0`} />
+              <KyvroMark dark={isDarkMode} icon={!!(shopBrand && shopBrand.wordmark)} title="Dorzi logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-10 min-[400px]:h-11 sm:h-14'} w-auto shrink-0`} />
               {shopBrand && shopBrand.wordmark ? (
                 <div className="flex flex-col items-start min-w-0">
                   <span className="text-lg sm:text-2xl font-serif font-bold tracking-wide truncate max-w-[9rem] sm:max-w-[16rem]" style={{ color: shopBrand.color }}>{shopBrand.name}</span>
-                  <span className="text-[9px] tracking-[0.2em] font-sans -mt-0.5 text-gray-500">POWERED BY KYVRO</span>
+                  <span className="text-[9px] tracking-[0.2em] font-sans -mt-0.5 text-gray-500">POWERED BY DORZI</span>
                 </div>
-              ) : (
-                <span className={`flex items-center whitespace-nowrap leading-none max-[319px]:hidden ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                  {/* Montserrat 600 with wide letter spacing (font loaded in index.html, only these 5 letters); the negative right margin cancels the last letter's spacing */}
-                  <span className="text-[18px] min-[400px]:text-[22px] sm:text-[28px] font-semibold tracking-[0.3em] -mr-[0.3em] ml-1 sm:ml-1.5" style={{ fontFamily: 'Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }}>KYVRO</span>
-                </span>
-              )}
+              ) : null}
             </div>
           </div>
 

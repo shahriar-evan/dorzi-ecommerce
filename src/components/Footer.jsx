@@ -9,16 +9,15 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
           <div className="space-y-4">
             {/* logo + name: centered on a phone (one column), left from 640px (grid columns) */}
             <div className="flex items-center justify-center sm:justify-start gap-1.5">
-              <KyvroMark dark={isDarkMode} title="Kyvro logo" className="h-11 sm:h-12 xl:h-11 w-auto shrink-0" />
-              {/* same look as the header wordmark: Montserrat 600, wide spacing (font loaded in index.html); Bangla name in the normal font, not bold */}
+              <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
+              {/* Bangla name next to the logo, in the normal font */}
               <span className={`flex items-center gap-2 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                <span className="text-[28px] font-semibold tracking-[0.3em] -mr-[0.3em] ml-1" style={{ fontFamily: 'Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }}>KYVRO</span>
                 <span className="text-[28px] leading-none" aria-hidden="true">&middot;</span>
-                <span className="text-[28px] font-normal" lang="bn">কাইভ্রো</span>
+                <span className="text-[28px] font-normal" lang="bn">দর্জি</span>
               </span>
             </div>
             <p className="leading-relaxed">
-              Kyvro offers stylish, comfortable, and affordable clothing made for everyday wear. Discover premium fabrics, modern designs, and perfect fits.
+              Dorzi offers stylish, comfortable, and affordable clothing made for everyday wear. Discover premium fabrics, modern designs, and perfect fits.
             </p>
             <p className={`font-semibold ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>Domain: www.kyvro.store</p>
           </div>
@@ -61,7 +60,7 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12 pt-6 border-t text-center text-gray-500 text-[11px]">
-          &copy; 2026 Kyvro &middot; কাইভ্রো &bull; www.kyvro.store. All rights reserved.
+          &copy; 2026 Dorzi &middot; দর্জি &bull; www.kyvro.store. All rights reserved.
           {/* the team's way in (also kyvro.store/Admin); kept small on purpose */}
           <button type="button" onClick={() => setCurrentView('admin')} className="block mx-auto mt-2 text-[10px] text-gray-400 hover:text-gray-500 hover:underline">Team login</button>
         </div>

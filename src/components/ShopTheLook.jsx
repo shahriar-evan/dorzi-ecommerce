@@ -204,7 +204,7 @@ export default function ShopTheLook({ products = [], formatPrice, addToCart, ope
         <div className="relative px-4 sm:px-10 pt-10 pb-6 overflow-hidden">
           <p className="text-[11px] font-bold tracking-[0.35em] text-[#B8921F]">SHOP THE LOOK</p>
           <h2 className="mt-2 text-3xl sm:text-5xl font-serif font-bold">Wear the whole look.</h2>
-          <p className="mt-2 text-sm text-gray-500">Styled head to toe from Kyvro. Drag to turn, tap a model to see each piece. · ঘুরিয়ে দেখুন, মডেলে ট্যাপ করুন।</p>
+          <p className="mt-2 text-sm text-gray-500">Styled head to toe from Dorzi. Drag to turn, tap a model to see each piece. · ঘুরিয়ে দেখুন, মডেলে ট্যাপ করুন।</p>
 
           <div ref={stage} className={`relative mt-4 select-none touch-pan-y transition-[height] duration-500 ${focus ? 'h-[620px] sm:h-[820px]' : 'h-[440px] sm:h-[560px] cursor-grab active:cursor-grabbing'}`}
             onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>

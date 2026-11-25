@@ -169,7 +169,7 @@ export default function App() {
   const shopFeat = shopCtx ? (shopCtx.planExempt ? Object.fromEntries(FEATURES.map((f) => [f.key, true])) : effectiveFeatures(shopCtx, shopTier, plans.tierFeatures)) : {};
   // WhatsApp order messages name the shop and link its products (null on the main store)
   setWaShop(shopCtx ? { name: shopDisplayName(shopCtx), url: `${window.location.origin}/${shopLinkKey(shopCtx)}` } : null);
-  useEffect(() => { if (shopCtx) { try { document.title = `${shopDisplayName(shopCtx)} · Kyvro`; } catch (e) { /* ignore */ } } }, [shopCtx && shopDisplayName(shopCtx)]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (shopCtx) { try { document.title = `${shopDisplayName(shopCtx)} · Dorzi`; } catch (e) { /* ignore */ } } }, [shopCtx && shopDisplayName(shopCtx)]); // eslint-disable-line react-hooks/exhaustive-deps
   // storefront theme (src/data/themes.js): a preview (?themePreview=) > the shop's own theme (non-Classic needs the
   // "themes" feature, else Classic) > the main site's theme (settings/theme)
   const [siteTheme, setSiteTheme] = useState({ theme: 'classic', mode: 'auto' });
@@ -423,7 +423,7 @@ export default function App() {
   const lockText = ((storeSettings.maintenanceMessage || '').trim()) || "ওয়েবসাইটে কাজ চলছে, অর্ডার সাময়িক বন্ধ, কিন্তু added to cart করে রাখতে পারবেন। পরবর্তীতে ওয়েবসাইট পুনরায় চালু হলে পেমেন্ট করতে পারবেন অথবা ম্যানুয়ালি অর্ডার করতে WhatsApp এ যোগাযোগ করুন।\n\nMaintenance mode is ON. Ordering is paused for a little while, but you can keep items in your cart and pay when the website opens again, or contact us on WhatsApp to order manually.";
   // WhatsApp message with everything in the customer's cart (used by the maintenance popup)
   const cartRef = useRef([]);
-  const cartWhatsAppText = () => ((cartRef.current || []).length ? waOrderText(waCartLines(cartRef.current)) : waOrderText(['Hello Kyvro, I want to place an order manually.']));
+  const cartWhatsAppText = () => ((cartRef.current || []).length ? waOrderText(waCartLines(cartRef.current)) : waOrderText(['Hello Dorzi, I want to place an order manually.']));
   useEffect(() => {
     if (visitorLocked && currentView === 'checkout') { setCurrentView('home'); showMaintenance(lockText, cartWhatsAppText); }
   }, [visitorLocked, currentView]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -799,10 +799,10 @@ export default function App() {
   const deliveryCharge = deliveryFee(checkoutForm.deliveryArea, checkoutForm.paymentMethod, subtotal - discount, storeSettings, cart.reduce((n, i) => n + (parseInt(i.quantity, 10) || 0), 0));
   const discountLabel = discountInfo.rule ? describeRule(discountInfo.rule) : '';
   const reward = nextReward(subtotal - lookOff.base, storeSettings);
-  // a shop's promo code (Premium "coupons"): only on that shop's link; comes out of the shop's markup, never Kyvro's price
+  // a shop's promo code (Premium "coupons"): only on that shop's link; comes out of the shop's markup, never Dorzi's price
   const [couponCode, setCouponCode] = useState('');
   const [couponMsg, setCouponMsg] = useState(null);
-  // the main store (no shop link): the Owner's store promo codes (settings/promos), out of Kyvro's own price
+  // the main store (no shop link): the Owner's store promo codes (settings/promos), out of Dorzi's own price
   const [storePromos, setStorePromos] = useState(null);
   useEffect(() => (!shopCtx && currentView === 'checkout' && !storePromos ? watchPromos(setStorePromos) : undefined), [shopCtx, currentView]); // eslint-disable-line react-hooks/exhaustive-deps
   const shopCouponsOn = !!shopCtx && !!shopFeat.coupons && !!shopCtx.coupons && Object.keys(shopCtx.coupons).length > 0;
@@ -1005,7 +1005,7 @@ export default function App() {
 
   const goAccount = (tab) => { setAccountTab(tab); setCurrentView('account'); };
   // "Start selling" / "Start your own business": first the public pricing page (no login needed). Choosing Free / Pro /
-  // Premium asks for Google sign-in, then opens Sell on Kyvro with that plan (application form; Pro / Premium pay after approval).
+  // Premium asks for Google sign-in, then opens Sell on Dorzi with that plan (application form; Pro / Premium pay after approval).
   const [sellPlan, setSellPlan] = useState('');
   const [pricingBusy, setPricingBusy] = useState('');
   const startSelling = () => { setCurrentView('pricing'); window.scrollTo(0, 0); };
@@ -1497,7 +1497,7 @@ export default function App() {
       )}
 
       {/* 1. ANNOUNCEMENT BAR */}
-      {/* the main store's scrolling text is Kyvro's own: a shop link shows the shop's announcement there instead (Premium
+      {/* the main store's scrolling text is Dorzi's own: a shop link shows the shop's announcement there instead (Premium
           "announcement", set in the seller dashboard), or nothing */}
       {!shopCtx ? <AnnouncementBar announcementText={announcementText} speed={storeSettings.bannerSpeed} isDarkMode={isDarkMode} />
         : shopFeat.announcement && shopExtrasOf(shopCtx).announcement ? <AnnouncementBar announcementText={shopExtrasOf(shopCtx).announcement} support={false} speed={storeSettings.bannerSpeed} isDarkMode={isDarkMode} /> : null}
@@ -1506,12 +1506,12 @@ export default function App() {
 
       {/* 2. HEADER */}
       <Header shopBrand={shopBrand} winterNav={!!shopCtx && navHas('Winter')} onStartSelling={sellAction} sellLabel={sellLabel} onAdminPanel={isAdminLoggedIn ? () => setCurrentView('admin') : null} cart={cart} curr={curr} currencyKey={currencyKey} currentView={currentView} isDarkMode={isDarkMode} setCurrencyKey={setCurrencyKey} setCurrentView={setCurrentView} setIsCartOpen={setIsCartOpen} setIsDarkMode={setIsDarkMode} setIsMobileMenuOpen={setIsMobileMenuOpen} setSelectedCategory={selectCategory} navHas={navHas} customerUser={customerUser} displayName={displayName} photoURL={photoURL} goAccount={goAccount} onSignIn={handleCustomerSignIn} onSignOut={handleCustomerSignOut} />
-      {/* a shop link: who sells it (a public seller is not Kyvro itself), Verified for Premium, the Pro / Premium page
+      {/* a shop link: who sells it (a public seller is not Dorzi itself), Verified for Premium, the Pro / Premium page
           extras (tagline, contact, about, social links) and the Premium ones (announcement, brand color, top picks) */}
       {shopPreview && currentView !== 'admin' && (
         <div className="px-4 py-2.5 text-center text-xs font-semibold bg-amber-500 text-black" role="status">
-          Preview: this shop is not live yet{shopRaw.removed && shopRaw.removed.at ? ` (removed by Kyvro${shopRaw.removed.note ? `: ${shopRaw.removed.note}` : ''})` : shopRaw.status === 'pending' ? ' (waiting for Kyvro\'s approval)' : shopRaw.killed ? ' (switched off by Kyvro)' : shopRaw.inactiveHold ? ' (hidden: the seller was inactive)' : shopRaw.active === false ? ' (switched off)' : basicDue(shopRaw, plans) ? ' (the Basic plan is not paid yet: pay it in your seller dashboard to open the store)' : ' (hidden: the paid plan has ended)'}. Only you can see it; customers get "page not found".
-          {/* what to do next: the team switches it on / reviews it; the shop's owner pays, renews or asks Kyvro */}
+          Preview: this shop is not live yet{shopRaw.removed && shopRaw.removed.at ? ` (removed by Dorzi${shopRaw.removed.note ? `: ${shopRaw.removed.note}` : ''})` : shopRaw.status === 'pending' ? ' (waiting for Dorzi\'s approval)' : shopRaw.killed ? ' (switched off by Dorzi)' : shopRaw.inactiveHold ? ' (hidden: the seller was inactive)' : shopRaw.active === false ? ' (switched off)' : basicDue(shopRaw, plans) ? ' (the Basic plan is not paid yet: pay it in your seller dashboard to open the store)' : ' (hidden: the paid plan has ended)'}. Only you can see it; customers get "page not found".
+          {/* what to do next: the team switches it on / reviews it; the shop's owner pays, renews or asks Dorzi */}
           {(() => {
             const btn = 'ml-2 mt-1.5 sm:mt-0 inline-flex items-center px-3 py-1 rounded-full bg-black text-[#D4AF37] font-bold hover:opacity-90';
             const off = shopRaw.killed || shopRaw.inactiveHold || shopRaw.active === false;
@@ -1528,18 +1528,18 @@ export default function App() {
               return null;
             }
             // the shop's own owner (a seller): switched off or hidden for inactivity -> they switch it on themselves (then
-            // Basic must be paid if it is charged; an ended Pro / Premium runs as Basic). Killed (Page off): ask Kyvro.
+            // Basic must be paid if it is charged; an ended Pro / Premium runs as Basic). Killed (Page off): ask Dorzi.
             if (removed) {
-              const waR = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro, my shop ${shopRaw.name || ''} (${window.location.origin}/${shopLinkKey(shopRaw)}) was removed. Please restore it. / আমার শপটি ফিরিয়ে দিন।`)}`;
-              return <a href={waR} target="_blank" rel="noopener noreferrer" className={btn}>Removed · ask Kyvro to restore</a>;
+              const waR = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi, my shop ${shopRaw.name || ''} (${window.location.origin}/${shopLinkKey(shopRaw)}) was removed. Please restore it. / আমার শপটি ফিরিয়ে দিন।`)}`;
+              return <a href={waR} target="_blank" rel="noopener noreferrer" className={btn}>Removed · ask Dorzi to restore</a>;
             }
             if (off && !shopRaw.killed && !pending) {
-              return <button type="button" onClick={async () => { try { await setMyShopLive(shopRaw.slug, true); } catch (e) { alert(e.code === 'permission-denied' ? 'Could not switch it on. Please contact Kyvro.' : e.message); } }} className={btn}>Switch my shop on</button>;
+              return <button type="button" onClick={async () => { try { await setMyShopLive(shopRaw.slug, true); } catch (e) { alert(e.code === 'permission-denied' ? 'Could not switch it on. Please contact Dorzi.' : e.message); } }} className={btn}>Switch my shop on</button>;
             }
             if (basicDue(shopRaw, plans) || (!off && !pending)) return <button type="button" onClick={() => { setSellPlan(''); goAccount('sell'); window.scrollTo(0, 0); }} className={btn}>{basicDue(shopRaw, plans) ? 'Pay Basic' : 'Renew plan'}</button>;
             if (pending) return <button type="button" onClick={() => { setSellPlan(''); goAccount('sell'); window.scrollTo(0, 0); }} className={btn}>Open my dashboard</button>;
-            const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro, my shop ${shopRaw.name || ''} (${window.location.origin}/${shopLinkKey(shopRaw)}) is switched off. Please switch it on. / আমার শপটি বন্ধ আছে, দয়া করে চালু করে দিন।`)}`;
-            return <a href={wa} target="_blank" rel="noopener noreferrer" className={btn}>Ask Kyvro to switch it on</a>;
+            const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi, my shop ${shopRaw.name || ''} (${window.location.origin}/${shopLinkKey(shopRaw)}) is switched off. Please switch it on. / আমার শপটি বন্ধ আছে, দয়া করে চালু করে দিন।`)}`;
+            return <a href={wa} target="_blank" rel="noopener noreferrer" className={btn}>Ask Dorzi to switch it on</a>;
           })()}
         </div>
       )}
@@ -1550,7 +1550,7 @@ export default function App() {
           <span>You are on the shop link of <strong className="text-white">{shopDisplayName(shopCtx, shopFeat)}</strong>.</span>
           <button type="button" onClick={() => { try { sessionStorage.removeItem('kyvro_shop'); } catch (e) { /* ignore */ } window.location.href = '/'; }}
             className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-[#D4AF37] text-[#D4AF37] font-bold hover:bg-[#D4AF37] hover:text-black transition">
-            ← Kyvro main site
+            ← Dorzi main site
           </button>
         </div>
       )}
@@ -1621,16 +1621,16 @@ export default function App() {
           <p className="text-6xl font-extrabold text-[#D4AF37]">404</p>
           <h1 className="mt-3 text-xl font-bold">This page was not found</h1>
           <p className="mt-2 text-sm text-gray-500">There is no shop at kyvro.store/{pathShop}, or the shop is switched off right now.</p>
-          <a href="/" className="mt-6 inline-flex px-6 py-3 rounded-full bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black text-xs font-bold uppercase tracking-widest">Go to Kyvro</a>
+          <a href="/" className="mt-6 inline-flex px-6 py-3 rounded-full bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black text-xs font-bold uppercase tracking-widest">Go to Dorzi</a>
         </div>
       )}
       {!productsReady && (currentView === 'home' || currentView === 'shop') && !pathNotFound && (
         <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5" aria-busy="true" aria-label="Loading">
-          <KyvroMark dark={isDarkMode} className="h-14 animate-pulse" />
+          <KyvroMark dark={isDarkMode} className="h-16 animate-pulse" />
           <span className="h-[2px] w-24 overflow-hidden rounded bg-black/10 dark:bg-white/10"><span className="block h-full w-1/2 animate-[kyvroLoad_1.1s_ease-in-out_infinite] bg-[#D4AF37]" /></span>
         </div>
       )}
-      {productsReady && currentView === 'home' && !pathNotFound && <HomeView lookBundle={!shopCtx} theme={activeTheme.theme} brandName={shopBrand ? shopBrand.name : 'Kyvro'} requestAdd={requestAdd} addToCart={addToCart} banners={banners} calculateDiscountPercent={calculateDiscountPercent} currentBannerIndex={currentBannerIndex} formatPrice={formatPrice} isDarkMode={isDarkMode} products={storefrontProducts} hideEmptyCategories={!!shopCtx} setCurrentBannerIndex={setCurrentBannerIndex} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} setSelectedProduct={setSelectedProduct} savedIds={savedIds} toggleSaved={toggleSaved} openCollection={(c, sub) => { setSelectedCategory(c); setSelectedSubCategory(sub || null); setCurrentView('shop'); }} />}
+      {productsReady && currentView === 'home' && !pathNotFound && <HomeView lookBundle={!shopCtx} theme={activeTheme.theme} brandName={shopBrand ? shopBrand.name : 'Dorzi'} requestAdd={requestAdd} addToCart={addToCart} banners={banners} calculateDiscountPercent={calculateDiscountPercent} currentBannerIndex={currentBannerIndex} formatPrice={formatPrice} isDarkMode={isDarkMode} products={storefrontProducts} hideEmptyCategories={!!shopCtx} setCurrentBannerIndex={setCurrentBannerIndex} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} setSelectedProduct={setSelectedProduct} savedIds={savedIds} toggleSaved={toggleSaved} openCollection={(c, sub) => { setSelectedCategory(c); setSelectedSubCategory(sub || null); setCurrentView('shop'); }} />}
 
       {/* SHOP CATALOG VIEW */}
       {productsReady && currentView === 'shop' && <ShopView selectedSubCategory={selectedSubCategory} setSelectedSubCategory={setSelectedSubCategory} requestAdd={requestAdd} addToCart={addToCart} filteredProducts={filteredProducts} formatPrice={formatPrice} isDarkMode={isDarkMode} products={storefrontProducts} searchQuery={searchQuery} selectedCategory={selectedCategory} setCurrentView={setCurrentView} setSearchQuery={setSearchQuery} setSelectedCategory={selectCategory} setSelectedProduct={setSelectedProduct} setSortBy={setSortBy} sortBy={sortBy} savedIds={savedIds} toggleSaved={toggleSaved} />}
@@ -1679,14 +1679,14 @@ export default function App() {
           </div>
         </div>
       )}
-      {/* home page of the main store only: Premium sellers' shops ("Featured on Kyvro") */}
+      {/* home page of the main store only: Premium sellers' shops ("Featured on Dorzi") */}
       {currentView === 'home' && !shopKey && <FeaturedShops plans={plans} products={shopProducts} isDarkMode={isDarkMode} formatPrice={formatPrice} />}
       {/* home page of the main store only (not on a shop link): invite visitors to sell */}
       {currentView === 'home' && !shopKey && (
         <section className={`border-t ${isDarkMode ? 'bg-[#0d0d0d] border-gray-800' : 'bg-[#111] border-gray-800'}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div>
-              <p className="text-lg sm:text-xl font-bold text-white">Start your own business with <span className="text-[#D4AF37]">Kyvro · কাইভ্রো</span></p>
+              <p className="text-lg sm:text-xl font-bold text-white">Start your own business with <span className="text-[#D4AF37]">Dorzi · দর্জি</span></p>
               <p className="text-sm text-gray-400 mt-1">Free 10 products, no investment. We deliver, you earn the markup.</p>
             </div>
             <button type="button" onClick={sellAction} className="shrink-0 w-full sm:w-auto bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black font-bold px-8 py-3 rounded text-xs uppercase tracking-widest shadow hover:opacity-90 transition">{hasMyShop ? 'My Shop' : 'Start selling'}</button>

@@ -2,7 +2,7 @@
 //
 // Environment variables (Vercel -> Project -> Settings -> Environment Variables):
 //   RESEND_API_KEY            API key from resend.com
-//   MAIL_FROM                 e.g.  Kyvro <offers@kyvro.store>   (the domain must be verified in Resend)
+//   MAIL_FROM                 e.g.  Dorzi <offers@kyvro.store>   (the domain must be verified in Resend)
 //   FIREBASE_SERVICE_ACCOUNT  the whole JSON of a Firebase service account key (for the notifications)
 //   FIREBASE_PROJECT_ID       optional, default kyvro-admin-auth
 //   SITE_URL                  optional, default https://kyvro.store
@@ -143,7 +143,7 @@ function buildMail(subject, message, sub, link, hasProduct) {
   const paragraphs = String(message).split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px;line-height:1.6">${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
   const html = `<!doctype html><html><body style="margin:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;color:#222">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#111;padding:20px;text-align:center"><span style="color:#D4AF37;font-size:22px;letter-spacing:4px;font-weight:bold">KYVRO</span><div style="color:#bbb;font-size:11px;letter-spacing:3px;margin-top:4px">কাইভ্রো &bull; WEAR YOUR STORY</div></div>
+  <div style="background:#111;padding:20px;text-align:center"><span style="color:#D4AF37;font-size:22px;letter-spacing:4px;font-weight:bold">DORZI</span><div style="color:#bbb;font-size:11px;letter-spacing:3px;margin-top:4px">দর্জি &bull; WEAR YOUR STORY</div></div>
   <div style="padding:26px 24px">${sub.name ? `<p style="margin:0 0 14px">Hi ${esc(sub.name.split(' ')[0])},</p>` : ''}${paragraphs}
     <p style="text-align:center;margin:26px 0"><a href="${link}" style="background:#D4AF37;color:#000;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:4px;letter-spacing:2px;font-size:13px">${hasProduct ? 'VIEW THIS PRODUCT' : 'SHOP NOW'}</a></p>
   </div>
@@ -222,7 +222,7 @@ export default async function handler(req, res) {
     // Notification (phone / browser). Same click, same text.
     let push = { pushSent: 0, pushFailed: 0, pushTotal: 0 };
     if (body.push !== false) {
-      const pushTitle = String(body.pushTitle || subject).trim().slice(0, 80) || 'Kyvro';
+      const pushTitle = String(body.pushTitle || subject).trim().slice(0, 80) || 'Dorzi';
       const pushText = String(body.pushBody || message).trim().slice(0, 180);
       push = await sendPush(idToken, {
         title: body.testOnly ? `[TEST] ${pushTitle}` : pushTitle,
