@@ -149,11 +149,11 @@ export const effectiveTier = (x, now = Date.now()) => (toMillis(x && x.paidUntil
 // Never for team shops, the Owner's shop, shops opened while Basic was free (basicFree not false), a running
 // Pro / Premium, or while Basic costs ৳0.
 // A shop order's markup for its owner: (shop price - store price) x qty for every item, minus the shop's own promo code
-// (a promo code only ever comes out of the markup, never out of Kyvro's price). Never below 0.
+// (a promo code only ever comes out of the markup, never out of Dorzi's price). Never below 0.
 export const itemsMarkup = (items) => (items || []).reduce((n, it) => n + Math.max(0, (Number(it && it.price) || 0) - (it && it.basePrice !== undefined ? Number(it.basePrice) || 0 : Number(it && it.price) || 0)) * (parseInt(it && it.quantity, 10) || 0), 0);
 // ---- Promo codes (Premium feature "coupons"): shops/{slug}.coupons = { CODE: { percent 1-50, minOrder, endsAt, active } }
 // (at most 5). The customer gets percent % off the products, but never more than the shop's own markup on the order,
-// so Kyvro's store price is never reduced. Same checks in firestore.rules (orders create) and checkOrderPrices below.
+// so Dorzi's store price is never reduced. Same checks in firestore.rules (orders create) and checkOrderPrices below.
 export const COUPON_MAX_PERCENT = 50;
 export const COUPON_MAX = 5;
 export const cleanCouponCode = (v) => String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 15);
@@ -170,7 +170,7 @@ export const couponAmountFor = (items, coupon, net) => (!coupon || net < coupon.
   : Math.max(0, Math.min(Math.floor((net * coupon.percent) / 100), Math.floor(itemsMarkup(items)))));
 // ---- Main store promo codes (Owner: Admin > Settings > Promo codes): settings/promos.codes =
 // { CODE: { percent 1-50, minOrder, maxOff (৳, 0 = no cap), endsAt, active } } (at most STORE_COUPON_MAX). Only on the
-// main store (never on a shop link, shops have their own). The discount comes out of Kyvro's own price.
+// main store (never on a shop link, shops have their own). The discount comes out of Dorzi's own price.
 // Same checks in firestore.rules (orders create: couponOk) and checkOrderPrices below.
 export const STORE_COUPON_MAX = 20;
 export const storeCouponActive = (promos, code, now = Date.now()) => {

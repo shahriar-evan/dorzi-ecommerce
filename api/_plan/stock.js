@@ -238,7 +238,7 @@ async function runCheck(token, { manual = false } = {}) {
       const backs = allChanges.filter((x) => x.what === 'back').map(line);
       const hid = allChanges.filter((x) => x.what === 'hidden').map((x) => x.name);
       const text = [outs.length ? `Out of stock at the supplier (shown as Stock out):\n- ${outs.join('\n- ')}` : '', backs.length ? `Back in stock (approve in Admin → Products to sell again):\n- ${backs.join('\n- ')}` : '', hid.length ? `Taken off the website (every colour out, Approve puts it back):\n- ${hid.join('\n- ')}` : ''].filter(Boolean).join('\n\n');
-      await emailOwners(owners, `Kyvro supplier stock: ${outs.length} out, ${backs.length} back${hid.length ? `, ${hid.length} hidden` : ''}`, `<pre style="font:14px/1.5 sans-serif;white-space:pre-wrap">${text.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))}</pre>`, text);
+      await emailOwners(owners, `Dorzi supplier stock: ${outs.length} out, ${backs.length} back${hid.length ? `, ${hid.length} hidden` : ''}`, `<pre style="font:14px/1.5 sans-serif;white-space:pre-wrap">${text.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))}</pre>`, text);
     } catch (e) { console.error('stock email', e); }
   }
   return { done: finished, checked: done, left: finished ? 0 : todo.length - done, total: queue.length, changes, shopbase: sb ? 'ok' : (process.env.SHOPBASE_USERNAME ? 'login failed' : 'not set') };

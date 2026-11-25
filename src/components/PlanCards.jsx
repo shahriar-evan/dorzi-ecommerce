@@ -3,7 +3,7 @@ import { Zap, Rocket, Gem, Check, Clock, Hourglass } from 'lucide-react';
 import { normalizePlans, planPrice, basicPrice, periodText } from '../data/priceCheck';
 import { PLAN_TEXT, fill } from '../data/planText';
 
-// The three seller plans side by side (Basic / Pro / Premium), in the Kyvro gold / dark style.
+// The three seller plans side by side (Basic / Pro / Premium), in the Dorzi gold / dark style.
 // Basic is the internal tier 'free'. Its card price (list price, discount, label, end date) comes from settings/plans.basic
 // and is display only: Basic never opens a payment page.
 //   mode 'apply'   : before applying (every button says Get started)

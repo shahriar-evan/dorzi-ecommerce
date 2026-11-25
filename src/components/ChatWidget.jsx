@@ -46,8 +46,8 @@ function statusSentence(o) {
       return { bn: `${head[0]} আপনার অর্ডার শিপ হয়ে গেছে 🚚${whenBn ? ` (${whenBn})` : ''}, ডেলিভারির পথে আছে। আগামী ${inside ? '১–২' : outside ? '২–৩' : '১–৩'} দিনের মধ্যে আপনার কাছে পৌঁছে যাবে।`,
         en: `${head[1]} your order has shipped 🚚${when ? ` (${when})` : ''} and is on the way. It will reach you in the next ${inside ? '1–2' : outside ? '2–3' : '1–3'} days.` };
     case 'Delivered':
-      return { bn: `${head[0]} আপনার অর্ডার ডেলিভার হয়ে গেছে 🎉${whenBn ? ` (${whenBn})` : ''}। Kyvro থেকে কেনার জন্য ধন্যবাদ!`,
-        en: `${head[1]} your order has been delivered 🎉${when ? ` (${when})` : ''}. Thank you for shopping with Kyvro!` };
+      return { bn: `${head[0]} আপনার অর্ডার ডেলিভার হয়ে গেছে 🎉${whenBn ? ` (${whenBn})` : ''}। Dorzi থেকে কেনার জন্য ধন্যবাদ!`,
+        en: `${head[1]} your order has been delivered 🎉${when ? ` (${when})` : ''}. Thank you for shopping with Dorzi!` };
     case 'Cancelled':
       return { bn: `${head[0]} এই অর্ডারটি বাতিল করা হয়েছে। কোনো প্রশ্ন থাকলে WhatsApp এ আমাদের জানান।`,
         en: `${head[1]} this order was cancelled. If you have any question, message us on WhatsApp.`, wa: true };
@@ -161,11 +161,11 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
   };
   const delivery = () => { const d = deliveryNote(storeSettings); quick('Delivery charge?', d.en, d.bn); };
 
-  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro${shopName ? ` (${shopName})` : ''}, I need help.`)}`;
+  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi${shopName ? ` (${shopName})` : ''}, I need help.`)}`;
 
   const facts = () => {
     const d = deliveryNote(storeSettings);
-    return [d.en, DELIVERY_TIME.en, COD.en, `Returns: ${RETURNS.en}`, 'Sizes and colours are chosen on the product page. Orders can also be placed on WhatsApp.', shopName ? `This page is the shop "${shopName}" on Kyvro.` : ''].filter(Boolean).join('\n');
+    return [d.en, DELIVERY_TIME.en, COD.en, `Returns: ${RETURNS.en}`, 'Sizes and colours are chosen on the product page. Orders can also be placed on WhatsApp.', shopName ? `This page is the shop "${shopName}" on Dorzi.` : ''].filter(Boolean).join('\n');
   };
 
   const send = async (e) => {
@@ -249,11 +249,11 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
         </button>
       )}
       {open && (
-        <div role="dialog" aria-label="Kyvro help chat"
+        <div role="dialog" aria-label="Dorzi help chat"
           className={`fixed z-50 inset-x-2 bottom-2 top-16 sm:inset-auto sm:right-5 sm:bottom-5 sm:top-auto sm:w-[370px] sm:h-[560px] flex flex-col rounded-xl border shadow-2xl overflow-hidden ${panel}`}>
           <div className="flex items-center justify-between bg-[#D4AF37] px-4 py-3 text-black">
             <div>
-              <p className="text-sm font-bold">{shopName || 'Kyvro'} Help</p>
+              <p className="text-sm font-bold">{shopName || 'Dorzi'} Help</p>
               <p className="text-[11px]">Ask anything · যেকোনো প্রশ্ন করুন</p>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 hover:bg-black/10"><X size={18} /></button>

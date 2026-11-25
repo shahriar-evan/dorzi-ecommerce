@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Smartphone, Landmark, Plus, Trash2, ShieldCheck } from 'lucide-react';
 import { BKASH_RE, cleanBank, bankProblem, cleanName, saveSellerPayout } from '../sellers';
 
-// Seller dashboard -> Earnings & Payout: where Kyvro sends the seller's markup. Up to 2 bKash numbers and up to 2 bank
+// Seller dashboard -> Earnings & Payout: where Dorzi sends the seller's markup. Up to 2 bKash numbers and up to 2 bank
 // accounts. Write only: the seller cannot read it back (only the Owner sees it in Sellers), so the form starts empty and
 // saving replaces everything that was saved before. Text in English + Bangla.
 const EMPTY_BANK = { bank: '', account: '', holder: '', branch: '', routing: '', swift: '' };
@@ -52,7 +52,7 @@ export default function PayoutForm({ uid, isDarkMode, disabled = false }) {
       await saveSellerPayout(uid, { bkash: b1 || '', bkashName: n1 || '', bkash2: b2 || '', bkash2Name: n2 || '', banks: list });
       setSaved({ bkash: given.map(([n, name]) => `••••${n.slice(-3)} (${name})`), banks: list.map((b) => `${b.bank} ••••${b.account.slice(-4)}`) });
       setBkash(['', '']); setBkashName(['', '']); setBanks([]);
-      setMsg({ type: 'ok', text: 'Saved. Only Kyvro can see it. / সেভ হয়েছে। শুধু Kyvro দেখতে পারবে।' });
+      setMsg({ type: 'ok', text: 'Saved. Only Dorzi can see it. / সেভ হয়েছে। শুধু Dorzi দেখতে পারবে।' });
     } catch (e) {
       setMsg({ type: 'err', text: e.code === 'permission-denied' ? 'Could not save. Open your shop first. / সেভ হয়নি। আগে দোকান খুলুন।' : e.message });
     }
@@ -62,10 +62,10 @@ export default function PayoutForm({ uid, isDarkMode, disabled = false }) {
   return (
     <fieldset disabled={disabled} className="space-y-4">
       <div className="space-y-1">
-        <p className="text-xs text-gray-500">Kyvro sends your markup here. Add up to 2 bKash numbers and up to 2 bank accounts. Fields with * are required.</p>
-        <p className="text-xs text-gray-500 leading-relaxed">ডেলিভারি হওয়া অর্ডারের মার্কআপ (আপনার আয়) Kyvro এখানে পাঠাবে। সর্বোচ্চ ২টি বিকাশ নম্বর এবং ২টি ব্যাংক অ্যাকাউন্ট দিতে পারবেন; অন্তত একটি দিতে হবে। * চিহ্নিত ঘরগুলো অবশ্যই পূরণ করুন।</p>
+        <p className="text-xs text-gray-500">Dorzi sends your markup here. Add up to 2 bKash numbers and up to 2 bank accounts. Fields with * are required.</p>
+        <p className="text-xs text-gray-500 leading-relaxed">ডেলিভারি হওয়া অর্ডারের মার্কআপ (আপনার আয়) Dorzi এখানে পাঠাবে। সর্বোচ্চ ২টি বিকাশ নম্বর এবং ২টি ব্যাংক অ্যাকাউন্ট দিতে পারবেন; অন্তত একটি দিতে হবে। * চিহ্নিত ঘরগুলো অবশ্যই পূরণ করুন।</p>
         <p className="flex items-start gap-1.5 text-[11px] text-gray-500"><ShieldCheck size={14} className="shrink-0 mt-0.5 text-green-600" />
-          <span>For your safety only Kyvro can see these details, so they are not shown here after saving. Saving again replaces everything. / নিরাপত্তার জন্য সেভ করার পর এগুলো এখানে দেখানো হয় না, শুধু Kyvro দেখে। আবার সেভ করলে আগের সব তথ্য বদলে যাবে, তাই সব একসাথে দিন।</span></p>
+          <span>For your safety only Dorzi can see these details, so they are not shown here after saving. Saving again replaces everything. / নিরাপত্তার জন্য সেভ করার পর এগুলো এখানে দেখানো হয় না, শুধু Dorzi দেখে। আবার সেভ করলে আগের সব তথ্য বদলে যাবে, তাই সব একসাথে দিন।</span></p>
       </div>
 
       {/* bKash */}

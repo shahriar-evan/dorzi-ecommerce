@@ -42,7 +42,7 @@ export async function planCaller(req) {
   if (r.status === 404) {
     // not on the team: a public seller has their own sellers/{uid} entry (readable only with their own login)
     const sr = await fetch(`${FS}/documents/sellers/${encodeURIComponent(uid)}`, { headers: { Authorization: `Bearer ${idToken}` } });
-    if (!sr.ok) return { error: 'Open your shop first (Sell on Kyvro).', status: 403 };
+    if (!sr.ok) return { error: 'Open your shop first (Sell on Dorzi).', status: 403 };
     const sd = fields(await sr.json());
     // a seller's shop waits for the Owner first (no status = from before approvals = approved)
     if ((sd.status || 'approved') !== 'approved') return { error: 'Your shop is waiting for approval.', status: 403 };

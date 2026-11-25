@@ -1,5 +1,5 @@
 // Vercel serverless function: tells the Owner(s) that an Admin made their own shop and it waits for Accept / Reject,
-// or (?action=seller) that a customer applied to sell on Kyvro, or (?action=seller-shop) that an approved seller asked
+// or (?action=seller) that a customer applied to sell on Dorzi, or (?action=seller-shop) that an approved seller asked
 // for one more shop (Pro / Premium)
 // (phone / browser notification + email). The shop itself is saved by the website, protected by Firestore rules.
 //
@@ -24,7 +24,7 @@ async function readDoc(token, path) {
   return Object.fromEntries(Object.entries(d.fields || {}).map(([k, v]) => [k, val(v)]));
 }
 
-// ?action=seller: a customer applied to sell on Kyvro (sellers/{uid} status 'pending'). Same safety: the text comes
+// ?action=seller: a customer applied to sell on Dorzi (sellers/{uid} status 'pending'). Same safety: the text comes
 // from the saved application, only for a waiting one, once per application (notified is cleared when they apply again).
 async function sellerApplied(req, res) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -51,19 +51,19 @@ async function sellerApplied(req, res) {
   const shopName = String(shop.name || app.slug || '').slice(0, 60);
   const person = String(app.name || app.email || 'Someone').slice(0, 80);
   const title = live ? `New seller shop (live): ${shopName}` : `Seller application: ${shopName}`;
-  const text = live ? `${person} opened a shop on Kyvro (${String(app.district || '')}). It is live. Admin Portal -> Sellers.` : `${person} wants to sell on Kyvro (${String(app.district || '')}). Admin Portal -> Sellers -> Pending applications.`;
+  const text = live ? `${person} opened a shop on Dorzi (${String(app.district || '')}). It is live. Admin Portal -> Sellers.` : `${person} wants to sell on Dorzi (${String(app.district || '')}). Admin Portal -> Sellers -> Pending applications.`;
   const pushed = await pushToOwners(token, owners, title, text);
   const sl = app.socialLinks || {};
   const socials = [['Facebook', sl.facebook], ['Instagram', sl.instagram], ['TikTok', sl.tiktok]].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(' · ') || String(app.pageLink || '');
   const row = (k, v) => (v ? `<tr><td style="padding:4px 12px 4px 0;color:#888">${esc(k)}</td><td style="padding:4px 0">${esc(v)}</td></tr>` : '');
   const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>${live ? `A new seller opened a shop: <strong>${esc(shopName)}</strong>. It is live now; you can switch it off (kill switch) or remove it any time.` : `A new seller applied: <strong>${esc(shopName)}</strong>. The shop stays off until you approve it.`}</p>
     <table style="font-size:14px">${row('Name', app.name)}${row('Email', app.email)}${row('WhatsApp', app.whatsapp)}${row('District', app.district)}${row('Area', app.area)}${row('Social', socials)}${row('Categories', Array.isArray(app.categories) ? app.categories.join(', ') : '')}${row('Sub-categories', Array.isArray(app.subCategories) ? app.subCategories.join(', ') : '')}${row('Note', app.productNote)}</table>
     <p>Open the Admin Portal and go to <strong>Sellers</strong>${live ? '' : ' to press <strong>Approve</strong> or <strong>Reject</strong>'}.</p>
-    <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Open Kyvro</a></p>
+    <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Open Dorzi</a></p>
   </div>
 </div></body></html>`;
   const plain = `A new seller applied: ${shopName}\nName: ${app.name || ''}\nEmail: ${app.email || ''}\nWhatsApp: ${app.whatsapp || ''}\nDistrict: ${app.district || ''}, ${app.area || ''}\nSocial: ${socials}\nCategories: ${Array.isArray(app.categories) ? app.categories.join(', ') : ''}\nSub-categories: ${Array.isArray(app.subCategories) ? app.subCategories.join(', ') : ''}\nNote: ${app.productNote || ''}\n\n${live ? 'The shop is live. Admin Portal -> Sellers (kill switch / remove).' : 'Admin Portal -> Sellers -> Approve / Reject.'}\n${SITE}`;
@@ -181,13 +181,13 @@ async function orderPlaced(req, res) {
   const subject = `New order ${orderNumber} on ${shopName}`;
   const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>🎉 নতুন অর্ডার এসেছে! <strong>${esc(shopName)}</strong> থেকে অর্ডার <strong>${esc(orderNumber)}</strong>।</p>
     <p>A new order came from your shop <strong>${esc(shopName)}</strong>.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px"><tr style="background:#fafafa"><th style="padding:6px 8px;text-align:left">Product</th><th style="padding:6px 8px">Qty</th><th style="padding:6px 8px;text-align:right">Price</th></tr>${rows}</table>
     <p>Payment: ${esc(pay)}<br>Your markup on this order: <strong>৳${markup}</strong> (paid after it is delivered and not returned).</p>
-    <p style="color:#666;font-size:13px">Kyvro confirms, packs and delivers the order. The customer's details stay with Kyvro.</p>
+    <p style="color:#666;font-size:13px">Dorzi confirms, packs and delivers the order. The customer's details stay with Dorzi.</p>
     <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Open my dashboard</a></p>
   </div>
 </div></body></html>`;
@@ -243,11 +243,11 @@ export default async function handler(req, res) {
 
     const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p><strong>${esc(person)}</strong>${who.email ? ` (${esc(who.email)})` : ''} made a new shop: <strong>${esc(shopName)}</strong>.</p>
     <p>It stays switched off until you accept it. Open the Admin Portal, go to <strong>Team Shops</strong> and press <strong>Accept</strong> or <strong>Reject</strong>.</p>
-    <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Open Kyvro</a></p>
+    <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Open Dorzi</a></p>
   </div>
   <div style="padding:16px 24px;background:#fafafa;color:#888;font-size:11px;text-align:center">${esc(SITE.replace(/^https?:\/\//, ''))}</div>
 </div></body></html>`;

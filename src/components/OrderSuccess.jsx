@@ -83,7 +83,7 @@ export default function OrderSuccess({ payNotice = '', order, formatPrice, isDar
             : 'অর্ডার বা পেমেন্ট নিয়ে কোনো সমস্যা হলে সরাসরি আমাদের WhatsApp-এ মেসেজ করুন।'}
         </p>
         <a
-          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Kyvro, I need help with my order ${order.orderNumber}${online ? ' (online payment problem)' : ''}.`)}`}
+          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi, I need help with my order ${order.orderNumber}${online ? ' (online payment problem)' : ''}.`)}`}
           target="_blank" rel="noreferrer"
           className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-8 py-3.5 tracking-widest uppercase rounded transition"
         >

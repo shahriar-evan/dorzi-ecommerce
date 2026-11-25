@@ -49,12 +49,12 @@ export default async function warn(req, res) {
       const email = String(seller.email || '').toLowerCase();
       if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         const shopName = String(shop.name || slug).slice(0, 60);
-        const subject = `Warning about your Kyvro shop: ${shopName}`;
+        const subject = `Warning about your Dorzi shop: ${shopName}`;
         const html = `<!doctype html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#111"><div style="max-width:560px;margin:0 auto;padding:24px;line-height:1.7">
-          <p>Kyvro sent a warning about your shop <strong>${esc(shopName)}</strong>:</p>
+          <p>Dorzi sent a warning about your shop <strong>${esc(shopName)}</strong>:</p>
           <p style="padding:12px;border-left:4px solid #D4AF37;background:#faf7ef">${esc(note)}</p>
-          <p>Please fix it soon, otherwise the shop may be removed. Open Sell on Kyvro to see it: <a href="${esc(SITE)}">${esc(SITE)}</a></p></div></body></html>`;
-        emailed = await emailOwners([email], subject, html, `Kyvro sent a warning about your shop ${shopName}:\n${note}\n\nPlease fix it soon, otherwise the shop may be removed.\n${SITE}`);
+          <p>Please fix it soon, otherwise the shop may be removed. Open Sell on Dorzi to see it: <a href="${esc(SITE)}">${esc(SITE)}</a></p></div></body></html>`;
+        emailed = await emailOwners([email], subject, html, `Dorzi sent a warning about your shop ${shopName}:\n${note}\n\nPlease fix it soon, otherwise the shop may be removed.\n${SITE}`);
       }
     }
     return res.status(200).json({ ok: true, at, emailed });

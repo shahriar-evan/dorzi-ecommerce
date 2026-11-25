@@ -116,7 +116,7 @@ export function AdminDashboard({ orders = [], products = [], adminRole, adminNam
   return (
     <div className="space-y-5">
       <div className={`${card} !space-y-1`}>
-        <h2 className="text-xl sm:text-2xl font-bold">{hello}, {(adminName || 'Kyvro').split(' ')[0]}!</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">{hello}, {(adminName || 'Dorzi').split(' ')[0]}!</h2>
         <p className="text-xs text-gray-500">Everything at a glance. Money counts every order except cancelled and returned ones.</p>
       </div>
       {(s.pending > 0 || s.cancelReq > 0 || s.waiting > 0 || s.low > 0 || s.none > 0) && (

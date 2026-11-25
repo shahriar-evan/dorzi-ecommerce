@@ -38,8 +38,8 @@ async function readFields(token, path) {
 }
 function warnEmail(shopName, days, removeIn) {
   const final = days >= 25;
-  const subject = final ? `Final warning: your Kyvro shop ${shopName} will be removed` : `Your Kyvro shop ${shopName} misses you`;
-  const lead = `You have not signed in to Kyvro for ${days} days.`;
+  const subject = final ? `Final warning: your Dorzi shop ${shopName} will be removed` : `Your Dorzi shop ${shopName} misses you`;
+  const lead = `You have not signed in to Dorzi for ${days} days.`;
   const tail = removeIn > 0 ? ` If you do not sign in, your shop is removed in about ${removeIn} days (only if it has no open orders and nothing is due).` : '';
   const html = `<!doctype html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#111"><div style="max-width:560px;margin:0 auto;padding:24px;line-height:1.7">
     <p>${esc(lead)}${esc(tail)}</p><p>Just sign in once to keep your shop: <a href="${esc(SITE)}">${esc(SITE)}</a></p></div></body></html>`;
@@ -137,14 +137,14 @@ async function basicReminder(token, d, f, plans, now) {
   if (!kind) return false;
   const date = new Date(until).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Dhaka' });
   const price = basicPrice(plans);
-  const subject = kind === 'before' ? `Your Kyvro Basic plan ends on ${date}` : 'Your Kyvro Basic plan has ended';
+  const subject = kind === 'before' ? `Your Dorzi Basic plan ends on ${date}` : 'Your Dorzi Basic plan has ended';
   const line = kind === 'before'
     ? `Your Basic plan ends on <strong>${esc(date)}</strong>. After that your store is closed to customers until you renew.`
     : `Your Basic plan ended on <strong>${esc(date)}</strong>. Your store is closed to customers now. Nothing is deleted: renew and it opens again.`;
   const hi = f.name ? `Hi ${String(f.name).split(' ')[0]},` : 'Hello,';
   const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>${esc(hi)}</p>
     <p>${line}</p>
@@ -198,7 +198,7 @@ export default async function handler(req, res) {
         if (!kind) continue;
 
         const date = new Date(until).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Dhaka' });
-        const subject = kind === 'before' ? `Your Kyvro shop plan ends on ${date}` : 'Your Kyvro shop plan has ended';
+        const subject = kind === 'before' ? `Your Dorzi shop plan ends on ${date}` : 'Your Dorzi shop plan has ended';
         const line = kind === 'before'
           ? `Your paid shop plan ends on <strong>${esc(date)}</strong>. After that your shop shows only its ${plans.freeLimit} best-selling products until you renew.`
           : `Your paid shop plan ended on <strong>${esc(date)}</strong>. Your shop now shows only its ${plans.freeLimit} best-selling products. The others are hidden, not deleted: renew and they come back.`;
@@ -206,7 +206,7 @@ export default async function handler(req, res) {
         const hi = f.name ? `Hi ${String(f.name).split(' ')[0]},` : 'Hello,';
         const html = `<!doctype html><html><body style="margin:0;background:#f3f3f3;font-family:Arial,Helvetica,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;background:#fff">
-  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">KYVRO</div>
+  <div style="background:#0b0b0b;padding:20px 24px;color:#D4AF37;font-size:20px;letter-spacing:3px;font-weight:bold">DORZI</div>
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>${esc(hi)}</p>
     <p>${line}</p>

@@ -1,7 +1,7 @@
 // Shop page extras (Pro / Premium): brand color presets, link checks and the contact link.
 // The same limits are checked in firestore.rules (shopExtrasOk).
 
-// Premium: one accent color for the shop (wordmark, buttons, badges). '' = Kyvro gold.
+// Premium: one accent color for the shop (wordmark, buttons, badges). '' = Dorzi gold.
 export const BRAND_COLORS = [
   { key: 'gold', label: 'Gold', hex: '#D4AF37' },
   { key: 'blue', label: 'Blue', hex: '#2563EB' },
@@ -57,7 +57,7 @@ export const shopDisplayName = (shop) => {
 // ---- Plan features: what each tier gets by default; the Owner / a Manager can switch any of them ON or OFF for a
 // shop (shops/{slug}.features). firestore.rules uses the same defaults (featOn).
 // paid: true = shop identity (name change, logo, banner): never on Free (even with an override; rules: paidFeatOn).
-// Name change, logo and banner: Premium ON (uploads wait for Kyvro's approval); Pro OFF unless switched on.
+// Name change, logo and banner: Premium ON (uploads wait for Dorzi's approval); Pro OFF unless switched on.
 // Pro by default: all products, priority approval, social links, the share kit and sales stats. The rest is Premium. The shop link (slug) never changes. ----
 export const FEATURES = [
   { key: 'allProducts', label: 'All products', pro: true },
@@ -80,7 +80,7 @@ export const FEATURES = [
   // storefront themes other than Classic (src/data/themes.js); never on Free
   { key: 'themes', label: 'All themes (Minimal, Bold, Boutique)', pro: true, paid: true },
   // Premium extras: the shop on the main site's "Featured shops", promo codes at checkout, an email for every new order
-  { key: 'featured', label: 'Featured on Kyvro', pro: false, paid: true },
+  { key: 'featured', label: 'Featured on Dorzi', pro: false, paid: true },
   { key: 'coupons', label: 'Promo codes', pro: false, paid: true },
   { key: 'orderEmail', label: 'Order email notification', pro: false, paid: true },
 ];

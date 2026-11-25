@@ -10,7 +10,7 @@ const PAGES = {
   privacy: {
     en: {
       title: 'Privacy Policy',
-      intro: 'Kyvro (www.kyvro.store) respects your privacy. This page explains what information we collect when you visit or order from our website, why we collect it, and how we look after it.',
+      intro: 'Dorzi (www.kyvro.store) respects your privacy. This page explains what information we collect when you visit or order from our website, why we collect it, and how we look after it.',
       sections: [
         { h: '1. Information we collect', li: [
           'Order details: your name, phone number, delivery address (district, zone, area, street) and any comment you write.',
@@ -25,7 +25,7 @@ const PAGES = {
           'To show you your order history and let you cancel an order within the allowed time.',
           'To prevent fake or abusive orders (for example by blocking a phone number or account that places fake orders).',
           'To send you offers and news by email and by phone / browser notification, if you signed in with Google or allowed notifications. You can switch these off at any time (see section 6).',
-          'To understand how visitors use the website, and to show Kyvro ads on Facebook, Instagram and Google to people who visited our shop (advertising and remarketing).',
+          'To understand how visitors use the website, and to show Dorzi ads on Facebook, Instagram and Google to people who visited our shop (advertising and remarketing).',
           'To improve the shop and to answer your questions.',
         ] },
         { h: '3. Who we share it with', p: ['We do not sell your personal information. We only share what is needed to complete your order:'], li: [
@@ -36,7 +36,7 @@ const PAGES = {
           'Meta (Facebook / Instagram) and Google (Google Analytics), which receive usage data about your visit (pages viewed, items added to cart, orders completed) to measure and improve our ads and website. We do not send them your name, phone number or address.',
           'Authorities, only if the law requires it.',
         ] },
-        { h: '4. Storage and security', p: ['Your data is stored on Google Firebase servers. Only authorised Kyvro team members can see customer orders. No system is 100% secure, but we take reasonable steps to protect your information.'] },
+        { h: '4. Storage and security', p: ['Your data is stored on Google Firebase servers. Only authorised Dorzi team members can see customer orders. No system is 100% secure, but we take reasonable steps to protect your information.'] },
         { h: '5. Cookies and local storage', p: ['We use browser storage and sign-in cookies that are needed to run the shop (login, cart, theme, currency). We also use the Facebook (Meta) Pixel and Google Analytics, which set cookies or similar identifiers in your browser to count visits, see which pages and products are popular, measure our advertising and show our ads to people who visited the shop. These tools are used for analytics and advertising only. You can block them with your browser settings or an ad blocker, and the shop will still work.'] },
         { h: '6. Your choices', li: [
           'You can ask us to correct or delete your personal information by contacting us. We may need to keep order records for a reasonable time for accounting and dispute purposes.',
@@ -51,7 +51,7 @@ const PAGES = {
     },
     bn: {
       title: 'গোপনীয়তা নীতি (Privacy Policy)',
-      intro: 'কাইভ্রো (www.kyvro.store) আপনার গোপনীয়তাকে সম্মান করে। আমাদের ওয়েবসাইট ব্যবহার বা অর্ডার করলে আমরা কী তথ্য নিই, কেন নিই এবং কীভাবে সুরক্ষিত রাখি, তা এই পেজে বলা হয়েছে।',
+      intro: 'দর্জি (www.kyvro.store) আপনার গোপনীয়তাকে সম্মান করে। আমাদের ওয়েবসাইট ব্যবহার বা অর্ডার করলে আমরা কী তথ্য নিই, কেন নিই এবং কীভাবে সুরক্ষিত রাখি, তা এই পেজে বলা হয়েছে।',
       sections: [
         { h: '১. আমরা কী তথ্য সংগ্রহ করি', li: [
           'অর্ডারের তথ্য: আপনার নাম, ফোন নম্বর, ডেলিভারির ঠিকানা (জেলা, থানা/উপজেলা, এলাকা, রাস্তা) এবং আপনার লেখা মন্তব্য।',
@@ -66,7 +66,7 @@ const PAGES = {
           'আপনার অর্ডারের ইতিহাস দেখানো এবং নির্দিষ্ট সময়ের মধ্যে অর্ডার বাতিল করার সুযোগ দেওয়া।',
           'ভুয়া বা অপব্যবহারমূলক অর্ডার ঠেকানো (যেমন ভুয়া অর্ডারকারী ফোন নম্বর বা অ্যাকাউন্ট ব্লক করা)।',
           'Google দিয়ে লগইন করলে বা নোটিফিকেশন Allow করলে ইমেইল ও ফোন/ব্রাউজার নোটিফিকেশনে অফার ও খবর পাঠানো। আপনি যে কোনো সময় এগুলো বন্ধ করতে পারবেন (৬ নম্বর দেখুন)।',
-          'দর্শকরা ওয়েবসাইট কীভাবে ব্যবহার করেন তা বোঝা এবং যারা আমাদের দোকান দেখেছেন তাদের Facebook, Instagram ও Google-এ কাইভ্রোর বিজ্ঞাপন দেখানো (বিজ্ঞাপন ও রিমার্কেটিং)।',
+          'দর্শকরা ওয়েবসাইট কীভাবে ব্যবহার করেন তা বোঝা এবং যারা আমাদের দোকান দেখেছেন তাদের Facebook, Instagram ও Google-এ দর্জির বিজ্ঞাপন দেখানো (বিজ্ঞাপন ও রিমার্কেটিং)।',
           'দোকানের মান উন্নত করা এবং আপনার প্রশ্নের উত্তর দেওয়া।',
         ] },
         { h: '৩. কাদের সাথে তথ্য শেয়ার করি', p: ['আমরা আপনার ব্যক্তিগত তথ্য বিক্রি করি না। অর্ডার সম্পন্ন করতে যতটুকু দরকার, শুধু ততটুকুই শেয়ার করি:'], li: [
@@ -77,7 +77,7 @@ const PAGES = {
           'Meta (Facebook / Instagram) ও Google (Google Analytics): আমাদের বিজ্ঞাপন ও ওয়েবসাইট মাপা ও উন্নত করতে তারা আপনার ভিজিটের ব্যবহার-তথ্য (দেখা পেজ, কার্টে যোগ করা পণ্য, সম্পন্ন অর্ডার) পায়। আপনার নাম, ফোন নম্বর বা ঠিকানা আমরা তাদের পাঠাই না।',
           'আইন বাধ্য করলে সংশ্লিষ্ট কর্তৃপক্ষ।',
         ] },
-        { h: '৪. সংরক্ষণ ও নিরাপত্তা', p: ['আপনার তথ্য Google Firebase-এর সার্ভারে জমা থাকে। শুধু অনুমোদিত কাইভ্রো টিমের সদস্যরা গ্রাহকের অর্ডার দেখতে পারেন। কোনো ব্যবস্থাই ১০০% নিরাপদ নয়, তবে আপনার তথ্য রক্ষায় আমরা যুক্তিসঙ্গত পদক্ষেপ নিই।'] },
+        { h: '৪. সংরক্ষণ ও নিরাপত্তা', p: ['আপনার তথ্য Google Firebase-এর সার্ভারে জমা থাকে। শুধু অনুমোদিত দর্জি টিমের সদস্যরা গ্রাহকের অর্ডার দেখতে পারেন। কোনো ব্যবস্থাই ১০০% নিরাপদ নয়, তবে আপনার তথ্য রক্ষায় আমরা যুক্তিসঙ্গত পদক্ষেপ নিই।'] },
         { h: '৫. কুকি ও লোকাল স্টোরেজ', p: ['দোকান চালাতে যা দরকার (লগইন, কার্ট, থিম, মুদ্রা) সেই ব্রাউজার স্টোরেজ ও লগইন কুকি আমরা ব্যবহার করি। এছাড়া Facebook (Meta) Pixel ও Google Analytics ব্যবহার করি, যেগুলো আপনার ব্রাউজারে কুকি বা অনুরূপ আইডি রেখে ভিজিট গোনে, কোন পেজ ও পণ্য জনপ্রিয় তা দেখে, আমাদের বিজ্ঞাপন মাপে এবং দোকান দেখা মানুষদের আমাদের বিজ্ঞাপন দেখায়। এই টুলগুলো শুধু অ্যানালিটিক্স ও বিজ্ঞাপনের জন্য ব্যবহৃত হয়। ব্রাউজার সেটিংস বা অ্যাড ব্লকার দিয়ে এগুলো বন্ধ করলেও দোকান ঠিকমতো চলবে।'] },
         { h: '৬. আপনার অধিকার', li: [
           'আমাদের সাথে যোগাযোগ করে আপনার তথ্য সংশোধন বা মুছে ফেলার অনুরোধ করতে পারেন। হিসাব ও বিরোধ নিষ্পত্তির জন্য অর্ডারের রেকর্ড কিছুদিন রাখার দরকার হতে পারে।',
@@ -120,7 +120,7 @@ const PAGES = {
           'Please keep your phone on so the delivery person can reach you.',
         ] },
         { h: '7. Returns and refunds', p: ['Please read our Return & Refund Policy. In short: check the product in front of the delivery person while they wait; once you accept and take it, it cannot be refunded, and a return or exchange after they leave costs an additional delivery charge.'] },
-        { h: '8. Using the website', p: ['Please do not misuse the website, place fake orders, try to break into the system or copy our photos and content without permission. All Kyvro names, logos, photos and text belong to Kyvro.'] },
+        { h: '8. Using the website', p: ['Please do not misuse the website, place fake orders, try to break into the system or copy our photos and content without permission. All Dorzi names, logos, photos and text belong to Dorzi.'] },
         { h: '9. Our responsibility', p: ['We do our best to keep the website correct and available, but we cannot promise it will always be error-free or uninterrupted. Our responsibility for any order is limited to the amount you paid for that order.'] },
         { h: '10. Governing law and changes', p: ['These terms follow the laws of Bangladesh. We may update them from time to time; the latest version is always on this page.'] },
         { h: '11. Contact us', p: [`Email: ${EMAIL}  |  WhatsApp: ${WA_TEXT}`] },
@@ -153,7 +153,7 @@ const PAGES = {
           'ডেলিভারি ম্যান যেন যোগাযোগ করতে পারে, তাই ফোন চালু রাখুন।',
         ] },
         { h: '৭. রিটার্ন ও রিফান্ড', p: ['আমাদের রিটার্ন ও রিফান্ড নীতি পড়ুন। সংক্ষেপে: ডেলিভারি ম্যান দাঁড়িয়ে থাকা অবস্থায় পণ্য দেখে নিন; একবার গ্রহণ করে নিলে আর রিফান্ড হবে না, আর ডেলিভারি ম্যান চলে যাওয়ার পর রিটার্ন বা পরিবর্তনে অতিরিক্ত ডেলিভারি চার্জ লাগবে।'] },
-        { h: '৮. ওয়েবসাইট ব্যবহার', p: ['ওয়েবসাইটের অপব্যবহার, ভুয়া অর্ডার, সিস্টেমে ঢোকার চেষ্টা, বা অনুমতি ছাড়া আমাদের ছবি ও লেখা কপি করা যাবে না। কাইভ্রোর সব নাম, লোগো, ছবি ও লেখার মালিক কাইভ্রো।'] },
+        { h: '৮. ওয়েবসাইট ব্যবহার', p: ['ওয়েবসাইটের অপব্যবহার, ভুয়া অর্ডার, সিস্টেমে ঢোকার চেষ্টা, বা অনুমতি ছাড়া আমাদের ছবি ও লেখা কপি করা যাবে না। দর্জির সব নাম, লোগো, ছবি ও লেখার মালিক দর্জি।'] },
         { h: '৯. আমাদের দায়', p: ['ওয়েবসাইট সঠিক ও চালু রাখতে আমরা সর্বোচ্চ চেষ্টা করি, তবে এটি সবসময় ত্রুটিহীন বা বিরতিহীন থাকবে এমন নিশ্চয়তা দিতে পারি না। কোনো অর্ডারের ক্ষেত্রে আমাদের দায় সেই অর্ডারে আপনার দেওয়া টাকার অঙ্কে সীমাবদ্ধ।'] },
         { h: '১০. প্রযোজ্য আইন ও পরিবর্তন', p: ['এই শর্তাবলি বাংলাদেশের আইন অনুযায়ী চলবে। আমরা সময়ে সময়ে এটি হালনাগাদ করতে পারি; সর্বশেষ সংস্করণ এই পেজেই থাকবে।'] },
         { h: '১১. যোগাযোগ', p: [`ইমেইল: ${EMAIL}  |  WhatsApp: ${WA_TEXT}`] },

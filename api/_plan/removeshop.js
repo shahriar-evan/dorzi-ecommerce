@@ -1,7 +1,7 @@
 // /api/plan?action=remove-shop (see api/plan.js), Owner only:
 //   { slug, note }            remove a shop: it is hidden at once (active false) and kept for 30 days in "Removed shops"
 //                             (shops/{slug}.removed = { at, note }); the shop's owner gets the reason by email and can ask
-//                             Kyvro (WhatsApp) to bring it back
+//                             Dorzi (WhatsApp) to bring it back
 //   { slug, restore: true }   bring it back (removed cleared, shop live again)
 //   { slug, purge: true }     delete it now for good (also done by the daily job 30 days after removal: purgeShop)
 // Orders always stay. The Owner is checked like the other Owner actions (the caller's own login must read sellers/).
@@ -107,14 +107,14 @@ export default async function removeShop(req, res) {
     if (to && !body.silent) {
       const shopName = String(shop.name || slug).slice(0, 60);
       const last = new Date(Date.parse(at) + KEEP_DAYS * 86400000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Dhaka' });
-      const subject = `Your Kyvro shop ${shopName} was removed`;
+      const subject = `Your Dorzi shop ${shopName} was removed`;
       const html = `<!doctype html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#111"><div style="max-width:560px;margin:0 auto;padding:24px;line-height:1.7">
-        <p>Kyvro removed your shop <strong>${esc(shopName)}</strong>. Customers cannot open it any more. Reason:</p>
+        <p>Dorzi removed your shop <strong>${esc(shopName)}</strong>. Customers cannot open it any more. Reason:</p>
         <p style="padding:12px;border-left:4px solid #D4AF37;background:#faf7ef">${esc(note)}</p>
-        <p>আপনার শপটি সরানো হয়েছে। কারণ উপরে লেখা আছে। শপটি ফিরে পেতে চাইলে <strong>${esc(last)}</strong>-এর মধ্যে Kyvro-কে WhatsApp-এ জানান। এরপর শপটি স্থায়ীভাবে মুছে যাবে।</p>
-        <p>To get it back, message Kyvro on WhatsApp before <strong>${esc(last)}</strong>. After that it is deleted for good. Your orders are not affected.</p>
+        <p>আপনার শপটি সরানো হয়েছে। কারণ উপরে লেখা আছে। শপটি ফিরে পেতে চাইলে <strong>${esc(last)}</strong>-এর মধ্যে Dorzi-কে WhatsApp-এ জানান। এরপর শপটি স্থায়ীভাবে মুছে যাবে।</p>
+        <p>To get it back, message Dorzi on WhatsApp before <strong>${esc(last)}</strong>. After that it is deleted for good. Your orders are not affected.</p>
         <p><a href="${esc(SITE)}">${esc(SITE)}</a></p></div></body></html>`;
-      emailed = await emailOwners([to], subject, html, `Kyvro removed your shop ${shopName}. Reason:\n${note}\n\nTo get it back, message Kyvro on WhatsApp before ${last}. After that it is deleted for good.\n${SITE}`);
+      emailed = await emailOwners([to], subject, html, `Dorzi removed your shop ${shopName}. Reason:\n${note}\n\nTo get it back, message Dorzi on WhatsApp before ${last}. After that it is deleted for good.\n${SITE}`);
     }
     return res.status(200).json({ ok: true, at, emailed });
   } catch (e) {

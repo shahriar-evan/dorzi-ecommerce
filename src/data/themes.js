@@ -2,7 +2,7 @@
 // Free shops: Classic only (any mode). Pro / Premium: every theme (feature "themes", rules: paidFeatOn('themes', true)).
 // The same keys are listed in firestore.rules (two lists: shops and settings/theme). A preview never saves: ?themePreview=<key>&themeMode=<mode> on any page.
 export const THEMES = [
-  { key: 'classic', label: 'Classic', desc: 'Gold and serif, photo slider on top, the Kyvro look.', free: true },
+  { key: 'classic', label: 'Classic', desc: 'Gold and serif, photo slider on top, the Dorzi look.', free: true },
   { key: 'minimal', label: 'Minimal', desc: 'Clean and white, no big banners, products first.' },
   { key: 'bold', label: 'Bold', desc: 'Big headline, large category tiles, strong buttons.' },
   { key: 'boutique', label: 'Boutique', desc: 'Soft cream, round category icons, tall product photos.' },

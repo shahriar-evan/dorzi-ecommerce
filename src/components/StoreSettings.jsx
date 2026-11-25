@@ -88,9 +88,9 @@ export default function StoreSettings({ products = [], settings, isDarkMode, sta
   const addRule = () => setRules((prev) => [...prev, { min: '', type: 'percent', value: '' }]);
   const removeRule = (i) => setRules((prev) => prev.filter((_, idx) => idx !== i));
 
-  // Subject: "Kyvro offer: <first line of the message>" (or of the banner text) - or whatever you type yourself
+  // Subject: "Dorzi offer: <first line of the message>" (or of the banner text) - or whatever you type yourself
   const firstLine = (v) => String(v || '').split('\n').map((x) => x.trim()).find(Boolean) || '';
-  const autoSubject = ('Kyvro offer: ' + (firstLine(mailBody) || firstLine(text) || 'new offers are live')).slice(0, 150);
+  const autoSubject = ('Dorzi offer: ' + (firstLine(mailBody) || firstLine(text) || 'new offers are live')).slice(0, 150);
   const subjectNow = subjectEdited && mailSubject.trim() ? mailSubject.trim() : autoSubject;
 
   const fillMail = () => {
@@ -131,7 +131,7 @@ export default function StoreSettings({ products = [], settings, isDarkMode, sta
     if (!(await askConfirm(`${confirmText()}\n\n"${t}"\n\nSend now? It cannot be undone.`))) return;
     setMailBusy(true);
     try {
-      const r = await sendOfferEmail({ subject: 'Kyvro: ' + t.slice(0, 90), message: `${t}\n\nVisit kyvro.store to see what is new.`, testOnly: false, pushTitle: 'Kyvro', pushBody: t });
+      const r = await sendOfferEmail({ subject: 'Dorzi: ' + t.slice(0, 90), message: `${t}\n\nVisit kyvro.store to see what is new.`, testOnly: false, pushTitle: 'Dorzi', pushBody: t });
       setMailMsg(resultText(r, false));
       loadCounts();
     } catch (e) { setMailMsg('Error: ' + e.message); }

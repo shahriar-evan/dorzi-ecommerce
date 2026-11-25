@@ -1,4 +1,4 @@
-// Find Kyvro products by a pasted supplier link (ShopBase / SelfShop / any shop link).
+// Find Dorzi products by a pasted supplier link (ShopBase / SelfShop / any shop link).
 // Uses the private productCosts, which the app only loads for the Owner and Managers,
 // so Admins and customers can never match a supplier link (supplier data stays hidden from them).
 

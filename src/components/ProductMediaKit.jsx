@@ -123,7 +123,7 @@ export default function ProductMediaKit({ product, photos = [], canEdit, isDarkM
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-serif font-bold">Marketing kit</h2>
-          <p className={`text-xs mt-0.5 ${sub}`}>Download the photos and videos in full quality for your Facebook / Instagram posts. Only you and the Kyvro team see this.</p>
+          <p className={`text-xs mt-0.5 ${sub}`}>Download the photos and videos in full quality for your Facebook / Instagram posts. Only you and the Dorzi team see this.</p>
         </div>
         <button type="button" className={btn} onClick={copyDetails}>{copied ? <Check size={14} /> : <Copy size={14} />} {copied ? 'Copied' : 'Copy details'}</button>
       </div>

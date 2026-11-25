@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       cancel_url: cb('cancel'),
       ipn_url: cb('ipn'),
       shipping_method: 'NO',
-      product_name: (due.kind === 'advance' ? `Delivery charge for Kyvro order ${orderNumber}` : `Kyvro order ${orderNumber}`).slice(0, 250),
+      product_name: (due.kind === 'advance' ? `Delivery charge for Dorzi order ${orderNumber}` : `Dorzi order ${orderNumber}`).slice(0, 250),
       product_category: 'Fashion',
       product_profile: 'general',
       cus_name: String(c.name || 'Customer').slice(0, 50),

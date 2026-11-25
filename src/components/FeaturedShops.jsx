@@ -4,7 +4,7 @@ import { watchAllShops, shopLinkKey } from '../shops';
 import { effectiveTier, shopIsPaid, basicDue } from '../data/priceCheck';
 import { effectiveFeatures, shopDisplayName, brandHex, shopExtrasOf } from '../data/shopBrand';
 
-// Main site home: "Featured shops" = live shops whose plan has "Featured on Kyvro" (Premium, or switched on by the
+// Main site home: "Featured shops" = live shops whose plan has "Featured on Dorzi" (Premium, or switched on by the
 // Owner / a Manager). Each card shows the shop's logo or first letter, its name and three of its products, and opens
 // the shop link. The Owner's own shop (planExempt) is not listed. Shown only when at least one shop qualifies.
 export default function FeaturedShops({ plans, products, isDarkMode, formatPrice }) {

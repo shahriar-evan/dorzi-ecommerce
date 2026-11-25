@@ -1,4 +1,4 @@
-# Kyvro: shop pages for everyone; the team panel, accounts and checkout are not for search results
+# Dorzi: shop pages for everyone; the team panel, accounts and checkout are not for search results
 User-agent: *
 Allow: /
 Disallow: /admin
