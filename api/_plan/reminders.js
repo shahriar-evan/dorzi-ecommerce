@@ -16,7 +16,7 @@ import { emailOwners, ownerEmails, pushToOwners } from '../_owners.js';
 import { readPlans } from '../_plans.js';
 import { unpaidOrders, cartReminders } from './nudges.js';
 import { purgeOldRemovedShops } from './removeshop.js';
-import { toMillis, planPrice, basicPrice, basicCharging, orderMarkup } from '../../src/data/priceCheck.js';
+import { toMillis, planPrice, basicPrice, basicCharging, orderMarkup, planDays } from '../../src/data/priceCheck.js';
 
 export const config = { maxDuration: 60 };
 
@@ -210,12 +210,12 @@ export default async function handler(req, res) {
   <div style="padding:24px;font-size:15px;line-height:1.7">
     <p>${esc(hi)}</p>
     <p>${line}</p>
-    <p>Renew for <strong>৳${price}</strong> (${plans.periodDays} days): Admin Portal &rarr; My Shop &rarr; <strong>Renew</strong>.</p>
+    <p>Renew for <strong>৳${price}</strong> (${planDays(plans, f.tier === 'premium' ? 'premium' : 'pro')} days): Admin Portal &rarr; My Shop &rarr; <strong>Renew</strong>.</p>
     <p><a href="${esc(SITE)}" style="display:inline-block;background:#D4AF37;color:#000;padding:10px 18px;text-decoration:none;font-weight:bold;border-radius:4px">Renew my plan</a></p>
   </div>
   <div style="padding:16px 24px;background:#fafafa;color:#888;font-size:11px;text-align:center">${esc(SITE.replace(/^https?:\/\//, ''))}</div>
 </div></body></html>`;
-        const text = `${hi}\n\n${line.replace(/<[^>]+>/g, '')}\n\nRenew for ৳${price} (${plans.periodDays} days): Admin Portal -> My Shop -> Renew.\n${SITE}`;
+        const text = `${hi}\n\n${line.replace(/<[^>]+>/g, '')}\n\nRenew for ৳${price} (${planDays(plans, f.tier === 'premium' ? 'premium' : 'pro')} days): Admin Portal -> My Shop -> Renew.\n${SITE}`;
         if (!(await emailOwners(new Set([email]), subject, html, text))) continue;
         sent += 1;
         const field = kind === 'before' ? 'remindedBefore' : 'remindedExpired';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Zap, Rocket, Gem, Check, Clock, Hourglass } from 'lucide-react';
-import { normalizePlans, planPrice, basicPrice } from '../data/priceCheck';
+import { normalizePlans, planPrice, basicPrice, periodText } from '../data/priceCheck';
 import { PLAN_TEXT, fill } from '../data/planText';
 
 // The three seller plans side by side (Basic / Pro / Premium), in the Kyvro gold / dark style.
@@ -92,7 +92,7 @@ export default function PlanCards({ plans: rawPlans, formatPrice, isDarkMode, mo
                   </p>
                 )}
                 <p className="mt-1 text-4xl sm:text-5xl font-extrabold tracking-tight">{formatPrice(price)}</p>
-                {!free && <p className={`text-xs mt-1 ${muted}`}>{fill(T.perDays, plans.periodDays, lang)}</p>}
+                {!free && <p className={`text-xs mt-1 ${muted}`}>{periodText(cfg.days, lang)}</p>}
                 {cfg.discount > 0 && labelOf(cfg) && (
                   <p className="mt-2"><span className="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#D4AF37]/15 text-[#B8921F] border border-[#D4AF37]/40">{labelOf(cfg)}</span></p>
                 )}

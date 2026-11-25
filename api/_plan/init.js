@@ -6,7 +6,7 @@
 import { SITE, accessToken } from '../_sslc.js';
 import { uddoktaConfigured, UDDOKTA_BASE, UDDOKTA_KEY } from '../_uddokta.js';
 import { readPlans, planCaller, currentPlan, readDoc } from '../_plans.js';
-import { planPrice, basicPrice, basicCharging } from '../../src/data/priceCheck.js';
+import { planPrice, basicPrice, basicCharging, planDays } from '../../src/data/priceCheck.js';
 
 export const config = { maxDuration: 30 };
 
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         email: me.email,
         amount: amount.toFixed(2),
         // checked again when UddoktaPay confirms the payment (api/_plans.js)
-        metadata: { kind: 'plan', tier, uid: me.uid, email: me.email, name: String(me.name || '').slice(0, 80), amount: String(amount), days: String(plans.periodDays) },
+        metadata: { kind: 'plan', tier, uid: me.uid, email: me.email, name: String(me.name || '').slice(0, 80), amount: String(amount), days: String(tier === 'basic' ? plans.periodDays : planDays(plans, tier)) },
         redirect_url: `${SITE}/api/plan?action=callback`,
         return_type: 'GET',
         cancel_url: `${SITE}/api/plan?action=callback&r=cancel`,
