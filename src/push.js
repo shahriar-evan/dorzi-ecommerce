@@ -5,8 +5,8 @@ import { VAPID_KEY } from "./pushConfig";
 import "./firebase"; // Firestore must be set up (local cache) before getFirestore()
 
 const db = getFirestore(getApp());
-const OFF_KEY = "kyvro_push_off";     // the customer switched notifications off on this device
-const ASKED_KEY = "kyvro_push_asked"; // time the "Allow alerts" card was dismissed
+const OFF_KEY = "dorzi_push_off";     // the customer switched notifications off on this device
+const ASKED_KEY = "dorzi_push_asked"; // time the "Allow alerts" card was dismissed
 const ls = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } },
@@ -107,7 +107,7 @@ export function listenForeground() {
     return onMessage(getMessaging(getApp()), (payload) => {
       const d = (payload && payload.data) || {};
       navigator.serviceWorker.ready.then((reg) => reg.showNotification(d.title || "Dorzi", {
-        body: d.body || "", icon: d.icon || "/kyvro-icon.png", data: { link: d.link || "/" },
+        body: d.body || "", icon: d.icon || "/dorzi-icon.png", data: { link: d.link || "/" },
       }));
     });
   } catch (e) { return () => {}; }

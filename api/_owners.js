@@ -52,7 +52,7 @@ export async function pushToOwners(token, owners, title, text, link = SITE) {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: {
         token: t,
-        data: { title, body: text, link, icon: `${SITE}/kyvro-icon.png` },
+        data: { title, body: text, link, icon: `${SITE}/dorzi-icon.png` },
         webpush: { headers: { Urgency: 'high', TTL: '86400' } },
       } }),
     });

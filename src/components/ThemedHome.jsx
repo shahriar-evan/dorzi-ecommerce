@@ -245,7 +245,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           </div>
         </section>
         <div className="bg-[#D4AF37] text-black overflow-hidden whitespace-nowrap py-2" aria-hidden="true">
-          <div className="kyvro-marquee inline-block text-xs sm:text-sm font-black uppercase tracking-[0.25em]">
+          <div className="dorzi-marquee inline-block text-xs sm:text-sm font-black uppercase tracking-[0.25em]">
             {Array.from({ length: 8 }).map((_, i) => <span key={i} className="mx-4">Wear your story ✦ Cash on delivery ✦ All over Bangladesh ✦</span>)}
           </div>
         </div>

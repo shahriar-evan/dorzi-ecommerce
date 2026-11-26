@@ -71,7 +71,7 @@ export default function RailQuickView({ items, index, setIndex, onClose, formatP
   const blocked = soldOut || needSize || needColor;
 
   return (
-    <div className="fixed inset-0 z-[65] isolate overflow-y-auto bg-[#f2f1ef] text-black kyvro-fade" role="dialog" aria-modal="true" aria-label={p.name}>
+    <div className="fixed inset-0 z-[65] isolate overflow-y-auto bg-[#f2f1ef] text-black dorzi-fade" role="dialog" aria-modal="true" aria-label={p.name}>
       <button type="button" onClick={onClose} aria-label="Go back" title="Back"
         className="fixed left-4 top-4 sm:left-8 sm:top-6 z-10 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#D4AF37] text-black shadow-lg transition hover:scale-110 active:scale-95">
         <ArrowLeft size={20} />

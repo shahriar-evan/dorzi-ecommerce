@@ -35,7 +35,7 @@ export default function AnnouncementBar({ announcementText, speed = 100, isDarkM
   return (
     <>
       <div ref={wrap} className={`text-[11px] sm:text-xs font-semibold py-2 overflow-hidden whitespace-nowrap border-b tracking-wider ${isDarkMode ? 'bg-[#1a1a1a] text-[#D4AF37] border-gray-800' : 'bg-gray-100 text-black border-gray-200'}`}>
-        <div className="kyvro-marquee" style={{ animationDuration: `${anim.seconds}s` }}>
+        <div className="dorzi-marquee" style={{ animationDuration: `${anim.seconds}s` }}>
           {renderUnit(unit, 'first')}
           {Array.from({ length: anim.copies - 1 }).map((_, i) => renderUnit(null, i))}
         </div>

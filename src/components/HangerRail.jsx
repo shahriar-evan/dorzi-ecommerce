@@ -16,12 +16,12 @@ export function Hanger({ className = '' }) {
   return (
     <svg viewBox="0 0 120 22" className={className} aria-hidden="true">
       <defs>
-        <linearGradient id="kyvroWood" x1="0" x2="0" y1="0" y2="1">
+        <linearGradient id="dorziWood" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0" stopColor="#9a6a43" />
           <stop offset="1" stopColor="#6b4428" />
         </linearGradient>
       </defs>
-      <path d="M4 19 Q60 -2 116 19" fill="none" stroke="url(#kyvroWood)" strokeWidth="5" strokeLinecap="round" />
+      <path d="M4 19 Q60 -2 116 19" fill="none" stroke="url(#dorziWood)" strokeWidth="5" strokeLinecap="round" />
       <rect x="55" y="3" width="10" height="7" rx="2" fill="#5a3820" />
     </svg>
   );
@@ -195,14 +195,14 @@ export default function HangerRail({
         <div className="relative">
           <Rod variant={variant} />
           <div ref={scRef} onScroll={update} onPointerDown={onPointerDown} onClickCapture={onClickCapture}
-            className="kyvro-noscroll relative flex items-start gap-3 sm:gap-6 overflow-x-auto px-6 sm:px-12 cursor-grab active:cursor-grabbing select-none"
+            className="dorzi-noscroll relative flex items-start gap-3 sm:gap-6 overflow-x-auto px-6 sm:px-12 cursor-grab active:cursor-grabbing select-none"
             style={{ paddingTop: ROD_Y - 8, paddingBottom: 84 }}>
             {products.map((p, i) => (
               <div key={p.id} data-hang onTransitionEnd={update}
                 className={`relative shrink-0 transition-[width] duration-500 ease-in-out ${!p.cutout ? (card === 'square' ? 'w-[160px] sm:w-[210px] lg:w-[250px]' : 'w-[158px] sm:w-[200px] lg:w-[230px]')
                   : (p.cutoutSide && hover !== i && tapped !== i) ? 'w-[78px] sm:w-[98px] lg:w-[112px]' : 'w-[136px] sm:w-[172px] lg:w-[196px]'}`}
                 style={{ marginTop: 'var(--sag, 0px)' }}>
-                <div className="kyvro-swing" style={{ animationDelay: `${-((i * 1.37) % 5.5)}s`, animationDuration: `${5 + (i % 3) * 0.6}s` }}>
+                <div className="dorzi-swing" style={{ animationDelay: `${-((i * 1.37) % 5.5)}s`, animationDuration: `${5 + (i % 3) * 0.6}s` }}>
                   <button type="button" onPointerDown={(e) => { pointer.current = e.pointerType; }} onClick={() => tap(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(-1)} onFocus={() => setHover(i)} onBlur={() => setHover(-1)}
                     aria-label={`${p.name}, ${shortPrice(formatPrice, p.price)}`}
                     className={`group relative block w-full origin-top transition-transform duration-300 ease-out ${hover === i ? 'z-10 scale-[1.1] translate-y-1' : ''}`}>
@@ -270,7 +270,7 @@ export default function HangerRail({
       <div className="relative grid grid-cols-1 sm:grid-cols-3 items-end gap-4 px-6 sm:px-10 pb-8 sm:pb-10">
         <div className="hidden sm:block min-h-[38px] text-sm">
           {hovered ? (
-            <div className="kyvro-fade">
+            <div className="dorzi-fade">
               <p className="font-bold line-clamp-1">{hovered.name}</p>
               <p className="text-gray-600">{shortPrice(formatPrice, hovered.price)}</p>
             </div>

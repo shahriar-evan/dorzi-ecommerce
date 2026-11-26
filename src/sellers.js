@@ -13,7 +13,7 @@ const db = getFirestore(getApp());
 // big brand names can never be part of a seller's shop name or link (always added to the Owner's list; also in
 // firestore.rules: brandRe). The Owner can add more words in Sellers -> Seller settings.
 export const BRAND_WORDS = ["nike", "adidas", "gucci", "zara", "apple", "puma", "reebok", "chanel", "prada", "dior", "versace", "armani", "rolex", "samsung", "uniqlo", "balenciaga", "burberry", "fendi", "hermes", "vuitton", "levis"];
-export const DEFAULT_BLOCKED_WORDS = ["kyvro", "official", "admin", "owner", "support", ...BRAND_WORDS];
+export const DEFAULT_BLOCKED_WORDS = ["dorzi", "kyvro", "official", "admin", "owner", "support", ...BRAND_WORDS];
 const escapeRe = (w) => String(w).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 // the regex the Firestore rules use (whole-text match, lower case); no words = nothing is blocked
 export const blockedRegexFor = (words) => {
@@ -126,7 +126,7 @@ export async function applyAsSeller({ uid, email, handle, details, basicFree = t
 export async function touchSellerSeen(uid) {
   if (!uid) return;
   try {
-    const k = `kyvro_seen_${uid}`;
+    const k = `dorzi_seen_${uid}`;
     const today = new Date().toISOString().slice(0, 10);
     if (localStorage.getItem(k) === today) return;
     await updateDoc(doc(db, "sellers", uid), { lastSeenAt: serverTimestamp() });

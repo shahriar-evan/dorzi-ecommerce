@@ -82,7 +82,7 @@ export default async function handler(req, res) {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: {
           token: t,
-          data: { title, body: text, link: SITE, icon: `${SITE}/kyvro-icon.png` },
+          data: { title, body: text, link: SITE, icon: `${SITE}/dorzi-icon.png` },
           webpush: { headers: { Urgency: 'high', TTL: '86400' } },
         } }),
       });

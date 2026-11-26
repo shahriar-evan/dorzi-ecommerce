@@ -1,6 +1,6 @@
-# Kyvro (কাইভ্রো) - E-Commerce Web Application
+# Dorzi (দর্জি) - E-Commerce Web Application
 
-Brand Name: **Kyvro (কাইভ্রো)**  
+Brand Name: **Dorzi (দর্জি)** (renamed from Kyvro, Nov 2026)  
 Tagline: **WEAR YOUR STORY**  
 Website Domain: `www.kyvro.store`  
 Support Email: `kyvrofashion@gmail.com`  

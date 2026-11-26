@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, Lock, Menu, X } from 'lucide-react';
-import KyvroMark from './KyvroMark';
+import DorziMark from './DorziMark';
 
 // Seller dashboard frame: a menu on the left (desktop) or a drop-down menu (phone), the chosen page on the right.
 // nav = [{ title, items: [{ key, label, icon, badge, children: [{ key, label }] }] }]
@@ -70,7 +70,7 @@ export default function SellerDashLayout({ nav, active, onSelect, isDarkMode, he
   // the Dorzi logo at the top of the menu (seller dashboard and Admin Portal)
   const brand = (
     <div className={`flex items-center gap-2 px-3 pt-1 pb-3 mb-3 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-      <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-10 w-auto shrink-0" />
+      <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-10 w-auto shrink-0" />
     </div>
   );
   const panel = `rounded-2xl border ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`;

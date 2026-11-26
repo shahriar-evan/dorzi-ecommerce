@@ -9,10 +9,10 @@ import React from 'react';
 // generator dorzi_final.py: letters outlined from Playfair Display Bold, so no font is needed).
 // ?v= changes when the pictures are redrawn, so browsers never keep an old copy.
 const V = '3';
-export default function KyvroMark({ dark = false, className = '', title = 'Dorzi', icon = false }) {
+export default function DorziMark({ dark = false, className = '', title = 'Dorzi', icon = false }) {
   const kind = icon ? 'mark' : 'logo';
   return (
-    <span className={`kyvro-mark inline-flex items-center ${className}`} role="img" aria-label={title}>
+    <span className={`dorzi-mark inline-flex items-center ${className}`} role="img" aria-label={title}>
       <img src={`/brand/dorzi-${kind}-black.webp?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? 'hidden' : ''}`} />
       <img src={`/brand/dorzi-${kind}-gold.webp?v=${V}`} alt="" draggable={false} className={`h-full w-auto select-none ${dark ? '' : 'hidden'}`} />
     </span>

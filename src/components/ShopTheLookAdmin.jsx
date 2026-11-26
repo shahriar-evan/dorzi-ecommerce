@@ -68,10 +68,10 @@ export function PhotoViewer({ name, photos, start = 0, onClose }) {
   const drag = useRef(null);
   const n = photos.length;
   const go = (d) => setI((k) => (k + d + n) % n);
-  const close = () => { if (window.history.state && window.history.state.kyvroViewer) window.history.back(); else onClose(); };
+  const close = () => { if (window.history.state && window.history.state.dorziViewer) window.history.back(); else onClose(); };
   useEffect(() => {
     // the browser / phone back button closes the viewer instead of leaving the page
-    window.history.pushState({ ...(window.history.state || {}), kyvroViewer: true }, '');
+    window.history.pushState({ ...(window.history.state || {}), dorziViewer: true }, '');
     const onPop = () => onClose();
     const onKey = (e) => { if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); };
     window.addEventListener('popstate', onPop);

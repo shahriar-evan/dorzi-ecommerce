@@ -135,7 +135,7 @@ export default function ShoeOrbit({ products, formatPrice, onOpen, addToCart, on
         {/* chosen shoe: name + price */}
         <div className="pointer-events-none absolute left-5 right-5 top-4 sm:left-12 sm:top-10 sm:right-auto sm:max-w-[360px] z-[120]">
           <p className="text-[11px] tracking-[0.25em] text-gray-500">{String(active + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</p>
-          <h3 key={shoe.id} className="kyvro-fade mt-1 text-2xl sm:text-5xl font-extrabold uppercase leading-[0.95] tracking-tight line-clamp-2">{shoe.name}</h3>
+          <h3 key={shoe.id} className="dorzi-fade mt-1 text-2xl sm:text-5xl font-extrabold uppercase leading-[0.95] tracking-tight line-clamp-2">{shoe.name}</h3>
           <p className="mt-2 sm:mt-3 text-base sm:text-lg font-bold">{shortPrice(formatPrice, shoe.price)}</p>
           <button type="button" onClick={() => onOpen(active)} onPointerDown={(e) => e.stopPropagation()}
             className="pointer-events-auto group mt-2 sm:mt-4 inline-flex items-center gap-2 border-b border-black pb-0.5 text-xs font-semibold">

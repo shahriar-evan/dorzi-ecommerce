@@ -124,7 +124,7 @@ async function shopbaseSession() {
   const jar = new Map();
   const keep = (r) => (r.headers.getSetCookie ? r.headers.getSetCookie() : []).forEach((c) => { const [kv] = c.split(';'); const i = kv.indexOf('='); jar.set(kv.slice(0, i).trim(), kv.slice(i + 1)); });
   const cookie = () => [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
-  const ua = 'Mozilla/5.0 (compatible; KyvroStock/1.0)';
+  const ua = 'Mozilla/5.0 (compatible; DorziStock/1.0)';
   const page = await fetch('https://shopbasebd.com/store/login', { headers: { 'User-Agent': ua } });
   keep(page);
   const html = await page.text();
