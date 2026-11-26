@@ -29,7 +29,7 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
               <li><a href="mailto:contactdorzifashion@gmail.com" className="hover:text-[#D4AF37]">24/7 Support: contactdorzifashion@gmail.com</a></li>
               <li><a href="https://www.facebook.com/dorziclothing" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">Facebook: www.facebook.com/dorziclothing</a></li>
               <li><a href="https://www.instagram.com/dorzi_fashion" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">Instagram: @dorzi_fashion</a></li>
-              <li><span>TikTok: tiktok.com/@kyvro.store</span></li>
+              <li><a href="https://www.tiktok.com/@dorzi.fashion" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">TikTok: tiktok.com/@dorzi.fashion</a></li>
               <li><button onClick={() => setCurrentView('tracking')} className="hover:text-[#D4AF37]">Order Tracking</button></li>
               {onStartSelling && <li><button onClick={onStartSelling} className="hover:text-[#D4AF37]">{sellLabel}</button></li>}
               <li><button onClick={() => setCurrentView('privacy')} className="hover:text-[#D4AF37]">Privacy Policy</button></li>

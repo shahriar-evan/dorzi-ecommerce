@@ -6,7 +6,7 @@ Website Domain: `www.kyvro.store`
 Support Email: `contactdorzifashion@gmail.com`  
 Instagram: `@dorzi_fashion`  
 Facebook: `www.facebook.com/dorziclothing`  
-TikTok: `tiktok.com/@kyvro.store`
+TikTok: `tiktok.com/@dorzi.fashion`
 
 ## How to run locally in VS Code:
 1. Unzip `kyvro-ecommerce.zip` into a folder on your computer.
