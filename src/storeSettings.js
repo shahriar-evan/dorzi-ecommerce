@@ -8,7 +8,7 @@ const db = getFirestore(getApp());
 
 // The last store settings seen in this browser (announcement text, maintenance mode ...), shown at once on the next
 // visit instead of the built-in defaults; the live ones replace them a moment later.
-const SETTINGS_KEY = "kyvro_settings_cache";
+const SETTINGS_KEY = "dorzi_settings_cache";
 export function cachedStoreSettings() {
   try { const c = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null"); return c ? normalizeSettings(c) : null; } catch (e) { return null; }
 }

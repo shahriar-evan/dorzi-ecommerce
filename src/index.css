@@ -17,20 +17,20 @@
   animation-play-state: paused;
 }
 
-@keyframes kyvroSlideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-@keyframes kyvroFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.kyvro-slide { animation: kyvroSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
-.kyvro-fade { animation: kyvroFadeIn 0.2s ease-out; }
+@keyframes dorziSlideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes dorziFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.dorzi-slide { animation: dorziSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.dorzi-fade { animation: dorziFadeIn 0.2s ease-out; }
 
 /* Top announcement bar: endless scroll at a steady speed (the duration is set from the text length) */
-@keyframes kyvroMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.kyvro-marquee {
+@keyframes dorziMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.dorzi-marquee {
   display: inline-flex;
   white-space: nowrap;
   will-change: transform;
-  animation: kyvroMarquee 60s linear infinite;
+  animation: dorziMarquee 60s linear infinite;
 }
-.kyvro-marquee:hover { animation-play-state: paused; }
+.dorzi-marquee:hover { animation-play-state: paused; }
 
 /* Storefront themes (src/data/themes.js): small type changes on every page; the home page layout is in ThemedHome.jsx */
 [data-theme="minimal"] .font-serif { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; letter-spacing: -0.01em; }
@@ -39,10 +39,10 @@
 [data-theme="street"] .font-serif, [data-theme="fresh"] .font-serif { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 800; }
 
 /* Home showcase (HangerRail / ShoeOrbit): clothes swing gently on their hooks */
-@keyframes kyvroSwing { 0%, 100% { transform: rotate(-1.1deg); } 50% { transform: rotate(1.1deg); } }
-.kyvro-swing { transform-origin: 50% 0; animation: kyvroSwing 5.5s ease-in-out infinite; }
-.kyvro-noscroll { scrollbar-width: none; }
-.kyvro-noscroll::-webkit-scrollbar { display: none; }
-@media (prefers-reduced-motion: reduce) { .kyvro-swing { animation: none; } }
+@keyframes dorziSwing { 0%, 100% { transform: rotate(-1.1deg); } 50% { transform: rotate(1.1deg); } }
+.dorzi-swing { transform-origin: 50% 0; animation: dorziSwing 5.5s ease-in-out infinite; }
+.dorzi-noscroll { scrollbar-width: none; }
+.dorzi-noscroll::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) { .dorzi-swing { animation: none; } }
 /* first-visit logo screen (App.jsx): a short gold bar slides across */
-@keyframes kyvroLoad { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+@keyframes dorziLoad { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }

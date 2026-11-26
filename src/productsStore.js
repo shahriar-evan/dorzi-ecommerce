@@ -37,7 +37,7 @@ export async function loadCatalog() {
 // The last approved product list is kept in this browser, so the next visit shows the real shop at once
 // (not the starter list) while Firestore sends the fresh one. Big uploaded photos (data URLs) are left out of
 // the copy to stay small; they come back a moment later with the live list.
-const CACHE_KEY = "kyvro_products_cache";
+const CACHE_KEY = "dorzi_products_cache";
 const slim = (v) => {
   if (typeof v === "string") return v.startsWith("data:") && v.length > 3000 ? "" : v;
   if (Array.isArray(v)) return v.map(slim);

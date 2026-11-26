@@ -101,8 +101,8 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
   // the choice is remembered on this device).
   const [myShops, setMyShops] = useState(null); // null = loading
   useEffect(() => (sellerMode && uid ? watchMyShops(uid, setMyShops, () => setMyShops([])) : undefined), [sellerMode, uid]);
-  const [pick, setPick] = useState(() => { try { return localStorage.getItem('kyvro_myshop') || ''; } catch (e) { return ''; } });
-  const choose = (slug) => { setPick(slug); try { localStorage.setItem('kyvro_myshop', slug); } catch (e) { /* no storage */ } };
+  const [pick, setPick] = useState(() => { try { return localStorage.getItem('dorzi_myshop') || ''; } catch (e) { return ''; } });
+  const choose = (slug) => { setPick(slug); try { localStorage.setItem('dorzi_myshop', slug); } catch (e) { /* no storage */ } };
   // the application's shop first, then the extra shops in the order they were asked for
   const shopOrder = (mySeller && Array.isArray(mySeller.shops) && mySeller.shops.length ? mySeller.shops : mySeller && mySeller.slug ? [mySeller.slug] : []);
   const sortedShops = (myShops || []).slice().sort((a, b) => ((shopOrder.indexOf(a.slug) + 1) || 99) - ((shopOrder.indexOf(b.slug) + 1) || 99));

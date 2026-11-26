@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, Search, User, Menu, Sun, Moon, Truck } from 'lucide-react';
-import KyvroMark from './KyvroMark';
+import DorziMark from './DorziMark';
 import { CURRENCIES } from '../data/currencies';
 
 export default function Header({ shopBrand = null, onStartSelling, sellLabel = 'Start your own business', onAdminPanel = null, cart, curr, currencyKey, currentView, isDarkMode, setCurrencyKey, setCurrentView, setIsCartOpen, setIsDarkMode, setIsMobileMenuOpen, setSelectedCategory, navHas = () => true, winterNav = false, customerUser, displayName, photoURL, goAccount, onSignIn, onSignOut }) {
@@ -38,7 +38,7 @@ export default function Header({ shopBrand = null, onStartSelling, sellLabel = '
             >
               {/* the full Dorzi logo (the name is part of it); a Premium shop shows only the needle-D mark next to its own name */}
               {shopBrand && shopBrand.logo && <img src={shopBrand.logo} alt="" className="h-9 w-9 sm:h-11 sm:w-11 rounded object-cover border border-gray-300/40" />}
-              <KyvroMark dark={isDarkMode} icon={!!(shopBrand && shopBrand.wordmark)} title="Dorzi logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-10 min-[400px]:h-11 sm:h-14'} w-auto shrink-0`} />
+              <DorziMark dark={isDarkMode} icon={!!(shopBrand && shopBrand.wordmark)} title="Dorzi logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-10 min-[400px]:h-11 sm:h-14'} w-auto shrink-0`} />
               {shopBrand && shopBrand.wordmark ? (
                 <div className="flex flex-col items-start min-w-0">
                   <span className="text-lg sm:text-2xl font-serif font-bold tracking-wide truncate max-w-[9rem] sm:max-w-[16rem]" style={{ color: shopBrand.color }}>{shopBrand.name}</span>

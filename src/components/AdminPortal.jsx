@@ -4,7 +4,7 @@ import { callStock, outColours, backColours, colourLabel } from '../stockSync';
 import React from 'react';
 import { askConfirm } from './AlertCenter';
 import AdminLogin from './AdminLogin';
-import KyvroMark from './KyvroMark';
+import DorziMark from './DorziMark';
 import AdminManager from './AdminManager';
 import ImageField from './ImageField';
 import SizeStockEditor from './SizeStockEditor';
@@ -269,7 +269,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
         <div>
           <label className="block text-xs font-semibold text-gray-500 mb-1">Shop name (where you buy it)</label>
-          <input type="text" list="kyvro-supplier-names" placeholder="e.g. SelfShop" maxLength={80}
+          <input type="text" list="dorzi-supplier-names" placeholder="e.g. SelfShop" maxLength={80}
             value={newProductForm.supplierName || ''}
             onChange={e => setNewProductForm(prev => ({ ...prev, supplierName: e.target.value }))}
             className={inputCls} />
@@ -382,7 +382,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
               <p className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Supplier {i + 2}</p>
               <button type="button" onClick={() => removeExtraSup(i)} className="text-[11px] font-bold text-red-500">&times; Remove</button>
             </div>
-            <input type="text" list="kyvro-supplier-names" placeholder="Shop name, e.g. ShopBaseBD" maxLength={80}
+            <input type="text" list="dorzi-supplier-names" placeholder="Shop name, e.g. ShopBaseBD" maxLength={80}
               value={x.name || ''} onChange={e => setExtraSup(i, { name: e.target.value })} className={inputCls} />
             <div className="grid grid-cols-[104px_1fr] gap-2">
               <input type="number" min="0" placeholder="৳ cost" value={x.cost ?? ''} onChange={e => setExtraSup(i, { cost: e.target.value })} className={inputCls} />
@@ -411,7 +411,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
             <div className="space-y-8">
               <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-lg border gap-4 ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                 <div className="flex items-center gap-4 min-w-0">
-                <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-11 w-auto shrink-0" />
+                <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-11 w-auto shrink-0" />
                 <div className="min-w-0">
                   <h1 className="text-2xl font-serif font-bold">Dorzi Management Dashboard</h1>
                   <p className="text-xs text-gray-500">Logged in as: <strong className="text-[#D4AF37]">{adminName || loggedInUserEmail}</strong>{adminName && <span> ({loggedInUserEmail})</span>} &middot; {roleLabel} | Domain: www.kyvro.store</p>
@@ -696,7 +696,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
 
               {adminTab === 'add-product' && (canAddProduct || editingProductId) && (
                 <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                <datalist id="kyvro-supplier-names">{supplierNames.map(n => <option key={n} value={n} />)}</datalist>
+                <datalist id="dorzi-supplier-names">{supplierNames.map(n => <option key={n} value={n} />)}</datalist>
                 <form onSubmit={handleSaveProduct} className={`p-8 rounded-lg border space-y-6 w-full lg:flex-1 min-w-0 max-w-3xl ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
                     <h3 className="text-lg font-serif font-bold">

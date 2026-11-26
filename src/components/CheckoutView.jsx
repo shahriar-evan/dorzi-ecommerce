@@ -91,7 +91,7 @@ export default function CheckoutView({
         </div>
       )}
 
-      <form id="kyvro-checkout-form" onSubmit={handleCheckoutSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-start">
+      <form id="dorzi-checkout-form" onSubmit={handleCheckoutSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-start">
         {/* BILLING & SHIPPING */}
         <div className={`${panel} lg:col-span-3 space-y-5`}>
           <h2 className="text-xl font-bold border-b pb-3">Billing &amp; Shipping Information</h2>
@@ -335,17 +335,17 @@ export default function CheckoutView({
           )}
           {showPayBtn ? (
             <div className="flex-1 flex flex-col gap-1.5">
-              <button type="submit" name="payvia" value="bkash" form="kyvro-checkout-form" disabled={placingOrder} className="h-10 rounded-lg bg-[#E2136E] text-white font-bold text-xs tracking-wide shadow active:scale-95 transition disabled:opacity-50">
+              <button type="submit" name="payvia" value="bkash" form="dorzi-checkout-form" disabled={placingOrder} className="h-10 rounded-lg bg-[#E2136E] text-white font-bold text-xs tracking-wide shadow active:scale-95 transition disabled:opacity-50">
                 {placingOrder ? 'Placing order...' : `${PAY_PROVIDER === 'uddokta' ? 'Pay with bKash / Nagad' : 'Pay with bKash'}${payAmt}`}
               </button>
-              {CARD_PAY_ON && <button type="submit" name="payvia" value="card" form="kyvro-checkout-form" disabled={placingOrder} className="h-10 rounded-lg bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black font-bold text-xs tracking-wide shadow active:scale-95 transition disabled:opacity-50">
+              {CARD_PAY_ON && <button type="submit" name="payvia" value="card" form="dorzi-checkout-form" disabled={placingOrder} className="h-10 rounded-lg bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black font-bold text-xs tracking-wide shadow active:scale-95 transition disabled:opacity-50">
                 {placingOrder ? 'Placing order...' : `${PAY_PROVIDER === 'uddokta' ? 'Pay with Card' : 'Pay with Card / Bank'}${payAmt}`}
               </button>}
             </div>
           ) : (
             <button
               type="submit"
-              form="kyvro-checkout-form"
+              form="dorzi-checkout-form"
               disabled={placingOrder}
               className="flex-1 h-12 rounded-lg bg-gradient-to-b from-[#E9CB6B] via-[#D4AF37] to-[#B8921F] text-black font-bold text-xs tracking-wider uppercase shadow active:scale-95 transition disabled:opacity-50"
             >

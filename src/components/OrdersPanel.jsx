@@ -378,7 +378,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `kyvro-orders-${Date.now()}.csv`;
+    a.download = `dorzi-orders-${Date.now()}.csv`;
     a.click();
   };
 

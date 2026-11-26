@@ -37,10 +37,10 @@ export default function ShoeWall({ products, formatPrice, isDarkMode, openProduc
   const showcase = useShowcase();
   const uploaded = showcase || {};
   const [cols, setCols] = useState(() => {
-    try { const v = Number(localStorage.getItem('kyvro_shoe_cols')); if (DENSITY.includes(v)) return v; } catch (e) { /* no storage */ }
+    try { const v = Number(localStorage.getItem('dorzi_shoe_cols')); if (DENSITY.includes(v)) return v; } catch (e) { /* no storage */ }
     return 4;
   });
-  const choose = (n) => { setCols(n); setPage(0); try { localStorage.setItem('kyvro_shoe_cols', String(n)); } catch (e) { /* no storage */ } };
+  const choose = (n) => { setCols(n); setPage(0); try { localStorage.setItem('dorzi_shoe_cols', String(n)); } catch (e) { /* no storage */ } };
   const [page, setPage] = useState(0);
   const perPage = cols * 2;
   const pages = Math.max(1, Math.ceil(products.length / perPage));

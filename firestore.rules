@@ -307,10 +307,10 @@ service cloud.firestore {
 
     // ---- Public sellers ("Sell on Kyvro"): any signed-in customer who is NOT on the team can open ONE shop ----
     // settings/sellerRules (Owner): open = new sellers allowed; blockedRegex = shop names / links that are refused
-    // (built from blockedWords in the Owner's settings; default kyvro, official, admin, owner, support).
+    // (built from blockedWords in the Owner's settings; default dorzi, kyvro, official, admin, owner, support).
     function sellerRulesPath() { return /databases/$(database)/documents/settings/sellerRules; }
     function sellersOpen() { return !exists(sellerRulesPath()) || get(sellerRulesPath()).data.get('open', true) == true; }
-    function blockedRe() { return exists(sellerRulesPath()) ? get(sellerRulesPath()).data.get('blockedRegex', '.*(kyvro|official|admin|owner|support).*') : '.*(kyvro|official|admin|owner|support).*'; }
+    function blockedRe() { return exists(sellerRulesPath()) ? get(sellerRulesPath()).data.get('blockedRegex', '.*(dorzi|dorzi|kyvro|official|admin|owner|support).*') : '.*(dorzi|kyvro|official|admin|owner|support).*'; }
     // big brand names: never in a seller's shop name or link (same list as BRAND_WORDS in src/sellers.js)
     function brandRe() { return '.*(nike|adidas|gucci|zara|apple|puma|reebok|chanel|prada|dior|versace|armani|rolex|samsung|uniqlo|balenciaga|burberry|fendi|hermes|vuitton|levis).*'; }
     function sellerNameOk(name, slug) { return !name.lower().matches(blockedRe()) && !slug.matches(blockedRe()) && !name.lower().matches(brandRe()) && !slug.matches(brandRe()); }
@@ -630,7 +630,7 @@ service cloud.firestore {
         && (!exists(/databases/$(database)/documents/shops/$(h)) || h == request.resource.data.slug)
         && (isOwner() || (!h.matches(blockedRe()) && !h.matches(brandRe())))
         // the site's own routes can never be a shop link (kyvro.store/<link>); same list as src/data/reservedLinks.js
-        && !h.matches('^(admin|api|s|shop|shops|men|mens|women|womens|winter|shoes|wallets|watches|cart|checkout|account|orders|order-tracking|wallet|sell|seller|sellers|plans|pricing|login|signup|about|contact|terms|privacy|help|support|kyvro|official|owner|www|static|assets)$')
+        && !h.matches('^(admin|api|s|shop|shops|men|mens|women|womens|winter|shoes|wallets|watches|cart|checkout|account|orders|order-tracking|wallet|sell|seller|sellers|plans|pricing|login|signup|about|contact|terms|privacy|help|support|dorzi|kyvro|official|owner|www|static|assets)$')
         && existsAfter(/databases/$(database)/documents/shops/$(request.resource.data.slug))
         && getAfter(/databases/$(database)/documents/shops/$(request.resource.data.slug)).data.ownerUid == request.auth.uid
         && getAfter(/databases/$(database)/documents/shops/$(request.resource.data.slug)).data.get('handle', '') == h;

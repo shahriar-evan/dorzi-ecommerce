@@ -37,7 +37,7 @@ const LINKS = {
   key: 'https://aistudio.google.com/apikey',
   billing: 'https://console.cloud.google.com/billing',
   usage: 'https://aistudio.google.com/usage',
-  vercel: 'https://vercel.com/shahriar-evans-projects/kyvro-ecommerce/settings/environment-variables',
+  vercel: 'https://vercel.com/shahriar-evans-projects/dorzi-ecommerce/settings/environment-variables',
   orCredits: 'https://openrouter.ai/settings/credits',
   orKeys: 'https://openrouter.ai/settings/keys',
 };

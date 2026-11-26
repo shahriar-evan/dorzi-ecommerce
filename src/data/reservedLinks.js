@@ -7,7 +7,7 @@ export const RESERVED_LINKS = [
   'cart', 'checkout', 'account', 'orders', 'order-tracking', 'wallet',
   'sell', 'seller', 'sellers', 'plans', 'pricing',
   'login', 'signup', 'about', 'contact', 'terms', 'privacy', 'help', 'support',
-  'kyvro', 'official', 'owner', 'www', 'static', 'assets',
+  'dorzi', 'kyvro', 'official', 'owner', 'www', 'static', 'assets',
 ];
 export const isReservedLink = (link) => RESERVED_LINKS.includes(String(link || '').toLowerCase());
 

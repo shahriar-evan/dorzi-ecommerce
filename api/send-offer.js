@@ -113,7 +113,7 @@ async function sendPush(idToken, { title, text, onlyEmail, link }) {
           headers: { Authorization: `Bearer ${access}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: {
             token: t.token,
-            data: { title, body: text, link: link || SITE, icon: `${SITE}/kyvro-icon.png` },
+            data: { title, body: text, link: link || SITE, icon: `${SITE}/dorzi-icon.png` },
             webpush: { headers: { Urgency: 'high', TTL: '86400' } },
           } }),
         });

@@ -1,5 +1,5 @@
 import React from 'react';
-import KyvroMark from './KyvroMark';
+import DorziMark from './DorziMark';
 
 export default function Footer({ onStartSelling, sellLabel = 'Start your own business', navHas = () => true, isDarkMode, setCurrentView, setSelectedCategory, customerUser, onSignIn, goAccount }) {
   return (
@@ -9,7 +9,7 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
           <div className="space-y-4">
             {/* logo + name: centered on a phone (one column), left from 640px (grid columns) */}
             <div className="flex items-center justify-center sm:justify-start gap-1.5">
-              <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
+              <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
               {/* Bangla name next to the logo, in the normal font */}
               <span className={`flex items-center gap-2 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
                 <span className="text-[28px] leading-none" aria-hidden="true">&middot;</span>

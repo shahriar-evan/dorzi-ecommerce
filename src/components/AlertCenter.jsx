@@ -58,8 +58,8 @@ export function showMaintenance(message, getWaText) {
   emit();
 }
 
-if (typeof window !== 'undefined' && !window.__kyvroAlert) {
-  window.__kyvroAlert = true;
+if (typeof window !== 'undefined' && !window.__dorziAlert) {
+  window.__dorziAlert = true;
   window.alert = (m) => showAlert(m);
 }
 

@@ -22,7 +22,7 @@ export default function ShopView({ requestAdd, addToCart, filteredProducts, form
     ? [...filteredProducts.filter((p) => !railIds.includes(String(p.id))), ...filteredProducts.filter((p) => railIds.includes(String(p.id)))]
     : filteredProducts;
   const openProduct = (p) => { setSelectedProduct(p); setCurrentView('product-detail'); };
-  const seeAll = () => { try { document.getElementById('kyvro-shop-grid').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { /* no grid */ } };
+  const seeAll = () => { try { document.getElementById('dorzi-shop-grid').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { /* no grid */ } };
   const card = (product) => (
                   <div key={product.id} className={`group rounded-lg overflow-hidden border flex flex-col ${isDarkMode ? 'bg-[#181818] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                     <div className="relative h-64 overflow-hidden bg-gray-900 cursor-pointer" onClick={() => { setSelectedProduct(product); setCurrentView('product-detail'); }}>
@@ -159,7 +159,7 @@ export default function ShopView({ requestAdd, addToCart, filteredProducts, form
             addToCart={addToCart} openProduct={openProduct} onItems={setRailIds} onSeeAll={seeAll} />
         )}
 
-        <div id="kyvro-shop-grid" className={`flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 w-full scroll-mt-24 ${railOn ? 'pt-10 sm:pt-14' : ''}`}>
+        <div id="dorzi-shop-grid" className={`flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 w-full scroll-mt-24 ${railOn ? 'pt-10 sm:pt-14' : ''}`}>
           {/* Shoes: the shoe wall (pairs on shelves, 2 / 4 / 6 a row) instead of the card grid */}
           {selectedCategory === 'Shoes' ? (
             <ShoeWall products={filteredProducts} formatPrice={formatPrice} isDarkMode={isDarkMode}

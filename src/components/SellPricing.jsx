@@ -11,10 +11,10 @@ import { normalizePlans } from '../data/priceCheck';
 export default function SellPricing({ formatPrice, isDarkMode, onChoose, busy = '' }) {
   // language: English first; the EN / বাংলা switch is remembered on this device
   const [lang, setLangState] = useState(() => {
-    try { const v = localStorage.getItem('kyvro_plan_lang'); if (v === 'en' || v === 'bn') return v; } catch (e) { /* no storage */ }
+    try { const v = localStorage.getItem('dorzi_plan_lang'); if (v === 'en' || v === 'bn') return v; } catch (e) { /* no storage */ }
     return 'en';
   });
-  const setLang = (v) => { setLangState(v); try { localStorage.setItem('kyvro_plan_lang', v); } catch (e) { /* no storage */ } };
+  const setLang = (v) => { setLangState(v); try { localStorage.setItem('dorzi_plan_lang', v); } catch (e) { /* no storage */ } };
   const [plans, setPlans] = useState(() => normalizePlans(null));
   useEffect(() => watchPlans(setPlans), []);
   const T = PLAN_TEXT[lang];

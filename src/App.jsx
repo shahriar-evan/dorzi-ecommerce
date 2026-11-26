@@ -40,7 +40,7 @@ import sneakersImg from './assets/Snekers.webp';
 import AnnouncementBar from './components/AnnouncementBar';
 import BackButton from './components/BackButton';
 import Header from './components/Header';
-import KyvroMark from './components/KyvroMark';
+import DorziMark from './components/DorziMark';
 import MobileMenu from './components/MobileMenu';
 import CartDrawer from './components/CartDrawer';
 import HomeView from './components/HomeView';
@@ -69,7 +69,7 @@ const EMPTY_CHECKOUT = {
   district: '', upazila: '', area: '', deliveryArea: '', paymentMethod: 'Cash on Delivery', agree: false
 };
 
-const LAST_SHOP_KEY = 'kyvro_last_supplier_shop';
+const LAST_SHOP_KEY = 'dorzi_last_supplier_shop';
 const lastShop = () => { try { return localStorage.getItem(LAST_SHOP_KEY) || ''; } catch { return ''; } };
 const freshProductForm = () => ({ ...EMPTY_PRODUCT_FORM, supplierName: lastShop() });
 const EMPTY_PRODUCT_FORM = {
@@ -84,7 +84,7 @@ export default function App() {
     // an old copy can point at pictures from an older build (/assets/<name>-<hash>.png) that are gone now: use the
     // starter list instead (the real products come from Firestore a moment later anyway)
     try {
-      const saved = JSON.parse(localStorage.getItem('kyvro_products') || 'null');
+      const saved = JSON.parse(localStorage.getItem('dorzi_products') || 'null');
       const stale = Array.isArray(saved) && saved.some((p) => /^\/assets\/[^/]+\.png$/.test(String((p && p.image) || '')));
       return Array.isArray(saved) && !stale ? saved : INITIAL_PRODUCTS;
     } catch (e) { return INITIAL_PRODUCTS; }
@@ -115,10 +115,10 @@ export default function App() {
       // the theme picker's preview frame shares this tab's session: it never remembers a shop, and a main-site preview
       // never picks up the shop remembered by the page around it
       if (/[?&]themePreview=/.test(window.location.search)) return pathShop;
-      if (pathShop) { sessionStorage.setItem('kyvro_shop', pathShop); return pathShop; }
+      if (pathShop) { sessionStorage.setItem('dorzi_shop', pathShop); return pathShop; }
       const q = String(new URLSearchParams(window.location.search).get('shop') || '').toLowerCase();
-      if (SLUG_RE.test(q)) { sessionStorage.setItem('kyvro_shop', q); return q; }
-      const saved = sessionStorage.getItem('kyvro_shop') || '';
+      if (SLUG_RE.test(q)) { sessionStorage.setItem('dorzi_shop', q); return q; }
+      const saved = sessionStorage.getItem('dorzi_shop') || '';
       return SLUG_RE.test(saved) ? saved : '';
     } catch (e) { return ''; }
   });
@@ -154,13 +154,13 @@ export default function App() {
       const viaQuery = !!new URLSearchParams(window.location.search).get('shop');
       if (key && (viaQuery || (pathShop && pathShop !== key))) {
         window.history.replaceState(window.history.state, '', `/${key}`);
-        sessionStorage.setItem('kyvro_shop', key);
+        sessionStorage.setItem('dorzi_shop', key);
       }
     } catch (e) { /* ignore */ }
   }, [shopCtx && shopLinkKey(shopCtx)]); // eslint-disable-line react-hooks/exhaustive-deps
   // kyvro.store/<something> that is no shop (or a shop that is off): a "not found" page, and the main store afterwards
   const pathNotFound = !!pathShop && !!shopSlug && shopDoc === null;
-  useEffect(() => { if (pathNotFound) { try { sessionStorage.removeItem('kyvro_shop'); } catch (e) { /* ignore */ } } }, [pathNotFound]);
+  useEffect(() => { if (pathNotFound) { try { sessionStorage.removeItem('dorzi_shop'); } catch (e) { /* ignore */ } } }, [pathNotFound]);
   // shop plans: a shop whose paid plan ran out shows only its best sellers (the rest are hidden, not deleted)
   const shopVisible = shopCtx ? visibleShopIds(shopCtx, Object.fromEntries(products.map((p) => [String(p.id), p])), plans) : null;
   // the shop's plan right now (the Owner's own shop has every extra) and the header brand (Premium: wordmark)
@@ -197,7 +197,7 @@ export default function App() {
   };
 
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('kyvro_cart');
+    const saved = localStorage.getItem('dorzi_cart');
     return saved ? JSON.parse(saved) : [];
   });
   // A cart made in one shop (or the main store) is emptied when the visitor moves to another one, so prices never get mixed
@@ -205,8 +205,8 @@ export default function App() {
     if (shopLoading) return;
     try {
       const cur = shopCtx ? shopSlug : '';
-      const tag = localStorage.getItem('kyvro_cart_shop') || '';
-      if (tag !== cur) { setCart([]); localStorage.setItem('kyvro_cart_shop', cur); }
+      const tag = localStorage.getItem('dorzi_cart_shop') || '';
+      if (tag !== cur) { setCart([]); localStorage.setItem('dorzi_cart_shop', cur); }
     } catch (e) { /* ignore */ }
   }, [shopLoading, shopCtx, shopSlug]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -223,7 +223,7 @@ export default function App() {
   const [profileReady, setProfileReady] = useState(false); // true once the signed-in customer's profile has arrived
   // Favourites of a visitor who is not signed in: kept on this device (and moved into the account after sign-in)
   const [guestSaved, setGuestSaved] = useState(() => {
-    try { const v = JSON.parse(localStorage.getItem('kyvro_saved') || '[]'); return Array.isArray(v) ? v.filter(x => typeof x === 'string' || typeof x === 'number').slice(0, 300) : []; } catch (e) { return []; }
+    try { const v = JSON.parse(localStorage.getItem('dorzi_saved') || '[]'); return Array.isArray(v) ? v.filter(x => typeof x === 'string' || typeof x === 'number').slice(0, 300) : []; } catch (e) { return []; }
   });
   const [myOrders, setMyOrders] = useState([]);
   const [accountTab, setAccountTab] = useState('orders');
@@ -433,7 +433,7 @@ export default function App() {
   // (the Owner sees "last visit" before removing a shop)
   useEffect(() => {
     if (!shopCtx || !shopVisibleToAll(shopCtx) || isAdminLoggedIn || (customerUser && customerUser.uid === shopCtx.ownerUid)) return;
-    const k = `kyvro_visit_${shopCtx.slug}`;
+    const k = `dorzi_visit_${shopCtx.slug}`;
     const today = new Date().toISOString().slice(0, 10);
     try { if (localStorage.getItem(k) === today) return; localStorage.setItem(k, today); } catch (e) { return; }
     noteShopVisit(shopCtx.slug).catch(() => {});
@@ -526,7 +526,7 @@ export default function App() {
   useEffect(() => {
     if (isCloud) return;
     try {
-      localStorage.setItem('kyvro_products', JSON.stringify(localProducts));
+      localStorage.setItem('dorzi_products', JSON.stringify(localProducts));
     } catch (err) {
       console.error('Could not save products:', err);
       alert('Browser storage is full, so the latest product changes could not be saved. Use smaller photos or image links instead of uploaded photos.');
@@ -534,7 +534,7 @@ export default function App() {
   }, [localProducts, isCloud]);
 
   useEffect(() => {
-    localStorage.setItem('kyvro_cart', JSON.stringify(cart));
+    localStorage.setItem('dorzi_cart', JSON.stringify(cart));
     cartRef.current = cart;
   }, [cart]);
   // signed-in customer: keep a short cart summary on users/{uid} (only when the cart really changed), so a cart left
@@ -544,7 +544,7 @@ export default function App() {
     if (!cartUid || shopLoading) return undefined;
     const items = cart || [];
     const sig = items.map((i) => `${i.id}:${i.selectedSize || ''}:${i.selectedColor || ''}:${i.quantity}`).join('|');
-    const key = `kyvro_cart_sig_${cartUid}`;
+    const key = `dorzi_cart_sig_${cartUid}`;
     let last = null;
     try { last = localStorage.getItem(key); } catch (e) { /* ignore */ }
     if (last === sig) return undefined;
@@ -609,7 +609,7 @@ export default function App() {
   }, [customerUid]);
 
   // Keep a visitor's favourites on this device
-  useEffect(() => { try { localStorage.setItem('kyvro_saved', JSON.stringify(guestSaved)); } catch (e) {} }, [guestSaved]);
+  useEffect(() => { try { localStorage.setItem('dorzi_saved', JSON.stringify(guestSaved)); } catch (e) {} }, [guestSaved]);
 
   // After sign-in: favourites saved on this device join the account's saved items (nothing is lost)
   useEffect(() => {
@@ -629,9 +629,9 @@ export default function App() {
   const onProducts = (list, isEmpty) => {
     setProductsReady(true);
     let moved = false;
-    try { moved = localStorage.getItem('kyvro_cloud') === '1'; } catch (e) {}
+    try { moved = localStorage.getItem('dorzi_cloud') === '1'; } catch (e) {}
     if (!isEmpty) {
-      try { localStorage.setItem('kyvro_cloud', '1'); } catch (e) {}
+      try { localStorage.setItem('dorzi_cloud', '1'); } catch (e) {}
       setCloudProducts(list);
     } else {
       setCloudProducts(moved ? [] : null);
@@ -653,9 +653,9 @@ export default function App() {
       const unsubscribe = watchProducts((list, isEmpty) => {
         setProductsReady(true);
         let moved = false;
-        try { moved = localStorage.getItem('kyvro_cloud') === '1'; } catch (e) {}
+        try { moved = localStorage.getItem('dorzi_cloud') === '1'; } catch (e) {}
         if (!isEmpty) {
-          try { localStorage.setItem('kyvro_cloud', '1'); } catch (e) {}
+          try { localStorage.setItem('dorzi_cloud', '1'); } catch (e) {}
           setCloudProducts(list);
         } else {
           // Nothing in Firestore yet: keep the old list. If it was emptied on purpose, stay empty.
@@ -1548,7 +1548,7 @@ export default function App() {
       {shopCtx && currentView !== 'admin' && (isAdminLoggedIn || (!!customerUser && customerUser.uid === shopCtx.ownerUid)) && (
         <div className={`px-4 py-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs ${isDarkMode ? 'bg-[#1a1a1a] text-gray-300' : 'bg-gray-900 text-gray-200'}`}>
           <span>You are on the shop link of <strong className="text-white">{shopDisplayName(shopCtx, shopFeat)}</strong>.</span>
-          <button type="button" onClick={() => { try { sessionStorage.removeItem('kyvro_shop'); } catch (e) { /* ignore */ } window.location.href = '/'; }}
+          <button type="button" onClick={() => { try { sessionStorage.removeItem('dorzi_shop'); } catch (e) { /* ignore */ } window.location.href = '/'; }}
             className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-[#D4AF37] text-[#D4AF37] font-bold hover:bg-[#D4AF37] hover:text-black transition">
             ← Dorzi main site
           </button>
@@ -1626,8 +1626,8 @@ export default function App() {
       )}
       {!productsReady && (currentView === 'home' || currentView === 'shop') && !pathNotFound && (
         <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5" aria-busy="true" aria-label="Loading">
-          <KyvroMark dark={isDarkMode} className="h-16 animate-pulse" />
-          <span className="h-[2px] w-24 overflow-hidden rounded bg-black/10 dark:bg-white/10"><span className="block h-full w-1/2 animate-[kyvroLoad_1.1s_ease-in-out_infinite] bg-[#D4AF37]" /></span>
+          <DorziMark dark={isDarkMode} className="h-16 animate-pulse" />
+          <span className="h-[2px] w-24 overflow-hidden rounded bg-black/10 dark:bg-white/10"><span className="block h-full w-1/2 animate-[dorziLoad_1.1s_ease-in-out_infinite] bg-[#D4AF37]" /></span>
         </div>
       )}
       {productsReady && currentView === 'home' && !pathNotFound && <HomeView lookBundle={!shopCtx} theme={activeTheme.theme} brandName={shopBrand ? shopBrand.name : 'Dorzi'} requestAdd={requestAdd} addToCart={addToCart} banners={banners} calculateDiscountPercent={calculateDiscountPercent} currentBannerIndex={currentBannerIndex} formatPrice={formatPrice} isDarkMode={isDarkMode} products={storefrontProducts} hideEmptyCategories={!!shopCtx} setCurrentBannerIndex={setCurrentBannerIndex} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} setSelectedProduct={setSelectedProduct} savedIds={savedIds} toggleSaved={toggleSaved} openCollection={(c, sub) => { setSelectedCategory(c); setSelectedSubCategory(sub || null); setCurrentView('shop'); }} />}

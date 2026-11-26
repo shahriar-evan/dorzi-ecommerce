@@ -51,7 +51,7 @@ async function pushToUid(token, project, uid, title, body, link) {
     const r = await fetch(`https://fcm.googleapis.com/v1/projects/${project}/messages:send`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: { token: t, data: { title, body, link, icon: `${SITE}/kyvro-icon.png` }, webpush: { headers: { Urgency: 'normal', TTL: '86400' } } } }),
+      body: JSON.stringify({ message: { token: t, data: { title, body, link, icon: `${SITE}/dorzi-icon.png` }, webpush: { headers: { Urgency: 'normal', TTL: '86400' } } } }),
     });
     if (r.ok) sent += 1;
   }

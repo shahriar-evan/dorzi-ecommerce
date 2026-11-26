@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Home, Footprints, Wallet, Watch } from 'lucide-react';
-import KyvroMark from './KyvroMark';
+import DorziMark from './DorziMark';
 
 // Custom line icons: a man, a woman and a jacket (lucide has no icon for them)
 const mk = (paths) => function CustomIcon({ size = 20 }) {
@@ -40,12 +40,12 @@ export default function MobileMenu({ navHas = () => true, isDarkMode, setIsDarkM
   ]).filter((it) => ({ 'Home': true, "Men's": navHas('Men'), "Women's & Girls'": navHas('Women'), 'Winter': navHas('Winter'), 'Shoes': navHas('Shoes'), 'Wallets': navHas('Wallets'), 'Watches': navHas('Watches') }[it.label]));
   return (
     <>
-      <div className="fixed inset-0 z-50 flex kyvro-fade bg-black/70 backdrop-blur-sm">
-        <div className={`kyvro-slide w-[85%] max-w-sm h-full flex flex-col justify-between shadow-2xl ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-white text-black'}`}>
+      <div className="fixed inset-0 z-50 flex dorzi-fade bg-black/70 backdrop-blur-sm">
+        <div className={`dorzi-slide w-[85%] max-w-sm h-full flex flex-col justify-between shadow-2xl ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-white text-black'}`}>
           <div>
             <div className={`flex justify-between items-center px-6 pt-6 pb-5 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
               <div className={`flex items-center gap-1.5 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                <KyvroMark dark={isDarkMode} title="Dorzi logo" className="h-12 w-auto shrink-0" />
+                <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-12 w-auto shrink-0" />
                 <span className="text-2xl" aria-hidden="true">&bull;</span>
                 <span className="text-xl font-bold" lang="bn">দর্জি</span>
               </div>

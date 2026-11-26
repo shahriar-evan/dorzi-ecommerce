@@ -14,8 +14,8 @@ if (cfg && cfg.projectId) {
     var d = (payload && payload.data) || {};
     self.registration.showNotification(d.title || 'Dorzi', {
       body: d.body || '',
-      icon: d.icon || '/kyvro-icon.png',
-      badge: '/kyvro-icon.png',
+      icon: d.icon || '/dorzi-icon.png',
+      badge: '/dorzi-icon.png',
       data: { link: d.link || '/' },
     });
   });
