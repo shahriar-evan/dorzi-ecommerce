@@ -4,7 +4,7 @@ import PriceTag, { DiscountBadge } from './PriceTag';
 import SlideTrack from './SlideTrack';
 import StockLabel from './StockLabel';
 import { totalStock, rankBySales } from '../data/catalog';
-import shirtImg from '../assets/shirts.webp';
+import shirtImg from '../assets/category-shirts.webp';
 import sneakersImg from '../assets/Snekers.webp';
 
 // Home page of the Minimal, Bold, Boutique, Editorial, Street, Fresh and Luxe themes (Classic is HomeView itself). Same products, categories and

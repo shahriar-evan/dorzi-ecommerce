@@ -1,5 +1,5 @@
-import shirtImg from '../assets/shirts.webp';
-import punjabiImg from '../assets/punjabi.webp';
+import shirtImg from '../assets/category-shirts.webp';
+import punjabiImg from '../assets/product-punjabi.webp';
 import sneakersImg from '../assets/Snekers.webp';
 
 export const INITIAL_PRODUCTS = [

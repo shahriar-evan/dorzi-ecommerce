@@ -34,6 +34,11 @@ export default function SlideTrack({ items, index, onIndex, className = '', loop
   useEffect(() => {
     if (index === posRef.current % n) return;
     const cur = posRef.current % n;
+    if (posRef.current === n) {             // still on the copy: jump to the real first slide first, then move on
+      setSnap(true); setPos(0);
+      requestAnimationFrame(() => requestAnimationFrame(() => { setSnap(false); setPos(index); }));
+      return;
+    }
     if (loop && cur === n - 1 && index === 0) setPos(n); else setPos(index);
   }, [index, n, loop]);
 
@@ -49,13 +54,21 @@ export default function SlideTrack({ items, index, onIndex, className = '', loop
   const moveRef = useRef(move);
   moveRef.current = move;
 
-  const onEnd = () => {
-    if (posRef.current === n) {           // arrived on the copy of the first slide: jump back to the real one
-      setSnap(true);
-      setPos(0);
-      requestAnimationFrame(() => requestAnimationFrame(() => setSnap(false)));
-    }
+  // arrived on the copy of the first slide: jump back to the real first one without animation. Done by a timer after
+  // the slide animation (600 ms), not by transitionend: that event never comes when the tab is in the background or
+  // the animation is cut short, and then the next change slid back across every photo at once (looked like a fast skip).
+  const snapBack = () => {
+    if (posRef.current !== n) return;
+    setSnap(true);
+    setPos(0);
+    requestAnimationFrame(() => requestAnimationFrame(() => setSnap(false)));
   };
+  useEffect(() => {
+    if (!loop || pos !== n || dragging) return undefined;
+    const t = setTimeout(snapBack, 650);
+    return () => clearTimeout(t);
+  }, [pos, n, loop, dragging]);
+  const onEnd = (e) => { if (e.target === e.currentTarget) snapBack(); };
 
   useEffect(() => {
     const el = box.current;
