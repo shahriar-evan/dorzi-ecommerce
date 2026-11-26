@@ -384,9 +384,9 @@ export default function App() {
   const banners = [coverPhoto1Img, men_womenImg, women_bannerImg, styleImg, shirtImg, punjabiImg, sneakersImg];
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
-  // Every slide stays exactly 15 seconds. The timer restarts after each change (also after a click on a dot)
+  // Every slide stays exactly 10 seconds (same as the top photos). The timer restarts after each change (also after a click on a dot)
   // and only runs while the home page is open, so the first photo is never cut short.
-  const BANNER_SECONDS = 15;
+  const BANNER_SECONDS = 10;
   useEffect(() => {
     if (currentView !== 'home') return undefined;
     const timer = setTimeout(() => {
