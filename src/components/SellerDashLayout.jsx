@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronDown, Lock, Menu, X } from 'lucide-react';
-import DorziMark from './DorziMark';
+import React, { useEffect, useState } from 'react';
+import { ChevronDown, Clock, Lock, Menu, X } from 'lucide-react';
 
 // Seller dashboard frame: a menu on the left (desktop) or a drop-down menu (phone), the chosen page on the right.
 // nav = [{ title, items: [{ key, label, icon, badge, children: [{ key, label }] }] }]
@@ -67,10 +66,15 @@ export default function SellerDashLayout({ nav, active, onSelect, isDarkMode, he
       ))}
     </nav>
   );
-  // the Dorzi logo at the top of the menu (seller dashboard and Admin Portal)
+  // top of the menu: which menu this is + the time in Bangladesh (orders, cut-offs and the nightly stock check run on
+  // BD time; the logo is only in the page header and footer)
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 30000); return () => clearInterval(t); }, []);
+  const bdTime = now.toLocaleString('en-GB', { timeZone: 'Asia/Dhaka', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true });
   const brand = (
-    <div className={`flex items-center gap-2 px-3 pt-1 pb-3 mb-3 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-      <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-10 w-auto shrink-0" />
+    <div className={`px-3 pt-1 pb-3 mb-3 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#B8921F]">{label}</p>
+      <p className={`mt-1 flex items-center gap-1.5 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}><Clock size={13} />Bangladesh: {bdTime}</p>
     </div>
   );
   const panel = `rounded-2xl border ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`;
