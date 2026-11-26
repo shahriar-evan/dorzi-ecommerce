@@ -29,11 +29,9 @@ import QuickAdd from './components/QuickAdd';
 import FeaturedShops from './components/FeaturedShops';
 import heroBannerImg from './assets/hero-banner.webp';
 import coverPhoto1Img from './assets/cover_photo1.webp';
-import threePieceWomenImg from './assets/three_piece_women.webp';
 import men_womenImg from './assets/men_women.webp';
 import women_bannerImg from './assets/women_banner.webp';
 import styleImg from './assets/style.webp';
-import punjabi_shirtImg from './assets/punjabi_shirt.webp';
 import shirtImg from './assets/shirts.webp';
 import punjabiImg from './assets/punjabi.webp';
 import sneakersImg from './assets/Snekers.webp';
@@ -383,7 +381,7 @@ export default function App() {
   // the theme's mode: Light / Dark open the page in that mode (the visitor can still switch); "Visitor chooses" leaves it
   useEffect(() => { if (activeTheme.mode === 'light' || activeTheme.mode === 'dark') setIsDarkMode(activeTheme.mode === 'dark'); }, [activeTheme.theme, activeTheme.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const banners = [coverPhoto1Img, men_womenImg, women_bannerImg, styleImg, punjabi_shirtImg, shirtImg, punjabiImg, sneakersImg, threePieceWomenImg];
+  const banners = [coverPhoto1Img, men_womenImg, women_bannerImg, styleImg, shirtImg, punjabiImg, sneakersImg];
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   // Every slide stays exactly 15 seconds. The timer restarts after each change (also after a click on a dot)

@@ -11,7 +11,7 @@ import HomeShowcase from './HomeShowcase';
 import heroBannerImg from '../assets/hero-banner.webp';
 import heroBanner1Img from '../assets/hero-banner1.webp';
 import heroBanner2Img from '../assets/hero-banner2.webp';
-import shirtImg from '../assets/shirts.webp';
+import shirtImg from '../assets/category-shirts.webp';
 import sneakersImg from '../assets/Snekers.webp';
 
 // Photos of the big top (hero) section. Each one stays 10 seconds, then the next slides in.
