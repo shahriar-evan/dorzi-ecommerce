@@ -5,7 +5,7 @@ Tagline: **WEAR YOUR STORY**
 Website Domain: `www.kyvro.store`  
 Support Email: `contactdorzifashion@gmail.com`  
 Instagram: `@kyvro_fashion`  
-Facebook: `www.facebook.com/kyvrofashion`  
+Facebook: `www.facebook.com/dorziclothing`  
 TikTok: `tiktok.com/@kyvro.store`
 
 ## How to run locally in VS Code:
