@@ -26,7 +26,7 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
             <h4 className={`font-bold uppercase tracking-wider mb-3 sm:mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>Customer Care</h4>
             <ul className="space-y-2">
               <li><button onClick={() => setCurrentView('shop')} className="hover:text-[#D4AF37]">Shop Collection</button></li>
-              <li><a href="mailto:kyvrofashion@gmail.com" className="hover:text-[#D4AF37]">24/7 Support: kyvrofashion@gmail.com</a></li>
+              <li><a href="mailto:contactdorzifashion@gmail.com" className="hover:text-[#D4AF37]">24/7 Support: contactdorzifashion@gmail.com</a></li>
               <li><span>Facebook: www.facebook.com/kyvrofashion</span></li>
               <li><span>Instagram: @kyvro_fashion</span></li>
               <li><span>TikTok: tiktok.com/@kyvro.store</span></li>

@@ -936,7 +936,7 @@ export default function App() {
     } catch (err) {
       console.error('Order failed:', err);
       setCheckoutError(err && err.code === 'permission-denied'
-        ? 'Sorry, we could not accept this order. Please contact us on WhatsApp or at kyvrofashion@gmail.com.'
+        ? 'Sorry, we could not accept this order. Please contact us on WhatsApp or at contactdorzifashion@gmail.com.'
         : 'Sorry, we could not place your order. Please check your internet connection and try again, or contact us.');
     }
     setPlacingOrder(false);

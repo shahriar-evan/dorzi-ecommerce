@@ -149,7 +149,7 @@ function buildMail(subject, message, sub, link, hasProduct) {
   </div>
   <div style="padding:16px 24px;background:#fafafa;color:#888;font-size:11px;text-align:center;line-height:1.6">
     You get this email because you signed in to kyvro.store.<br>
-    Questions? kyvrofashion@gmail.com &nbsp;|&nbsp; <a href="${unsub}" style="color:#888">Unsubscribe</a>
+    Questions? contactdorzifashion@gmail.com &nbsp;|&nbsp; <a href="${unsub}" style="color:#888">Unsubscribe</a>
   </div>
 </div></body></html>`;
   const text = `${sub.name ? `Hi ${sub.name.split(' ')[0]},\n\n` : ''}${message}\n\n${hasProduct ? 'See it here' : 'Shop now'}: ${link}\n\nUnsubscribe: ${unsub}`;

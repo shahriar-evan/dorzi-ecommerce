@@ -89,7 +89,7 @@ export default function OrderSuccess({ payNotice = '', order, formatPrice, isDar
         >
           Message us on WhatsApp
         </a>
-        <p className="text-xs text-gray-500">Or email <a href="mailto:kyvrofashion@gmail.com" className="underline">kyvrofashion@gmail.com</a> with your order number {order.orderNumber}.</p>
+        <p className="text-xs text-gray-500">Or email <a href="mailto:contactdorzifashion@gmail.com" className="underline">contactdorzifashion@gmail.com</a> with your order number {order.orderNumber}.</p>
       </div>
 
       <p className="text-xs text-gray-500 text-center">

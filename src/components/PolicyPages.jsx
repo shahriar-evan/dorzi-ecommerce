@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const EMAIL = 'kyvrofashion@gmail.com';
+const EMAIL = 'contactdorzifashion@gmail.com';
 const WA_TEXT = '+880 1770 849168';
 const UPDATED_EN = 'Last updated: 27 October 2026';
 const UPDATED_BN = 'সর্বশেষ আপডেট: ২৭ অক্টোবর ২০২৬';

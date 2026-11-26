@@ -3,7 +3,7 @@
 Brand Name: **Dorzi (দর্জি)** (renamed from Kyvro, Nov 2026)  
 Tagline: **WEAR YOUR STORY**  
 Website Domain: `www.kyvro.store`  
-Support Email: `kyvrofashion@gmail.com`  
+Support Email: `contactdorzifashion@gmail.com`  
 Instagram: `@kyvro_fashion`  
 Facebook: `www.facebook.com/kyvrofashion`  
 TikTok: `tiktok.com/@kyvro.store`

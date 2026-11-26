@@ -537,7 +537,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
         <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4 text-xs text-red-500">
           <p className="font-bold uppercase tracking-wider">Warning from Dorzi</p>
           <p className="mt-1 font-semibold">{shop.warning.note}</p>
-          <p className="mt-1 text-[11px] opacity-80">Please fix this soon, otherwise the shop may be removed. Questions: kyvrofashion@gmail.com</p>
+          <p className="mt-1 text-[11px] opacity-80">Please fix this soon, otherwise the shop may be removed. Questions: contactdorzifashion@gmail.com</p>
         </div>
       )}
       {/* seller: switch the shop ON / OFF themselves (also after Dorzi switched it off or hid it for inactivity).
@@ -574,7 +574,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
           <div className="min-w-0">
             <h3 className="text-xl font-bold">My Shop{isPendingShop(shop) ? ' (waiting for the Owner)' : shop.active === false ? ' (switched off by the Owner)' : ''}</h3>
             {isPendingShop(shop) && <p className="text-xs text-amber-600 mt-1">The Owner was notified. You can already choose products and prices; the link starts working when the Owner accepts your shop.</p>}
-            {shop.killed && <p className="text-xs text-red-500 mt-1 font-semibold">Dorzi switched this shop off{shop.killNote ? `: ${shop.killNote}` : ''}. It cannot be changed or switched on again. Contact kyvrofashion@gmail.com if you think this is a mistake.</p>}
+            {shop.killed && <p className="text-xs text-red-500 mt-1 font-semibold">Dorzi switched this shop off{shop.killNote ? `: ${shop.killNote}` : ''}. It cannot be changed or switched on again. Contact contactdorzifashion@gmail.com if you think this is a mistake.</p>}
             <p className="text-xs text-gray-500 break-all mt-1">{link}</p>
           </div>
           <div className="grid grid-cols-2 sm:flex gap-2 shrink-0">{linkButtons(shopLinkKey(shop), GOLD_BTN)}</div>

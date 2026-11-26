@@ -90,7 +90,7 @@ export default function AccountView({
     if (!(await askConfirm(`Cancel order ${o.orderNumber}?`))) return;
     setCancelMsg(''); setCancelling(o.id);
     try { await onCancelOrder(o.id); }
-    catch (e) { setCancelMsg('Sorry, this order can no longer be cancelled here (the 30 minutes are over or the team already confirmed it). Please contact us on WhatsApp or kyvrofashion@gmail.com.'); }
+    catch (e) { setCancelMsg('Sorry, this order can no longer be cancelled here (the 30 minutes are over or the team already confirmed it). Please contact us on WhatsApp or contactdorzifashion@gmail.com.'); }
     setCancelling('');
   };
 
@@ -231,7 +231,7 @@ export default function AccountView({
                 <span className="font-bold text-sm text-[#D4AF37]">{formatPrice(o.total)}</span>
               </div>
               {o.status === 'Pending' && (o.paymentStatus === 'Paid' || Number(o.advancePaid) > 0) && (
-                <p className="mt-4 text-xs text-gray-500">This order is already paid online, so it cannot be cancelled here. To cancel it, please message us on WhatsApp or kyvrofashion@gmail.com.</p>
+                <p className="mt-4 text-xs text-gray-500">This order is already paid online, so it cannot be cancelled here. To cancel it, please message us on WhatsApp or contactdorzifashion@gmail.com.</p>
               )}
               {msLeft(o) > 0 && (
                 <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">

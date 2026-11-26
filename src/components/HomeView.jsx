@@ -218,7 +218,7 @@ export default function HomeView({ theme = 'classic', brandName = 'Dorzi', hideE
                 { icon: Shield, title: "Uncompromising Quality", desc: "Hand-selected fabrics, genuine leather, and premium stainless steel materials." },
                 { icon: Truck, title: "Secure & Fastest Delivery", desc: "Fast and secure delivery to your doorstep, all over Bangladesh." },
                 { icon: RefreshCw, title: "14-Day Refund Policy", desc: "Refunds are made within 14 days. Check your product at delivery. See our Return & Refund Policy." },
-                { icon: User, title: "24/7 Support", desc: "Dedicated assistance anytime at kyvrofashion@gmail.com." }
+                { icon: User, title: "24/7 Support", desc: "Dedicated assistance anytime at contactdorzifashion@gmail.com." }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
