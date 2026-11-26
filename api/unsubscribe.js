@@ -32,6 +32,6 @@ export default async function handler(req, res) {
     }
     return res.status(400).send(page('Invalid link', 'This unsubscribe link is not valid or has expired.'));
   } catch (e) {
-    return res.status(500).send(page('Something went wrong', 'Please try again in a moment, or write to kyvrofashion@gmail.com.'));
+    return res.status(500).send(page('Something went wrong', 'Please try again in a moment, or write to contactdorzifashion@gmail.com.'));
   }
 }

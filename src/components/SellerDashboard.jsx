@@ -716,12 +716,12 @@ export default function SellerDashboard({ customerUser: signedIn, viewAs = null,
             <h3 className="text-lg font-bold flex items-center gap-2">Priority support <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D4AF37] text-black font-bold uppercase">Premium</span></h3>
             {plans.supportWhatsapp
               ? <a href={`https://wa.me/${plans.supportWhatsapp.replace(/^\+/, '').replace(/^0/, '880')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-green-600 text-white font-bold px-5 py-2 rounded text-xs uppercase tracking-wider">Chat on WhatsApp</a>
-              : <p className="text-xs text-gray-500">Email kyvrofashion@gmail.com and write "Premium" in the subject.</p>}
+              : <p className="text-xs text-gray-500">Email contactdorzifashion@gmail.com and write "Premium" in the subject.</p>}
             <p className="text-[11px] text-gray-500">Premium sellers are answered first.</p>
           </div>
         ) : (
           <div className={card}>
-            <p className="text-sm">Questions about your shop? Email <a href="mailto:kyvrofashion@gmail.com" className="font-semibold text-[#B8921F] underline">kyvrofashion@gmail.com</a>.</p>
+            <p className="text-sm">Questions about your shop? Email <a href="mailto:contactdorzifashion@gmail.com" className="font-semibold text-[#B8921F] underline">contactdorzifashion@gmail.com</a>.</p>
             <p className="text-[11px] text-gray-500">Premium sellers get priority support on WhatsApp. <button type="button" onClick={goPlans} className="underline text-[#B8921F] font-semibold">See plans</button></p>
           </div>
         )}

@@ -28,7 +28,7 @@ export default function AnnouncementBar({ announcementText, speed = 100, isDarkM
 
   const renderUnit = (refEl, key) => (
     <span key={key} ref={refEl} className="inline-block pr-12">
-      {announcementText} &nbsp;&nbsp;&bull;&nbsp;&nbsp; {support && <>24/7 Customer Support: kyvrofashion@gmail.com &nbsp;&nbsp;&bull;&nbsp;&nbsp;</>}
+      {announcementText} &nbsp;&nbsp;&bull;&nbsp;&nbsp; {support && <>24/7 Customer Support: contactdorzifashion@gmail.com &nbsp;&nbsp;&bull;&nbsp;&nbsp;</>}
     </span>
   );
 

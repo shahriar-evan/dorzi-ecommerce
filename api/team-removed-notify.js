@@ -52,11 +52,11 @@ export default async function handler(req, res) {
     <p>${esc(hi)}</p>
     <p>You have been removed from the Dorzi Admin team. You can no longer sign in to the Admin Portal with this email.</p>
     ${noteHtml}
-    <p>If you think this was a mistake, please contact us at kyvrofashion@gmail.com.</p>
+    <p>If you think this was a mistake, please contact us at contactdorzifashion@gmail.com.</p>
   </div>
   <div style="padding:16px 24px;background:#fafafa;color:#888;font-size:11px;text-align:center">${esc(SITE.replace(/^https?:\/\//, ''))}</div>
 </div></body></html>`;
-    const text = `${hi}\n\nYou have been removed from the Dorzi Admin team. You can no longer sign in to the Admin Portal with this email.\n${note ? `\nNote from the Owner:\n${note}\n` : ''}\nIf you think this was a mistake, contact kyvrofashion@gmail.com.`;
+    const text = `${hi}\n\nYou have been removed from the Dorzi Admin team. You can no longer sign in to the Admin Portal with this email.\n${note ? `\nNote from the Owner:\n${note}\n` : ''}\nIf you think this was a mistake, contact contactdorzifashion@gmail.com.`;
 
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
