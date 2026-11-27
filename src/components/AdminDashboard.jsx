@@ -4,7 +4,7 @@ import { toDate, formatDateTime } from '../utils/dates';
 import { watchAllShops } from '../shops';
 import { isLowStock, isNoStock, LOW_STOCK_ADMIN } from '../data/catalog';
 
-// Admin Portal > Dashboard and Analytics. Only numbers the team already sees in Orders / Products: order totals, counts,
+// Admin Portal > Dashboard, and the sales Analytics shown inside CRM (AdminCRM.jsx). Only numbers the team already sees in Orders / Products: order totals, counts,
 // product names. No supplier cost or profit here (profit stays in Team Stats for the Owner / Managers), and customers are
 // only counted (by phone), never listed.
 const DAY = 86400000;
@@ -133,9 +133,9 @@ export function AdminDashboard({ orders = [], products = [], adminRole, adminNam
         <Stat isDarkMode={isDarkMode} label="Revenue today" value={formatPrice(s.revToday)} note={`${formatPrice(s.revMonth)} this month`} Icon={Wallet} tint="bg-[#D4AF37]/15 text-[#B8921F]" />
         <Stat isDarkMode={isDarkMode} label="Orders today" value={s.ordToday} note={`${s.ordMonth} this month`} Icon={ShoppingBag} tint="bg-green-600/10 text-green-600" onClick={() => goTab('orders')} />
         <Stat isDarkMode={isDarkMode} label="Live products" value={s.live} note={s.waiting ? `${s.waiting} waiting` : 'all approved'} Icon={Package} tint="bg-purple-500/10 text-purple-500" onClick={() => goTab('products')} />
-        <Stat isDarkMode={isDarkMode} label="Customers" value={s.customers} note="people who ordered" Icon={Users} tint="bg-blue-500/10 text-blue-500" />
+        <Stat isDarkMode={isDarkMode} label="Customers" value={s.customers} note="people who ordered · CRM" Icon={Users} tint="bg-blue-500/10 text-blue-500" onClick={() => goTab('crm')} />
         {isOwner && <Stat isDarkMode={isDarkMode} label="Live shops" value={shops ? liveShops.length : '-'} note={shops ? `${shops.filter((x) => x.kind === 'seller').length} seller shops` : ''} Icon={Store} tint="bg-teal-500/10 text-teal-600" onClick={() => goTab('sellers')} />}
-        <Stat isDarkMode={isDarkMode} label="Analytics" value="30 days" note="sales, top products, shops" Icon={TrendingUp} tint="bg-gray-500/10 text-gray-500" onClick={() => goTab('analytics')} />
+        <Stat isDarkMode={isDarkMode} label="Analytics" value="30 days" note="in CRM: sales, customers" Icon={TrendingUp} tint="bg-gray-500/10 text-gray-500" onClick={() => goTab('analytics')} />
       </div>
       <div className={card}>
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -166,7 +166,7 @@ export function AdminDashboard({ orders = [], products = [], adminRole, adminNam
   );
 }
 
-export function AdminAnalytics({ orders = [], formatPrice, isDarkMode }) {
+export function AdminAnalytics({ orders = [], formatPrice, isDarkMode, title = 'Analytics' }) {
   const { card } = useCard(isDarkMode);
   const [range, setRange] = useState(30);
   const a = useMemo(() => {
@@ -212,7 +212,7 @@ export function AdminAnalytics({ orders = [], formatPrice, isDarkMode }) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold">Analytics</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">{title}</h2>
           <p className="text-xs text-gray-500">Sales of the whole store (main store and every shop link). Cancelled and returned orders do not count as money.</p>
         </div>
         <div className={`inline-flex rounded-full border p-1 text-xs font-bold ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`} role="group" aria-label="Time range">

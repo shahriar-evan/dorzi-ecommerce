@@ -21,8 +21,9 @@ import SellerDashBannerSettings from './SellerDashBannerSettings';
 import StorePromoCodes from './StorePromoCodes';
 import ShopTheLookAdmin from './ShopTheLookAdmin';
 import SellerDashLayout from './SellerDashLayout';
-import { AdminDashboard, AdminAnalytics } from './AdminDashboard';
-import { LayoutDashboard, BarChart3, ShoppingBag, Package, PlusCircle, Boxes, Users, Store, UserCheck, Gem, ShieldCheck, Settings, Palette, ShoppingBasket, Shirt } from 'lucide-react';
+import { AdminDashboard } from './AdminDashboard';
+import AdminCRM from './AdminCRM';
+import { LayoutDashboard, Contact, ShoppingBag, Package, PlusCircle, Boxes, Users, Store, UserCheck, Gem, ShieldCheck, Settings, Palette, ShoppingBasket, Shirt } from 'lucide-react';
 import ThemePicker from './ThemePicker';
 import { watchSiteTheme, saveSiteTheme } from '../themeStore';
 import SellersPanel from './SellersPanel';
@@ -167,7 +168,10 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
   const isOwner = adminRole === 'owner';
   // My Shop with unsaved ticks / prices: ask before switching to another tab
   const shopDirty = React.useRef(false);
+  // CRM opens on Customers; the Dashboard's Analytics card opens its Analytics tab (the old Analytics page lives in CRM)
+  const [crmStart, setCrmStart] = React.useState('customers');
   const goTab = async (tab, before) => {
+    if (tab === 'analytics' || tab === 'crm') { setCrmStart(tab === 'analytics' ? 'analytics' : 'customers'); tab = 'crm'; }
     if ((adminTab === 'my-shop' || adminTab === 'own-shop') && tab !== adminTab && shopDirty.current
       && !(await askConfirm('You have unsaved changes in your shop. Leave without saving?', { danger: true, confirmText: 'Leave' }))) return;
     if (before) before();
@@ -431,7 +435,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
               <SellerDashLayout label="Admin menu" isDarkMode={isDarkMode} active={adminTab} onSelect={(k) => (k === 'add-product' ? goTab(k, () => setEditingProductId(null)) : goTab(k))} nav={[
                 { title: '', items: [
                   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                  { key: 'analytics', label: 'Analytics', icon: BarChart3 },
+                  { key: 'crm', label: 'CRM', icon: Contact },
                   { key: 'orders', label: `Orders (${orders.length})`, icon: ShoppingBag, count: orders.filter((o) => o.status === 'Pending').length + (isOwner ? orders.filter((o) => o.cancelRequest && o.cancelRequest.status === 'pending' && o.status !== 'Cancelled').length : 0) },
                   { key: 'products', label: `Products (${products.length})`, icon: Package, count: pendingCount },
                   ...((canAddProduct || editingProductId) ? [{ key: 'add-product', label: editingProductId ? 'Edit Product' : 'Add Product', icon: PlusCircle }] : []),
@@ -453,7 +457,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
               {adminTab === 'dashboard' && <AdminDashboard orders={orders} products={products} adminRole={adminRole} adminName={adminName} formatPrice={formatPrice} isDarkMode={isDarkMode} goTab={goTab} canSeeProfit={canSeeSupplier} openStock={(k) => goTab('products', () => { setStockFilter(k); setCatFilter('All'); setProductSearch(''); })} />}
               {adminTab === 'looks' && canManageTeam && <ShopTheLookAdmin products={products} isDarkMode={isDarkMode} formatPrice={formatPrice} staff={{ email: loggedInUserEmail, name: adminName }} />}
               {adminTab === 'theme' && isOwner && <SiteThemePage isDarkMode={isDarkMode} staff={{ email: loggedInUserEmail, name: adminName }} />}
-              {adminTab === 'analytics' && <AdminAnalytics orders={orders} formatPrice={formatPrice} isDarkMode={isDarkMode} />}
+              {(adminTab === 'crm' || adminTab === 'analytics') && <AdminCRM orders={orders} formatPrice={formatPrice} isDarkMode={isDarkMode} adminRole={adminRole} adminName={adminName} loggedInUserEmail={loggedInUserEmail} startTab={crmStart} />}
               {adminTab === 'plan-members' && canManageTeam && <PlanMembers isOwner={isOwner} isDarkMode={isDarkMode} />}
               {adminTab === 'sellers' && isOwner && <SellersPanel orders={orders} products={products} isDarkMode={isDarkMode} formatPrice={formatPrice} loggedInUserEmail={loggedInUserEmail} adminName={adminName} />}
               {adminTab === 'settings' && isOwner && <StoreSettings products={products} settings={storeSettings} isDarkMode={isDarkMode} formatPrice={formatPrice} staff={{ email: loggedInUserEmail, name: adminName }} />}
