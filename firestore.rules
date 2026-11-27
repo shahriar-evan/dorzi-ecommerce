@@ -867,6 +867,21 @@ service cloud.firestore {
       allow delete: if isOwner() || isManager();
     }
 
+    // Admin CRM: the team's notes, tags and follow-up date for a customer (document id = phone key, like blockedPhones).
+    // Team members only; customers and sellers never read it. The customer list itself comes from the orders.
+    match /crmCustomers/{key} {
+      allow read: if isStaff();
+      allow create, update: if isStaff() && key.matches('^[0-9]{7,16}$')
+        && request.resource.data.keys().hasOnly(['tags', 'notes', 'followUp', 'followUpNote', 'updatedBy', 'updatedAt'])
+        && request.resource.data.tags is list && request.resource.data.tags.size() <= 10
+        && request.resource.data.notes is list && request.resource.data.notes.size() <= 50
+        && request.resource.data.followUp is string && request.resource.data.followUp.size() <= 10
+        && request.resource.data.followUpNote is string && request.resource.data.followUpNote.size() <= 200
+        && request.resource.data.updatedBy == myEmail()
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isOwner() || isManager();
+    }
+
     // Offer-email list. A customer is added automatically when they sign in with Google (document id = their email).
     // Only the Owner can read the whole list. A customer can read and switch their own entry.
     // The "Unsubscribe" link in an email works without signing in: it must carry the secret token (unsubWith) of that entry.
