@@ -29,7 +29,8 @@ const PAYMENT_STYLE = {
 
 const csv = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
 
-export default function OrdersPanel({ orders, products = [], productCosts = {}, isDarkMode, formatPrice, adminName, loggedInUserEmail, canUnblock, isOwner, canDeliver = false, showSupplier = true }) {
+export default function OrdersPanel({ orders, products = [], productCosts = {}, isDarkMode, formatPrice, adminName, loggedInUserEmail, canUnblock, isOwner, canDeliver = false, showSupplier = true, focusId = null }) {
+  // focusId: show only that order, already open, without the filters / blocked list (Admin CRM → customer → order history)
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [busyId, setBusyId] = useState(null);
@@ -41,7 +42,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
   const [blocked, setBlocked] = useState({ phones: {}, emails: {} });
   const [showBlocked, setShowBlocked] = useState(false);
   const [copiedId, setCopiedId] = useState('');
-  const [openIds, setOpenIds] = useState({}); // which orders are expanded (all start collapsed)
+  const [openIds, setOpenIds] = useState(() => (focusId ? { [focusId]: true } : {})); // which orders are expanded (all start collapsed)
   const toggleOpen = (id) => setOpenIds((m) => ({ ...m, [id]: !m[id] }));
   // Paid orders: Manager / Admin send a cancel request (reason box), the Owner decides
   const [reqOpen, setReqOpen] = useState({});
@@ -77,7 +78,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
   const [courier, setCourier] = useState({});
   const askedCourier = useRef(new Set());
   const courierOpen = (o) => !['Cancelled', 'Delivered'].includes(o.status) && !o.returned && (Date.now() - (toDate(o.createdAt) || 0)) < 7 * 864e5;
-  const courierKeys = [...new Set(orders.filter(courierOpen).map((o) => phoneKey(o.customer?.phone)))].filter((k) => /^01[3-9][0-9]{8}$/.test(k)).sort().join(',');
+  const courierKeys = [...new Set((focusId ? orders.filter((o) => o.id === focusId) : orders).filter(courierOpen).map((o) => phoneKey(o.customer?.phone)))].filter((k) => /^01[3-9][0-9]{8}$/.test(k)).sort().join(',');
   useEffect(() => {
     const want = courierKeys ? courierKeys.split(',').filter((k) => !askedCourier.current.has(k)) : [];
     if (!want.length) return undefined;
@@ -294,7 +295,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
     return (!rangeStart || d >= rangeStart) && (!rangeEnd || d <= rangeEnd);
   };
   const historyList = orders.filter((o) => FINISHED.includes(o.status) && inRange(o));
-  const visible = (filter === 'Unpaid' ? unpaidList : live).filter((o) => {
+  const visible = focusId ? orders.filter((o) => o.id === focusId) : (filter === 'Unpaid' ? unpaidList : live).filter((o) => {
     if (filter === 'Unpaid') return !q || searchBits(o).some((v) => String(v || '').toLowerCase().includes(q));
     if (filter === 'History') return FINISHED.includes(o.status) && inRange(o) && (!q || searchBits(o).some((v) => String(v || '').toLowerCase().includes(q)));
     if (filter !== 'All' && o.status !== filter) return false;
@@ -424,6 +425,8 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
 
   return (
     <div className="space-y-5">
+      {focusId && error && <p className="text-xs p-3 rounded border border-red-500/40 text-red-500 bg-red-500/10">{error}</p>}
+      {!focusId && (<>
       {/* summary + filters */}
       <div className={`${cardClass} !space-y-3`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -508,6 +511,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
         )}
       </div>
 
+      </>)}
       {visible.length === 0 && (
         <p className="text-sm text-gray-500 text-center py-10">
           {orders.length === 0 ? 'No orders yet. New orders from customers will appear here automatically.' : 'No orders match this filter.'}
