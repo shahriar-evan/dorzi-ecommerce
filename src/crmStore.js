@@ -34,3 +34,26 @@ export function saveCrm(phone, entry, staff) {
     updatedBy: clean(staff.email, 120), updatedAt: serverTimestamp(),
   });
 }
+
+// Incomplete orders (leads/<phoneKey>): written by the server (api/plan.js?action=lead) when a customer typed a phone
+// at checkout or to the chat agent with products picked but ordered nothing. Team reads; marks one contacted.
+export function watchLeads(onData) {
+  return onSnapshot(collection(db, "leads"),
+    (snap) => onData(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    () => onData([]));
+}
+export function markLeadContacted(lead, staff, contacted = true) {
+  return setDoc(doc(db, "leads", lead.id), contacted
+    ? { status: "contacted", contactedBy: String(staff.name || staff.email || "").slice(0, 120), contactedAt: new Date().toISOString() }
+    : { status: "", contactedBy: "", contactedAt: "" }, { merge: true });
+}
+
+// The browser side: send an incomplete order (fire and forget; never blocks the page)
+export function sendLead({ phone, name = "", items = [], source = "checkout", shop = "" }) {
+  try {
+    fetch("/api/plan?action=lead", {
+      method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, name, items: items.slice(0, 10), source, shop }),
+    }).catch(() => {});
+  } catch (e) { /* offline */ }
+}

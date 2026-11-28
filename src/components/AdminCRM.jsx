@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Users, UserPlus, Repeat, Crown, Moon, AlertTriangle, Ban, Search, ArrowLeft, Phone, MessageCircle, Copy, Download, CalendarClock, StickyNote, Tag, X, Check, Wallet, TrendingUp, Truck, RefreshCw } from 'lucide-react';
+import { Users, UserPlus, Repeat, Crown, Moon, AlertTriangle, Ban, Search, ArrowLeft, Phone, MessageCircle, Copy, Download, CalendarClock, StickyNote, Tag, X, Check, Wallet, TrendingUp, Truck, RefreshCw, ShoppingCart, Trash2 } from 'lucide-react';
 import { toDate, formatDateTime } from '../utils/dates';
 import { phoneKey } from '../data/shopConfig';
 import { watchBlocked, blockPhone } from '../blocklist';
-import { watchCrm, saveCrm, MAX_TAGS } from '../crmStore';
+import { watchCrm, saveCrm, MAX_TAGS, watchLeads, markLeadContacted } from '../crmStore';
 import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
 import OrdersPanel from './OrdersPanel';
 import { courierVerdict, checkCourier } from '../courierCheck';
+import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
 export { courierVerdict };
 
 const TONE = { green: 'bg-green-600/10 text-green-700 border-green-600/30', amber: 'bg-amber-500/10 text-amber-700 border-amber-500/30', red: 'bg-red-500/10 text-red-600 border-red-500/30', gray: 'bg-gray-500/10 text-gray-600 border-gray-500/30' };
@@ -86,6 +87,12 @@ const ms = (o) => { const d = toDate(o.createdAt); return d ? d.getTime() : 0; }
 const today = () => new Date().toISOString().slice(0, 10);
 const daysAgo = (t) => { if (!t) return '-'; const d = Math.floor((Date.now() - t) / DAY); return d <= 0 ? 'today' : d === 1 ? '1 day ago' : `${d} days ago`; };
 const waLink = (key) => `https://wa.me/88${key.replace(/^88/, '')}`;
+// Incomplete order → a ready WhatsApp message (the team member only presses Send in WhatsApp)
+const leadMessage = (l) => {
+  const items = (l.items || []).map((it) => `${it.name}${[it.size, it.color].filter(Boolean).length ? ` (${[it.size, it.color].filter(Boolean).join(', ')})` : ''}`).join(', ');
+  return `আসসালামু আলাইকুম${l.name ? ` ${l.name}` : ''}! Dorzi থেকে বলছি। আপনি ${items} অর্ডার করতে চাচ্ছিলেন, কিন্তু অর্ডারটি শেষ হয়নি। কোনো সমস্যা হয়েছে? চাইলে এখানেই সাইজ, রং আর ঠিকানা জানান, আমরা অর্ডারটি করে দিচ্ছি। 🙂`;
+};
+const leadWa = (l) => `https://wa.me/88${String(l.id || l.phone).replace(/^88/, '')}?text=${encodeURIComponent(leadMessage(l))}`;
 const cityOf = (addr) => {
   const lines = String(addr || '').split('\n');
   const get = (k) => (lines.map((l) => l.match(new RegExp(`^\\s*${k}\\s*:\\s*(.*)$`, 'i'))).find(Boolean) || [])[1];
@@ -349,6 +356,9 @@ export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRo
   const [copied, setCopied] = useState('');
   useEffect(() => watchCrm(setCrm), []);
   useEffect(() => watchBlocked(setBlocked), []);
+  const [leads, setLeads] = useState([]);
+  const [leadView, setLeadView] = useState('new');
+  useEffect(() => watchLeads(setLeads), []);
   useEffect(() => { setTab(startTab); }, [startTab]);
 
   const canExport = adminRole === 'owner' || adminRole === 'manager';
@@ -382,7 +392,15 @@ export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRo
   const open = customers.find((c) => c.key === openKey);
   if (open) return <CustomerProfile key={open.key} c={open} onBack={() => setOpenKey('')} isDarkMode={isDarkMode} formatPrice={formatPrice} staff={staff} canBlock canExport={canExport} allOrders={orders} orderTools={orderTools} />;
 
-  const TABS = [['customers', 'Customers'], ['followups', `Follow-ups${dueNow ? ` (${dueNow})` : ''}`], ['segments', 'Segments'], ['analytics', 'Analytics']];
+  // Incomplete orders: hidden once the same phone ordered (from 10 minutes before the save on), and after 30 days
+  const orderedAfter = (l) => { const t = Date.parse(l.at || 0) - 10 * 60000; return orders.some((o) => phoneKey(o.customer?.phone) === l.id && (toDate(o.createdAt) || 0) >= t); };
+  const openLeads = leads.filter((l) => l.at && Date.now() - Date.parse(l.at) < 30 * 864e5 && !orderedAfter(l)).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  const newLeads = openLeads.filter((l) => l.status !== 'contacted');
+  const shownLeads = leadView === 'new' ? newLeads : openLeads.filter((l) => l.status === 'contacted');
+  const contactLead = async (l, yes = true) => { try { await markLeadContacted(l, staff, yes); } catch (e) { alert(`Could not save: ${e.message || e}`); } };
+  const deleteLead = async (l) => { if (!(await askConfirm(`Delete the incomplete order of ${l.phone}?`))) return; try { await deleteDoc(doc(getFirestore(), 'leads', l.id)); } catch (e) { alert(`Could not delete: ${e.message || e}`); } };
+
+  const TABS = [['customers', 'Customers'], ['leads', `Incomplete orders${newLeads.length ? ` (${newLeads.length})` : ''}`], ['followups', `Follow-ups${dueNow ? ` (${dueNow})` : ''}`], ['segments', 'Segments'], ['analytics', 'Analytics']];
   const realC = customers.filter((c) => c.real > 0);
   const repeatRate = realC.length ? Math.round((realC.filter((c) => c.real >= 2).length / realC.length) * 100) : 0;
   const ltv = realC.length ? realC.reduce((n, c) => n + c.spent, 0) / realC.length : 0;
@@ -466,6 +484,38 @@ export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRo
             )}
           </div>
         </>
+      )}
+
+      {tab === 'leads' && (
+        <div className={card}>
+          <h3 className="text-sm font-bold mb-1 flex items-center gap-2"><ShoppingCart size={15} /> Incomplete orders</h3>
+          <p className="text-xs text-gray-500 mb-3">People who typed their phone at checkout (or to the chat agent) with products picked, but did not order. Press WhatsApp: the message is ready, you only press Send (it is then marked contacted). Gone when they order, or after 30 days.</p>
+          <div className="flex gap-2 mb-3">
+            <button type="button" onClick={() => setLeadView('new')} className={chip(leadView === 'new')}>New ({newLeads.length})</button>
+            <button type="button" onClick={() => setLeadView('contacted')} className={chip(leadView === 'contacted')}>Contacted ({openLeads.length - newLeads.length})</button>
+          </div>
+          {shownLeads.length === 0 ? <p className="text-sm text-gray-500">{leadView === 'new' ? 'No incomplete orders right now.' : 'Nobody contacted yet.'}</p> : (
+            <ul className="divide-y divide-gray-500/15">
+              {shownLeads.map((l) => (
+                <li key={l.id} className="py-3 flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 text-sm">
+                    <div className="font-bold">{l.name || 'No name'} <span className="font-normal text-gray-500">· {l.phone}</span></div>
+                    <div className="text-xs mt-0.5">{(l.items || []).map((it) => `${it.qty} × ${it.name}${[it.size, it.color].filter(Boolean).length ? ` (${[it.size, it.color].filter(Boolean).join(', ')})` : ''}`).join(' · ')}</div>
+                    <div className="text-[11px] text-gray-500 mt-0.5">{formatPrice(l.total || 0)} · {l.source === 'chat' ? 'from the chat' : 'at checkout'}{l.shop ? ` · shop ${l.shop}` : ''} · {formatDateTime(l.at)}{l.status === 'contacted' ? ` · contacted by ${l.contactedBy || '?'}` : ''}</div>
+                  </div>
+                  <span className="flex flex-wrap gap-2">
+                    <a href={leadWa(l)} target="_blank" rel="noopener noreferrer" onClick={() => { if (l.status !== 'contacted') contactLead(l); }} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded bg-green-600 text-white text-xs font-bold"><MessageCircle size={13} /> WhatsApp</a>
+                    <a href={`tel:${l.phone}`} onClick={() => { if (l.status !== 'contacted') contactLead(l); }} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded border text-xs font-semibold"><Phone size={13} /> Call</a>
+                    {l.status === 'contacted'
+                      ? <button type="button" onClick={() => contactLead(l, false)} className="px-2.5 py-1.5 rounded border text-xs font-semibold">Back to new</button>
+                      : <button type="button" onClick={() => contactLead(l)} className="px-2.5 py-1.5 rounded border text-xs font-semibold"><Check size={13} className="inline" /> Contacted</button>}
+                    {canExport && <button type="button" onClick={() => deleteLead(l)} aria-label="Delete" className="px-2 py-1.5 rounded border text-xs text-red-600 border-red-500/50"><Trash2 size={13} /></button>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       {tab === 'followups' && (

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch, ShoppingBag, Ruler, Boxes } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppButton';
+import { sendLead } from '../crmStore';
 import { WHATSAPP_NUMBER, deliveryNote, ONLINE_PAY_ON } from '../data/shopConfig';
 import { totalStock, supplierOutFor, productColors, imageFor, stockForColor, stockForSize, hasSizeStock } from '../data/catalog';
 
@@ -152,7 +153,7 @@ function TypeText({ text: en, bn: bnText, animate, onTick, onDone }) {
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function ChatWidget({ products = [], storeSettings, formatPrice, isDarkMode, onOpenProduct, onOrder, shopName = '', raise = false, setCurrentView }) {
+export default function ChatWidget({ products = [], storeSettings, formatPrice, isDarkMode, onOpenProduct, onOrder, shopName = '', shopSlug = '', isStaff = false, raise = false, setCurrentView }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState('');
@@ -226,6 +227,12 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
       const r = await api({ op: 'ask', message: q, history, catalog: catalogText(products), faq: facts(), details: detailsText(products, [...new Set(seen)]) });
       m = r.ok ? { text: r.reply, ids: r.order ? [] : (r.ids || []), colors: r.colors || {}, q, order: r.order && byId(r.order.id) ? r.order : null, handoff: !!r.handoff, summary: r.summary || '' }
         : { text: r.error === 'too-fast' ? 'Please wait a moment and try again.' : 'Sorry, I cannot answer right now. Please use the buttons below or tap WhatsApp to talk to us.', wa: true };
+      // the agent got a phone with an order: save it as an incomplete order for the team (removed from the list once they order)
+      if (r.ok && r.order && byId(r.order.id) && !isStaff) {
+        const ph = String(r.order.phone || '').replace(/[^\d]/g, '').replace(/^88/, '');
+        const p = byId(r.order.id);
+        if (/^01[3-9]\d{8}$/.test(ph)) sendLead({ phone: ph, name: r.order.name, items: [{ id: String(p.id), name: p.name, size: r.order.size, color: r.order.color, qty: r.order.qty, price: Number(p.price) || 0 }], source: 'chat', shop: shopSlug });
+      }
     } catch (err) {
       m = { text: 'No internet connection. Please try again.' };
     }

@@ -869,6 +869,18 @@ service cloud.firestore {
 
     // Admin CRM: the team's notes, tags and follow-up date for a customer (document id = phone key, like blockedPhones).
     // Team members only; customers and sellers never read it. The customer list itself comes from the orders.
+    // Incomplete orders (api/plan.js?action=lead writes them; no client create). Team reads; a team member may only
+    // mark one contacted (status / contactedBy / contactedAt). Owner / Manager delete.
+    match /leads/{key} {
+      allow read: if isStaff();
+      allow update: if isStaff()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'contactedBy', 'contactedAt'])
+        && request.resource.data.status in ['', 'contacted']
+        && request.resource.data.contactedBy is string && request.resource.data.contactedBy.size() <= 120
+        && request.resource.data.contactedAt is string && request.resource.data.contactedAt.size() <= 40;
+      allow delete: if isOwner() || isManager();
+    }
+
     match /crmCustomers/{key} {
       allow read: if isStaff();
       allow create, update: if isStaff() && key.matches('^[0-9]{7,16}$')

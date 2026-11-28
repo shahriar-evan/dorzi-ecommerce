@@ -38,6 +38,7 @@ import sneakersImg from './assets/Snekers.webp';
 import AnnouncementBar from './components/AnnouncementBar';
 import BackButton from './components/BackButton';
 import Header from './components/Header';
+import { sendLead } from './crmStore';
 import DorziMark from './components/DorziMark';
 import MobileMenu from './components/MobileMenu';
 import CartDrawer from './components/CartDrawer';
@@ -794,6 +795,20 @@ export default function App() {
   const discountInfo = bestDiscount(subtotal - lookOff.base, storeSettings);
   const discount = discountInfo.amount;
   // Flat delivery charge; free above the Owner's minimum (see data/shopConfig.js and Admin > Store Settings)
+  // Incomplete order: a customer at checkout with products and a valid phone who has not ordered after 20 seconds of no
+  // typing is saved for the team (CRM → Incomplete orders; one-click WhatsApp). Team members testing are not saved.
+  const leadSent = useRef('');
+  useEffect(() => {
+    if (currentView !== 'checkout' || isAdminLoggedIn || !cart.length) return undefined;
+    const ph = cleanPhone(checkoutForm.phone || '').replace(/^\+?88/, '');
+    if (!/^01[3-9]\d{8}$/.test(ph)) return undefined;
+    const items = cart.map((i) => ({ id: String(i.id), name: i.name, size: i.selectedSize || '', color: i.selectedColor || '', qty: i.quantity, price: Number(i.price) || 0 }));
+    const sig = JSON.stringify([ph, checkoutForm.fullName, items]);
+    if (sig === leadSent.current) return undefined;
+    const t = setTimeout(() => { leadSent.current = sig; sendLead({ phone: ph, name: checkoutForm.fullName, items, source: 'checkout', shop: shopSlug }); }, 20000);
+    return () => clearTimeout(t);
+  }, [currentView, isAdminLoggedIn, cart, checkoutForm.phone, checkoutForm.fullName, shopSlug]);
+
   const deliveryCharge = deliveryFee(checkoutForm.deliveryArea, checkoutForm.paymentMethod, subtotal - discount, storeSettings, cart.reduce((n, i) => n + (parseInt(i.quantity, 10) || 0), 0));
   const discountLabel = discountInfo.rule ? describeRule(discountInfo.rule) : '';
   const reward = nextReward(subtotal - lookOff.base, storeSettings);
@@ -1693,7 +1708,7 @@ export default function App() {
       )}
       {productsReady && !['admin', 'checkout'].includes(currentView) && !/[?&]themePreview=/.test(window.location.search) && (
         <Suspense fallback={null}>
-          <ChatWidget products={storefrontProducts} storeSettings={storeSettings} formatPrice={formatPrice} isDarkMode={isDarkMode} shopName={shopBrand ? shopBrand.name : ''}
+          <ChatWidget products={storefrontProducts} storeSettings={storeSettings} formatPrice={formatPrice} isDarkMode={isDarkMode} shopName={shopBrand ? shopBrand.name : ''} shopSlug={shopSlug} isStaff={isAdminLoggedIn}
             raise={currentView === 'product-detail'} setCurrentView={setCurrentView}
             onOpenProduct={(p) => { setSelectedProduct(p); setCurrentView('product-detail'); window.scrollTo(0, 0); }}
             onOrder={(p, o, now) => {
