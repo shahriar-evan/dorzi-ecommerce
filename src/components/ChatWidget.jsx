@@ -1,15 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch } from 'lucide-react';
+import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch, ShoppingBag, Ruler } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppButton';
 import { WHATSAPP_NUMBER, deliveryNote, ONLINE_PAY_ON } from '../data/shopConfig';
-import { totalStock, supplierOutFor, productColors, imageFor, stockForColor } from '../data/catalog';
+import { totalStock, supplierOutFor, productColors, imageFor, stockForColor, stockForSize, hasSizeStock } from '../data/catalog';
 
 // The website's help chat (bottom-right button).
 //  - Quick buttons (delivery charge / time, Cash on Delivery, returns) answer here in the browser: free, no AI.
 //  - Track order (button, or an order code + phone typed in the chat): api/plan?action=chat op 'order' (status only; the phone
 //    must match the order) → one friendly sentence (Bangla, then English) + the order card.
-//  - Anything typed → api/plan?action=chat op 'ask' (AI on OpenRouter) with this page's in-stock products and the store facts;
+//  - Anything typed → api/plan?action=chat op 'ask' (AI: OpenAI, else OpenRouter) with this page's in-stock products and the store facts;
 //    the answer can show product cards that open the product.
+//  - Agent: an answer can carry an order card (product, colour, size, qty; "Order now" = add to cart + the normal checkout,
+//    filled in with the name / phone / address typed in the chat; nothing is ordered without the checkout), size help
+//    (the details of the products shown last are sent along) and a WhatsApp hand-off with a short summary of the chat.
 // Never sends or shows supplier data or anyone's personal details.
 
 const STATUS_BN = { Pending: 'অর্ডার গ্রহণ করা হয়েছে', Processing: 'প্রসেসিং চলছে', Shipped: 'শিপ করা হয়েছে', Delivered: 'ডেলিভার্ড', Cancelled: 'বাতিল' };
@@ -91,13 +94,23 @@ export function colourFromText(p, q) {
   return list.find((c) => stockForColor(p, c) > 0) || list[0] || '';
 }
 
-// in-stock products of this page, one short line each: id|name|category|price|colours
+// in-stock sizes of a product (all its sizes when it keeps no stock per size)
+const sizesInStock = (p) => (Array.isArray(p.sizes) ? p.sizes.filter(Boolean) : []).filter((z) => !hasSizeStock(p) || stockForSize(p, z) > 0);
+
+// in-stock products of this page, one short line each: id|name|category|price|colours|sizes
 function catalogText(products) {
   return products.filter((p) => totalStock(p) > 0).slice(0, 400).map((p) => {
     const colours = productColors(p).filter((c) => !supplierOutFor(p, c)).join(', ');
     const cat = [p.gender, p.category].filter(Boolean).join(' / ');
-    return [p.id, p.name, cat, Math.round(Number(p.price) || 0), colours].map((x) => String(x || '').replace(/[|\n]/g, ' ').slice(0, 70)).join('|');
+    const sizes = sizesInStock(p).filter((z) => z !== 'Standard').join(', ');
+    return [p.id, p.name, cat, Math.round(Number(p.price) || 0), colours, sizes].map((x) => String(x || '').replace(/[|\n]/g, ' ').slice(0, 70)).join('|');
   }).join('\n');
+}
+
+// size details of the products the customer looked at last (for size help): id|description, at most 2
+function detailsText(products, ids) {
+  return ids.slice(0, 2).map((id) => products.find((p) => String(p.id) === String(id))).filter(Boolean)
+    .map((p) => `${p.id}|${String(p.description || '').replace(/[|\r\n\t]+/g, ' ').slice(0, 650)}`).filter((l) => l.split('|')[1].trim()).join('\n');
 }
 
 // A bot message that appears like someone typing it: letter by letter (about 25 letters a second, at most ~6 s).
@@ -133,7 +146,7 @@ function TypeText({ text: en, bn: bnText, animate, onTick, onDone }) {
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function ChatWidget({ products = [], storeSettings, formatPrice, isDarkMode, onOpenProduct, shopName = '', raise = false, setCurrentView }) {
+export default function ChatWidget({ products = [], storeSettings, formatPrice, isDarkMode, onOpenProduct, onOrder, shopName = '', raise = false, setCurrentView }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState('');
@@ -162,6 +175,11 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
   const delivery = () => { const d = deliveryNote(storeSettings); quick('Delivery charge?', d.en, d.bn); };
 
   const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi${shopName ? ` (${shopName})` : ''}, I need help.`)}`;
+  // hand-off: the summary the AI wrote + the customer's last messages, so the team does not ask again
+  const waWith = (summary) => {
+    const said = msgs.filter((x) => x.role === 'user' && x.text).slice(-4).map((x) => `- ${x.text}`).join('\n');
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Dorzi${shopName ? ` (${shopName})` : ''}, I need help.${summary ? `\n${summary}` : ''}${said ? `\n\nFrom the website chat:\n${said}` : ''}`)}`;
+  };
 
   const facts = () => {
     const d = deliveryNote(storeSettings);
@@ -172,14 +190,15 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
     if (e) e.preventDefault();
     const q = text.trim();
     if (!q || busy) return;
-    const history = msgs.filter((m) => m.text && !m.order).slice(-6).map((m) => ({ role: m.role, text: m.text }));
+    const history = msgs.filter((m) => m.text && !(m.order && m.order.number)).slice(-10).map((m) => ({ role: m.role, text: m.text }));
     add({ role: 'user', text: q });
     setText('');
     setBusy(true);
     const started = Date.now();
     let m;
     const bits = findOrderBits(q);
-    if (bits.code || bits.phone) {
+    // order tracking only with an order code (now or just before); a phone number alone may be for a new order (agent)
+    if (bits.code || (bits.phone && pending.current.code)) {
       const code = bits.code || pending.current.code;
       const ph = bits.phone || pending.current.phone;
       if (code && ph) {
@@ -197,8 +216,9 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
       return;
     }
     try {
-      const r = await api({ op: 'ask', message: q, history, catalog: catalogText(products), faq: facts() });
-      m = r.ok ? { text: r.reply, ids: r.ids || [], colors: r.colors || {}, q }
+      const seen = [...msgs].reverse().flatMap((x) => [...(x.order ? [x.order.id] : []), ...(x.ids || [])]);
+      const r = await api({ op: 'ask', message: q, history, catalog: catalogText(products), faq: facts(), details: detailsText(products, [...new Set(seen)]) });
+      m = r.ok ? { text: r.reply, ids: r.order ? [] : (r.ids || []), colors: r.colors || {}, q, order: r.order && byId(r.order.id) ? r.order : null, handoff: !!r.handoff, summary: r.summary || '' }
         : { text: r.error === 'too-fast' ? 'Please wait a moment and try again.' : 'Sorry, I cannot answer right now. Please use the buttons below or tap WhatsApp to talk to us.', wa: true };
     } catch (err) {
       m = { text: 'No internet connection. Please try again.' };
@@ -271,8 +291,31 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
                   <div key={m.key} className={`max-w-[92%] rounded-lg px-3 py-2 ${bubbleBot}`}>
                     <TypeText text={m.text || ''} bn={m.bn || ''} animate={!!m.anim} onTick={scroll} onDone={() => { settle(m.key); setTimeout(scroll, 30); }} />
                     {!m.anim && m.policy && setCurrentView && <button type="button" onClick={() => { setOpen(false); setCurrentView('refund'); window.scrollTo(0, 0); }} className="mt-1.5 text-xs font-semibold text-[#B8941F] underline">Read the full Return &amp; Refund Policy</button>}
-                    {!m.anim && m.wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-green-600"><WhatsAppIcon size={13} /> WhatsApp</a>}
-                    {!m.anim && m.order && (
+                    {!m.anim && (m.wa || m.handoff) && <a href={m.handoff ? waWith(m.summary) : wa} target="_blank" rel="noopener noreferrer" className={m.handoff ? 'mt-2 inline-flex items-center gap-1.5 rounded bg-green-600 px-3 py-1.5 text-xs font-bold text-white' : 'mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-green-600'}><WhatsAppIcon size={13} /> {m.handoff ? 'Talk to the Dorzi team on WhatsApp' : 'WhatsApp'}</a>}
+                    {!m.anim && m.order && m.order.id && byId(m.order.id) && (() => {
+                      const p = byId(m.order.id); const o = m.order;
+                      return (
+                        <div className={`mt-2 rounded-lg border p-2 text-xs ${isDarkMode ? 'border-gray-700 bg-[#121212]' : 'border-gray-300 bg-white'}`}>
+                          <div className="flex gap-2">
+                            {imageFor(p, o.color) && <img src={imageFor(p, o.color)} alt="" className="h-16 w-16 rounded object-cover shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="font-semibold leading-tight line-clamp-2">{p.name}</p>
+                              <p className="text-gray-500 mt-0.5">{[o.color, o.size && `Size ${o.size}`, `× ${o.qty}`].filter(Boolean).join(' · ')}</p>
+                              <p className="font-bold text-[#B8941F] mt-0.5">{formatPrice((Number(p.price) || 0) * o.qty)}</p>
+                            </div>
+                          </div>
+                          {(o.name || o.phone || o.address) && <p className="mt-1.5 text-gray-500">{[o.name, o.phone, o.address].filter(Boolean).join(' · ')}</p>}
+                          {onOrder && (
+                            <div className="mt-2 flex gap-2">
+                              <button type="button" onClick={() => { onOrder(p, o, true); setOpen(false); }} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded bg-[#D4AF37] py-2 font-bold uppercase tracking-wider text-black"><ShoppingBag size={13} /> Order now</button>
+                              <button type="button" onClick={() => onOrder(p, o, false)} className="rounded border px-3 font-semibold">Add to cart</button>
+                            </div>
+                          )}
+                          <p className="mt-1.5 text-[10px] text-gray-500">Order now opens the checkout with these details: choose city / zone and payment there.</p>
+                        </div>
+                      );
+                    })()}
+                    {!m.anim && m.order && m.order.number && (
                       <div className={`mt-2 rounded-lg border px-3 py-2 text-xs ${isDarkMode ? 'border-gray-700' : 'border-gray-300 bg-white'}`}>
                         <p className="font-bold">{m.order.status}{STATUS_BN[m.order.status] ? <span className="font-normal text-gray-500"> · {STATUS_BN[m.order.status]}</span> : null}</p>
                         <p className="text-gray-500 mt-0.5">{[...new Set([m.order.paymentMethod, m.order.paymentStatus].filter(Boolean))].join(' · ')}{m.order.total ? ` · ${formatPrice(m.order.total)}` : ''}</p>
@@ -322,6 +365,7 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
               <button type="button" className={chip} disabled={busy} onClick={() => quick('Cash on Delivery?', COD.en, COD.bn)}><Wallet size={12} /> Cash on Delivery</button>
               <button type="button" className={chip} disabled={busy} onClick={() => quick('Return policy?', RETURNS.en, RETURNS.bn, { policy: true })}><RotateCcw size={12} /> Returns</button>
               <button type="button" className={chip} disabled={busy} onClick={() => setTrack(true)}><PackageSearch size={12} /> Track order</button>
+              <button type="button" className={chip} disabled={busy} onClick={() => setText('Amar jonno kon size hobe? Height: , Weight: ')}><Ruler size={12} /> Size help</button>
               <a href={wa} target="_blank" rel="noopener noreferrer" className={`${chip} text-green-600`}><WhatsAppIcon size={12} /> WhatsApp</a>
             </div>
             <form onSubmit={send} className="flex gap-2">

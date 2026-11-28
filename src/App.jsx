@@ -1695,7 +1695,13 @@ export default function App() {
         <Suspense fallback={null}>
           <ChatWidget products={storefrontProducts} storeSettings={storeSettings} formatPrice={formatPrice} isDarkMode={isDarkMode} shopName={shopBrand ? shopBrand.name : ''}
             raise={currentView === 'product-detail'} setCurrentView={setCurrentView}
-            onOpenProduct={(p) => { setSelectedProduct(p); setCurrentView('product-detail'); window.scrollTo(0, 0); }} />
+            onOpenProduct={(p) => { setSelectedProduct(p); setCurrentView('product-detail'); window.scrollTo(0, 0); }}
+            onOrder={(p, o, now) => {
+              // chat order card: the name / phone / address typed in the chat fill the checkout (only empty fields)
+              setCheckoutForm((f) => ({ ...f, fullName: f.fullName || o.name || '', phone: f.phone || o.phone || '', address: f.address || o.address || '' }));
+              addToCart(p, o.color || undefined, o.size || undefined, o.qty || 1, now);
+              if (now) window.scrollTo(0, 0);
+            }} />
         </Suspense>
       )}
       <Footer shopBrand={shopBrand} onStartSelling={sellAction} sellLabel={sellLabel} navHas={navHas} isDarkMode={isDarkMode} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} customerUser={customerUser} onSignIn={handleCustomerSignIn} goAccount={goAccount} />
