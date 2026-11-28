@@ -6,16 +6,9 @@ import { watchBlocked, blockPhone } from '../blocklist';
 import { watchCrm, saveCrm, MAX_TAGS } from '../crmStore';
 import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
-import { auth } from '../firebase';
+import { courierVerdict, checkCourier } from '../courierCheck';
+export { courierVerdict };
 
-// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, BD Courier, kept 24 h)
-export function courierVerdict(r) {
-  if (!r) return null;
-  if (!r.total) return { label: 'No courier history (new number)', tone: 'gray' };
-  if (r.rate >= 80) return { label: `Good: ${r.rate}% of parcels received`, tone: 'green' };
-  if (r.rate >= 50) return { label: `Careful: only ${r.rate}% received, call before sending`, tone: 'amber' };
-  return { label: `Risky: only ${r.rate}% received, ask for advance payment`, tone: 'red' };
-}
 const TONE = { green: 'bg-green-600/10 text-green-700 border-green-600/30', amber: 'bg-amber-500/10 text-amber-700 border-amber-500/30', red: 'bg-red-500/10 text-red-600 border-red-500/30', gray: 'bg-gray-500/10 text-gray-600 border-gray-500/30' };
 
 export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
@@ -26,13 +19,7 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
     setBusy(true); setErr('');
     try {
       let data;
-      if (fetcher) data = await fetcher(phone, fresh);
-      else {
-        const idToken = await auth.currentUser.getIdToken();
-        const r = await fetch('/api/plan?action=courier-check', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` }, body: JSON.stringify({ phone, fresh }) });
-        data = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
-      }
+      data = await (fetcher || checkCourier)(phone, fresh);
       setRes(data);
     } catch (e) { setErr(e.message || String(e)); }
     setBusy(false);
