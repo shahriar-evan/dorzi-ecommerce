@@ -28,8 +28,8 @@ const RETURNS = {
 
 // Wholesale: not started yet (coming soon). When it starts: 50% advance, the rest when the products arrive.
 const WHOLESALE = {
-  en: 'Wholesale is coming soon. When it starts: pay 50% in advance to place a wholesale order, and pay the remaining 50% when you receive the products. For now, message us on WhatsApp if you are interested.',
-  bn: 'হোলসেল শীঘ্রই আসছে। চালু হলে: হোলসেল অর্ডার করতে ৫০% টাকা আগে দিতে হবে, বাকি ৫০% পণ্য হাতে পেয়ে দিতে পারবেন। আগ্রহী হলে এখন WhatsApp এ জানাতে পারেন।',
+  en: 'Wholesale is coming soon. Once it starts, you can order wholesale products online by paying 50% in advance, and pay the remaining 50% when you receive the products. If you are interested in wholesale, message us on WhatsApp now.',
+  bn: 'Wholesale অপশন শীঘ্রই আসছে। চালু হওয়ার পর Wholesale এ পন্য অর্ডার করতে ৫০% টাকা অগ্রিম দিয়ে অর্ডার করতে পারবেন অনলাইন থেকেই, বাকি ৫০% পণ্য হাতে পেয়ে দিতে পারবেন। wholesale নিয়ে আগ্রহী হলে এখন WhatsApp এ জানাতে পারেন।',
 };
 
 const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
