@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch, ShoppingBag, Ruler } from 'lucide-react';
+import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch, ShoppingBag, Ruler, Boxes } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppButton';
 import { WHATSAPP_NUMBER, deliveryNote, ONLINE_PAY_ON } from '../data/shopConfig';
 import { totalStock, supplierOutFor, productColors, imageFor, stockForColor, stockForSize, hasSizeStock } from '../data/catalog';
@@ -24,6 +24,12 @@ const COD = {
 const RETURNS = {
   en: 'Please check the product in front of the delivery person. If anything is wrong, return it to them right then (you pay only the delivery charge). After the delivery person leaves, a return or exchange needs an extra delivery charge. Online payments for orders not delivered are refunded within 14 days to the same bKash / Nagad.',
   bn: 'ডেলিভারি ম্যানের সামনেই পণ্য চেক করুন। সমস্যা থাকলে তখনই ফেরত দিন (শুধু ডেলিভারি চার্জ দিতে হবে)। ডেলিভারি ম্যান চলে যাওয়ার পর রিটার্ন বা এক্সচেঞ্জে অতিরিক্ত ডেলিভারি চার্জ লাগবে। ডেলিভারি না হলে অনলাইন পেমেন্ট ১৪ দিনের মধ্যে একই বিকাশ / নগদে ফেরত দেওয়া হয়।',
+};
+
+// Wholesale: not started yet (coming soon). When it starts: 50% advance, the rest when the products arrive.
+const WHOLESALE = {
+  en: 'Wholesale is coming soon. When it starts: pay 50% in advance to place a wholesale order, and pay the remaining 50% when you receive the products. For now, message us on WhatsApp if you are interested.',
+  bn: 'হোলসেল শীঘ্রই আসছে। চালু হলে: হোলসেল অর্ডার করতে ৫০% টাকা আগে দিতে হবে, বাকি ৫০% পণ্য হাতে পেয়ে দিতে পারবেন। আগ্রহী হলে এখন WhatsApp এ জানাতে পারেন।',
 };
 
 const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
@@ -183,7 +189,7 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
 
   const facts = () => {
     const d = deliveryNote(storeSettings);
-    return [d.en, DELIVERY_TIME.en, COD.en, `Returns: ${RETURNS.en}`, 'Sizes and colours are chosen on the product page. Orders can also be placed on WhatsApp.', shopName ? `This page is the shop "${shopName}" on Dorzi.` : ''].filter(Boolean).join('\n');
+    return [d.en, DELIVERY_TIME.en, COD.en, `Returns: ${RETURNS.en}`, 'Sizes and colours are chosen on the product page. Orders can also be placed on WhatsApp.', `Wholesale: ${WHOLESALE.en}`, shopName ? `This page is the shop "${shopName}" on Dorzi.` : ''].filter(Boolean).join('\n');
   };
 
   const send = async (e) => {
@@ -361,6 +367,7 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
           <div className={`border-t px-3 pt-2 pb-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
             <div className="flex gap-1.5 overflow-x-auto pb-2 [scrollbar-width:none]">
               <button type="button" className={chip} disabled={busy} onClick={delivery}><Truck size={12} /> Delivery charge</button>
+              <button type="button" className={chip} disabled={busy} onClick={() => quick('Wholesale?', WHOLESALE.en, WHOLESALE.bn, { wa: true })}><Boxes size={12} /> Wholesale <span className="rounded bg-[#D4AF37]/25 px-1 text-[9px] font-bold uppercase text-[#B8941F]">Soon</span></button>
               <button type="button" className={chip} disabled={busy} onClick={() => quick('Delivery time?', DELIVERY_TIME.en, DELIVERY_TIME.bn)}><Clock size={12} /> Delivery time</button>
               <button type="button" className={chip} disabled={busy} onClick={() => quick('Cash on Delivery?', COD.en, COD.bn)}><Wallet size={12} /> Cash on Delivery</button>
               <button type="button" className={chip} disabled={busy} onClick={() => quick('Return policy?', RETURNS.en, RETURNS.bn, { policy: true })}><RotateCcw size={12} /> Returns</button>
