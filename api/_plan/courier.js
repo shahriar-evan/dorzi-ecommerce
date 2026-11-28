@@ -46,29 +46,12 @@ async function writeDoc(token, path, fields) {
   });
 }
 
-export default async function courierCheck(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only.' });
-  const who = await teamCaller(req);
-  if (who.error) return res.status(who.status).json({ error: who.error });
-  const body = req.body && typeof req.body === 'object' ? req.body : JSON.parse(req.body || '{}');
-  const key = phoneKey(body.phone);
-  if (!/^01[3-9][0-9]{8}$/.test(key)) return res.status(400).json({ error: 'Not a Bangladesh mobile number (01XXXXXXXXX).' });
+const BATCH_MAX = 25;        // numbers per Orders panel request
+const BATCH_NEW_MAX = 10;    // new API calls per Orders panel request (the rest wait for the next open)
+const BATCH_KEEP_MS = 30 * 24 * 60 * 60 * 1000; // the Orders panel badge accepts an answer up to 30 days old
 
-  const token = await accessToken();
-  const cached = await readDoc(token, `courierChecks/${key}`);
-  if (cached && cached.result && !body.fresh && Date.now() - Date.parse(cached.at || 0) < KEEP_MS) {
-    try { return res.json({ ...JSON.parse(cached.result), at: cached.at, cached: true }); } catch (e) { /* old / bad copy: ask again */ }
-  }
-
-  const apiKey = process.env.BDCOURIER_API_KEY;
-  if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (BDCOURIER_API_KEY in Vercel).' });
-
-  const day = dayBD();
-  const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 80;
-  const used = num((await readDoc(token, `courierUsage/${day}`) || {}).count);
-  if (used >= limit) return res.status(429).json({ error: `Today's courier check limit (${limit}) is used up. Try again tomorrow.` });
-
-  let out;
+// one API call → { result } | { error, status }
+async function askApi(apiKey, key) {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 20000);
@@ -78,21 +61,68 @@ export default async function courierCheck(req, res) {
       body: JSON.stringify({ phone: key }),
       signal: ctrl.signal,
     }).finally(() => clearTimeout(t));
-    out = await r.json().catch(() => ({}));
+    const out = await r.json().catch(() => ({}));
     if (!r.ok || out.status !== 'success' || !out.data) {
       console.error('courier-check', r.status, out && out.message);
       const msg = r.status === 401 ? 'API key is wrong or expired (BDCOURIER_API_KEY).' : String((out && (out.message || out.error)) || '').slice(0, 160);
-      return res.status(r.status === 429 ? 429 : 502).json({ error: msg ? `Courier check service: ${msg}` : 'Courier check service did not answer. Try again later.' });
+      return { error: msg ? `Courier check service: ${msg}` : 'Courier check service did not answer. Try again later.', status: r.status === 429 ? 429 : 502 };
     }
+    return { result: shape(out) };
   } catch (e) {
-    return res.status(502).json({ error: 'Courier check service did not answer. Try again later.' });
+    return { error: 'Courier check service did not answer. Try again later.', status: 502 };
   }
+}
 
-  const result = shape(out);
-  const at = new Date().toISOString();
-  await Promise.all([
-    writeDoc(token, `courierChecks/${key}`, { result: { stringValue: JSON.stringify(result) }, at: { stringValue: at }, by: { stringValue: who.email } }),
-    writeDoc(token, `courierUsage/${day}`, { count: { integerValue: String(used + 1) }, updatedAt: { stringValue: at } }),
-  ]);
-  return res.json({ ...result, at, cached: false });
+const fromCache = (c, maxAge) => {
+  if (!c || !c.result || Date.now() - Date.parse(c.at || 0) >= maxAge) return null;
+  try { return { ...JSON.parse(c.result), at: c.at, cached: true }; } catch (e) { return null; }
+};
+
+// body { phone, fresh? } → one answer (CRM profile)
+// body { phones: [...] } → { results: { <phoneKey>: answer } } (Orders panel badges; saved answers first, then at most
+//   BATCH_NEW_MAX new API calls; numbers not checked yet are simply missing and are tried on the next open)
+export default async function courierCheck(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only.' });
+  const who = await teamCaller(req);
+  if (who.error) return res.status(who.status).json({ error: who.error });
+  const body = req.body && typeof req.body === 'object' ? req.body : JSON.parse(req.body || '{}');
+  const valid = (k) => /^01[3-9][0-9]{8}$/.test(k);
+  const batch = Array.isArray(body.phones);
+  const keys = batch ? [...new Set(body.phones.map(phoneKey))].filter(valid).slice(0, BATCH_MAX) : [phoneKey(body.phone)];
+  if (!batch && !valid(keys[0])) return res.status(400).json({ error: 'Not a Bangladesh mobile number (01XXXXXXXXX).' });
+
+  const token = await accessToken();
+  const results = {};
+  const todo = [];
+  await Promise.all(keys.map(async (key) => {
+    const hit = (batch || !body.fresh) ? fromCache(await readDoc(token, `courierChecks/${key}`), batch ? BATCH_KEEP_MS : KEEP_MS) : null;
+    if (hit) results[key] = hit; else todo.push(key);
+  }));
+  if (!batch && results[keys[0]]) return res.json(results[keys[0]]);
+  if (batch && !todo.length) return res.json({ results });
+
+  const apiKey = process.env.BDCOURIER_API_KEY;
+  if (!apiKey) return batch ? res.json({ results, note: 'not-set-up' }) : res.status(503).json({ error: 'Courier check is not set up yet (BDCOURIER_API_KEY in Vercel).' });
+
+  const day = dayBD();
+  const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 80;
+  const used = num((await readDoc(token, `courierUsage/${day}`) || {}).count);
+  const room = Math.max(0, limit - used);
+  if (!room) return batch ? res.json({ results, note: 'limit' }) : res.status(429).json({ error: `Today's courier check limit (${limit}) is used up. Try again tomorrow.` });
+
+  let calls = 0;
+  let lastError = null;
+  for (const key of todo.slice(0, Math.min(room, batch ? BATCH_NEW_MAX : 1))) {
+    const a = await askApi(apiKey, key);
+    calls += 1;
+    if (a.error) { lastError = a; if (a.status === 429) break; continue; }
+    const at = new Date().toISOString();
+    results[key] = { ...a.result, at, cached: false };
+    await writeDoc(token, `courierChecks/${key}`, { result: { stringValue: JSON.stringify(a.result) }, at: { stringValue: at }, by: { stringValue: who.email } });
+  }
+  if (calls) await writeDoc(token, `courierUsage/${day}`, { count: { integerValue: String(used + calls) }, updatedAt: { stringValue: new Date().toISOString() } });
+
+  if (batch) return res.json({ results });
+  if (results[keys[0]]) return res.json(results[keys[0]]);
+  return res.status((lastError && lastError.status) || 502).json({ error: (lastError && lastError.error) || 'Courier check failed.' });
 }

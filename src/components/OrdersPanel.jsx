@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { askConfirm, askInput } from './AlertCenter';
 import { ORDER_STATUSES, DELIVERY_AREA_BN } from '../data/shopConfig';
 import { requestDelivered, confirmDelivered, rejectDelivered } from '../orders';
@@ -10,6 +10,7 @@ import { checkOrderPrices, orderVisibleIds, orderMarkup } from '../data/priceChe
 import { watchPlans, watchPromos } from '../storeSettings';
 import { watchLooks } from '../looks';
 import { watchAllShops } from '../shops';
+import { courierVerdict, checkCourierMany } from '../courierCheck';
 
 const STATUS_STYLE = {
   Pending: 'bg-yellow-500/15 text-yellow-600',
@@ -71,6 +72,41 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
   const [lookItems, setLookItems] = useState(null);
   const needLooks = orders.some((o) => o.status === 'Pending' && o.lookOff);
   useEffect(() => (needLooks ? watchLooks((l) => setLookItems(Object.fromEntries(l.map((x) => [x.id, (x.items || []).map((it) => String(it.id))])))) : undefined), [needLooks]);
+  // Courier history badge (BD Courier, api/plan.js?action=courier-check) on open orders of the last 7 days.
+  // Saved answers are reused (30 days); new numbers use the team's daily check limit, at most 10 per open.
+  const [courier, setCourier] = useState({});
+  const askedCourier = useRef(new Set());
+  const courierOpen = (o) => !['Cancelled', 'Delivered'].includes(o.status) && !o.returned && (Date.now() - (toDate(o.createdAt) || 0)) < 7 * 864e5;
+  const courierKeys = [...new Set(orders.filter(courierOpen).map((o) => phoneKey(o.customer?.phone)))].filter((k) => /^01[3-9][0-9]{8}$/.test(k)).sort().join(',');
+  useEffect(() => {
+    const want = courierKeys ? courierKeys.split(',').filter((k) => !askedCourier.current.has(k)) : [];
+    if (!want.length) return undefined;
+    const t = setTimeout(() => {
+      want.forEach((k) => askedCourier.current.add(k));
+      checkCourierMany(want).then((r) => setCourier((m) => ({ ...m, ...r }))).catch((e) => console.error('Courier check:', e.message || e));
+    }, 800);
+    return () => clearTimeout(t);
+  }, [courierKeys]);
+  const COURIER_TONE = { green: 'bg-green-600/15 text-green-700', amber: 'bg-amber-500/20 text-amber-700', red: 'bg-red-600 text-white', gray: 'bg-gray-500/15 text-gray-500' };
+
+  // Possible duplicate: another not-cancelled order from the same phone within 24 hours with a same product
+  const dupOf = (() => {
+    const out = {};
+    const live_ = orders.filter((o) => o.status !== 'Cancelled');
+    const byPhone = {};
+    live_.forEach((o) => { const k = phoneKey(o.customer?.phone); if (k) (byPhone[k] = byPhone[k] || []).push(o); });
+    const itemKeys = (o) => new Set((o.items || []).map((i) => String(i.id || i.name || '')).filter(Boolean));
+    Object.values(byPhone).forEach((list) => {
+      if (list.length < 2) return;
+      list.forEach((a) => list.forEach((b) => {
+        if (a.id === b.id) return;
+        if (Math.abs((toDate(a.createdAt) || 0) - (toDate(b.createdAt) || 0)) > 864e5) return;
+        const ka = itemKeys(a);
+        if ([...itemKeys(b)].some((k) => ka.has(k))) (out[a.id] = out[a.id] || []).push(b.orderNumber);
+      }));
+    });
+    return out;
+  })();
   const productsById = Object.fromEntries(products.map((p) => [String(p.id), p]));
   const priceCheck = (o) => {
     if (o.status !== 'Pending' || !products.length) return { ok: true, problems: [] };
@@ -504,6 +540,8 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
                 <span className={`inline-block px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${STATUS_STYLE[o.status] || ''}`}>{o.status}</span>
                 {o.returned && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white">Returned</span>}
                 {!priceCheck(o).ok && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white">Price mismatch</span>}
+                {(() => { const v = courierOpen(o) && courierVerdict(courier[phoneKey(o.customer?.phone)]); return v ? <span className={`block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${COURIER_TONE[v.tone]}`}>{v.short}</span> : null; })()}
+                {dupOf[o.id] && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-black">Possible duplicate</span>}
                 {o.deliveredRequest && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4AF37] text-black">{canDeliver ? `Delivery requested by ${o.deliveredRequest.byName || o.deliveredRequest.by}` : 'Delivery requested'}</span>}
                 {!canDeliver && myRejected(o) && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white">Delivery rejected</span>}
                 {o.cancelRequest && o.cancelRequest.status === 'pending' && o.status !== 'Cancelled' && <span className="block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white">Cancel request</span>}
@@ -535,6 +573,8 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
                 <p>Area: {o.deliveryArea} {DELIVERY_AREA_BN[o.deliveryArea] ? `(${DELIVERY_AREA_BN[o.deliveryArea]})` : ''}</p>
                 {o.customer?.notes && <p>Comment: <em>{o.customer.notes}</em></p>}
                 {o.email && <p>Account: <strong>{o.email}</strong></p>}
+                {(() => { const r = courier[phoneKey(o.customer?.phone)]; const v = courierVerdict(r); return v ? <p className="pt-1">Courier history: <strong className={v.tone === 'red' ? 'text-red-500' : v.tone === 'amber' ? 'text-amber-600' : v.tone === 'green' ? 'text-green-600' : ''}>{v.label}</strong>{r.total ? ` (${r.success} of ${r.total} received)` : ''}{(r.reports || []).length ? <span className="text-red-500 font-semibold"> · {r.reports.length} fraud report(s), see CRM</span> : ''}</p> : null; })()}
+                {dupOf[o.id] && <p className="pt-1 text-amber-600 font-semibold">Possible duplicate of {dupOf[o.id].join(', ')} (same phone, same product, within 24 hours)</p>}
                 <div className="flex flex-wrap gap-2 pt-2">
                   {blocked.phones[phoneKey(o.customer?.phone)]
                     ? <span className="px-3 py-1.5 rounded text-[11px] font-bold bg-red-600/15 text-red-500">Phone blocked</span>
