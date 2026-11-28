@@ -8,7 +8,7 @@ import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
 import { auth } from '../firebase';
 
-// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, FraudBD, kept 24 h)
+// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, FraudShield, kept 24 h)
 export function courierVerdict(r) {
   if (!r) return null;
   if (!r.total) return { label: 'No courier history (new number)', tone: 'gray' };
@@ -41,7 +41,7 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
   return (
     <div className={card}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-bold flex items-center gap-2"><Truck size={15} /> Courier check <span className="font-normal text-xs text-gray-500">Steadfast, Pathao, RedX, Paperfly</span></h3>
+        <h3 className="text-sm font-bold flex items-center gap-2"><Truck size={15} /> Courier check <span className="font-normal text-xs text-gray-500">Steadfast, Pathao, RedX, Paperfly, CarryBee +2</span></h3>
         {!res
           ? <button type="button" disabled={busy} onClick={() => run(false)} className="px-4 py-2 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider disabled:opacity-50">{busy ? 'Checking…' : 'Check this number'}</button>
           : <button type="button" disabled={busy} onClick={() => run(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded border text-xs font-semibold disabled:opacity-50"><RefreshCw size={13} className={busy ? 'animate-spin' : ''} /> Check again</button>}
@@ -51,6 +51,7 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
       {res && (
         <div className="mt-3 space-y-3">
           <div className={`rounded-lg border px-3 py-2 text-sm font-bold ${TONE[v.tone]}`}>{v.label}</div>
+          {res.risk && <p className="text-xs text-gray-500">FraudShield risk score: <strong className={res.risk.score >= 60 ? 'text-red-600' : res.risk.score >= 30 ? 'text-amber-700' : 'text-green-700'}>{res.risk.score} / 100</strong>{res.risk.label ? ` (${res.risk.label})` : ''} · lower is safer</p>}
           <div className="grid grid-cols-3 gap-2 text-center text-sm">
             {[['Parcels', res.total], ['Received', res.success], ['Returned / cancelled', res.cancel]].map(([k, n]) => (
               <div key={k} className={`rounded-lg border p-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}><div className="text-[11px] text-gray-500">{k}</div><div className="font-bold">{n}</div></div>
@@ -63,14 +64,21 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
                 {(res.couriers || []).map((c) => (
                   <tr key={c.name} className={`border-t ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <td className="py-1.5 pr-2 font-semibold">{c.name}</td>
-                    {c.rating
-                      ? <td colSpan={3} className="py-1.5 pl-2 text-right capitalize">{c.rating}{c.risk ? ` · risk ${c.risk}` : ''}</td>
-                      : <><td className="py-1.5 px-2 text-right">{c.total}</td><td className="py-1.5 px-2 text-right text-green-700">{c.success}</td><td className="py-1.5 pl-2 text-right text-red-600">{c.cancel}</td></>}
+                    <td className="py-1.5 px-2 text-right">{c.total}</td><td className="py-1.5 px-2 text-right text-green-700">{c.success}</td><td className="py-1.5 pl-2 text-right text-red-600">{c.cancel}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          {(res.reviews || []).length > 0 && (
+            <div>
+              <div className="text-xs font-bold mb-1">What other shops said</div>
+              <ul className="space-y-1">
+                {res.reviews.map((r, i) => <li key={i} className="text-xs"><span className="text-[#B8921F]">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span> {r.comment} <span className="text-gray-500">{r.name ? `· ${r.name}` : ''}{r.at ? ` · ${r.at}` : ''}</span></li>)}
+              </ul>
+            </div>
+          )}
+          {!(res.couriers || []).length && <p className="text-xs text-gray-500">No courier has a parcel for this number yet.</p>}
           <p className="text-[11px] text-gray-500">Checked {res.at ? new Date(res.at).toLocaleString('en-GB') : ''}{res.cached ? ' (saved copy, under 24 h old)' : ''}. Courier data can be late or miss small couriers: use it as a hint, not proof.</p>
         </div>
       )}

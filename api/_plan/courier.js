@@ -1,34 +1,37 @@
 // Courier fraud check (Admin CRM → customer profile → "Courier check"): how many parcels this phone number got
-// across Bangladesh couriers (Steadfast, Pathao, RedX, Paperfly) and how many it sent back / cancelled.
+// across Bangladesh couriers (Steadfast, Pathao, RedX, Paperfly, CarryBee, Parceldex, CourrierFast) and how many it
+// sent back / cancelled, plus FraudShield's risk score and other shops' reviews of the number.
 //   POST /api/plan?action=courier-check  team only, body { phone, fresh? }
-// Uses FraudBD (fraudbd.com, needs FRAUDBD_API_KEY). The answer is kept 24 h in courierChecks/{phoneKey}
-// (server only; no client rule allows it) so the same number does not use the daily API limit twice.
+// Uses FraudShield (fraudshield.bd, POST /api/customer/check, needs FRAUDSHIELD_API_KEY). The answer is kept 24 h in
+// courierChecks/{phoneKey} (server only; no client rule allows it) so the same number does not use the daily limit twice.
 // Optional COURIER_CHECK_DAILY_LIMIT (default 100) caps new API calls per day for the whole team (courierUsage/{day}).
 import { FS, accessToken, val } from '../_sslc.js';
 import { teamCaller } from './aiphoto.js';
 
-const API = 'https://fraudbd.com/api/check-courier-info';
+const API = 'https://fraudshield.bd/api/customer/check';
 const KEEP_MS = 24 * 60 * 60 * 1000;
 
 const phoneKey = (p) => String(p || '').replace(/[\s()-]/g, '').replace(/^[+]/, '').replace(/^880/, '0').replace(/^1/, '01');
 const num = (v) => Math.max(0, Math.round(Number(v) || 0));
 const dayBD = () => new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10);
 
-// FraudBD answer → { couriers: [{ name, total, success, cancel, rating?, risk? }], total, success, cancel, rate }
+// FraudShield answer → { couriers: [{ name, total, success, cancel }], total, success, cancel, rate,
+//   risk: { score, level, label } | null, reviews: [{ name, rating, comment, at }] (max 5) }
 export function shape(data) {
-  const sums = (data && data.Summaries) || {};
-  const couriers = Object.entries(sums).map(([name, s]) => {
-    s = s || {};
-    const c = { name: String(name).slice(0, 20), total: num(s.total), success: num(s.success), cancel: num(s.cancel) };
-    if (s.data_type === 'rating') {
-      c.rating = String(s.customer_rating || '').replace(/_/g, ' ').slice(0, 30);
-      c.risk = String(s.risk_level || '').replace(/_/g, ' ').slice(0, 20);
-    }
-    return c;
-  }).slice(0, 8);
-  const ts = (data && data.totalSummary) || {};
-  const total = num(ts.total), success = num(ts.success), cancel = num(ts.cancel);
-  return { couriers, total, success, cancel, rate: total ? Math.round((success / total) * 100) : null };
+  const cd = (data && data.courierData) || {};
+  const sum = cd.summary || {};
+  const couriers = Object.entries(cd).filter(([k, c]) => k !== 'summary' && c && typeof c === 'object').map(([k, c]) => ({
+    name: String(c.name || k).slice(0, 20), total: num(c.total_parcel), success: num(c.success_parcel), cancel: num(c.cancelled_parcel),
+  })).slice(0, 10);
+  const total = num(sum.total_parcel), success = num(sum.success_parcel), cancel = num(sum.cancelled_parcel);
+  const rs = data && data.fraudRiskScore;
+  const risk = rs && typeof rs === 'object'
+    ? { score: Math.min(100, num(rs.score)), level: String(rs.level || '').slice(0, 20), label: String(rs.label || '').slice(0, 30) }
+    : null;
+  const reviews = (Array.isArray(data && data.reviews) ? data.reviews : []).slice(0, 5).map((r) => ({
+    name: String(r.name || '').slice(0, 40), rating: Math.min(5, num(r.rating)), comment: String(r.comment || '').slice(0, 200), at: String(r.created_at || '').slice(0, 10),
+  }));
+  return { couriers, total, success, cancel, rate: total ? Math.round((success / total) * 100) : null, risk, reviews };
 }
 
 async function readDoc(token, path) {
@@ -60,8 +63,8 @@ export default async function courierCheck(req, res) {
     try { return res.json({ ...JSON.parse(cached.result), at: cached.at, cached: true }); } catch (e) { /* old / bad copy: ask again */ }
   }
 
-  const apiKey = process.env.FRAUDBD_API_KEY;
-  if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (FRAUDBD_API_KEY in Vercel).' });
+  const apiKey = process.env.FRAUDSHIELD_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (FRAUDSHIELD_API_KEY in Vercel).' });
 
   const day = dayBD();
   const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 100;
@@ -74,21 +77,21 @@ export default async function courierCheck(req, res) {
     const t = setTimeout(() => ctrl.abort(), 20000);
     const r = await fetch(API, {
       method: 'POST',
-      headers: { api_key: apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone_number: key }),
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ phone: key }),
       signal: ctrl.signal,
     }).finally(() => clearTimeout(t));
     out = await r.json().catch(() => ({}));
-    if (!r.ok || out.status === false || !out.data) {
+    if (!r.ok || out.success === false || !out.courierData) {
       console.error('courier-check', r.status, out && out.message);
-      const msg = String((out && out.message) || '').slice(0, 160);
+      const msg = r.status === 401 ? 'API key is wrong or expired (FRAUDSHIELD_API_KEY).' : String((out && (out.message || out.error)) || '').slice(0, 160);
       return res.status(r.status === 429 ? 429 : 502).json({ error: msg ? `Courier check service: ${msg}` : 'Courier check service did not answer. Try again later.' });
     }
   } catch (e) {
     return res.status(502).json({ error: 'Courier check service did not answer. Try again later.' });
   }
 
-  const result = shape(out.data);
+  const result = shape(out);
   const at = new Date().toISOString();
   await Promise.all([
     writeDoc(token, `courierChecks/${key}`, { result: { stringValue: JSON.stringify(result) }, at: { stringValue: at }, by: { stringValue: who.email } }),
