@@ -14,6 +14,7 @@ const PAGES = {
       sections: [
         { h: '1. Information we collect', li: [
           'Order details: your name, phone number, delivery address (district, zone, area, street) and any comment you write.',
+          'If you type your phone number at checkout (or in the help chat) with products picked but do not finish the order, we keep your name, phone and those products for up to 30 days so our team can call or WhatsApp you to help finish it.',
           'Account details: when you sign in with Google we receive your name, email address and profile photo.',
           'Your orders, saved items and cart.',
           'Offer emails and notifications: your email address, and a notification address of your device if you press "Allow" on our notification pop-up.',

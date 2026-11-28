@@ -104,6 +104,7 @@ export default function CheckoutView({
           <div>
             <label className={label}>Phone (আপনার ফোন নম্বর) *</label>
             <input type="tel" required maxLength={20} value={checkoutForm.phone} onChange={(e) => set('phone', e.target.value.replace(/[^0-9+\-\s()]/g, ''))} placeholder="Phone Number" className={input} />
+            <p className="mt-1 text-[10px] text-gray-500">We may call or WhatsApp this number about your order, also if you leave before ordering. (অর্ডার শেষ না করলেও আমরা এই নম্বরে যোগাযোগ করতে পারি।)</p>
           </div>
 
           <div className={`rounded border p-4 space-y-3 ${isDarkMode ? 'border-gray-700' : 'border-gray-300 bg-white'}`}>
