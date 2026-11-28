@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Img from './Img';
 import { askConfirm, askInput } from './AlertCenter';
 import { ORDER_STATUSES, DELIVERY_AREA_BN } from '../data/shopConfig';
 import { requestDelivered, confirmDelivered, rejectDelivered } from '../orders';
@@ -631,7 +632,7 @@ export default function OrdersPanel({ orders, products = [], productCosts = {}, 
               <div className="divide-y text-xs">
                 {(o.items || []).map((it, i) => (
                   <div key={i} className="py-2 flex items-center gap-3">
-                    {it.image && <img src={it.image} alt="" className="w-10 h-10 object-cover rounded" />}
+                    {it.image && <Img src={it.image} w={48} alt="" className="w-10 h-10 object-cover rounded" />}
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold">{it.name}</p>
                       <p className="text-gray-500">

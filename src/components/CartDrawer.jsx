@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import Img from './Img';
 import { ShoppingBag, X, ChevronRight, Trash2 } from 'lucide-react';
 import { deliveryNote, freeDeliveryMissing, normalizeSettings } from '../data/shopConfig';
 
@@ -48,7 +49,7 @@ export default function CartDrawer({ storeSettings, cart, formatPrice, isDarkMod
                 <div className="py-4 space-y-4 max-h-[55vh] overflow-y-auto pr-2">
                   {cart.map(item => (
                     <div key={item.cartItemId} className={`flex gap-4 p-3 rounded-lg border ${isDarkMode ? 'bg-[#1f1f1f] border-gray-800' : 'bg-gray-100 border-gray-300'}`}>
-                      <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded" />
+                      <Img src={item.image} w={100} alt={item.name} className="w-20 h-20 object-cover rounded" />
                       <div className="flex-1">
                         <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
                         <p className="text-xs text-[#D4AF37] mt-0.5">{formatPrice(item.price)}</p>

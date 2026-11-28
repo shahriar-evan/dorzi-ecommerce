@@ -1,5 +1,6 @@
 import PriceTag, { DiscountBadge } from './PriceTag';
 import React, { useState, useEffect } from 'react';
+import Img from './Img';
 import { hasSizeStock, totalStock, rankBySales } from '../data/catalog';
 import SlideTrack from './SlideTrack';
 import StockLabel from './StockLabel';
@@ -102,7 +103,7 @@ export default function HomeView({ theme = 'classic', brandName = 'Dorzi', hideE
                   onClick={() => { setSelectedCategory(cat.name); setCurrentView('shop'); }}
                   className="group relative h-60 sm:h-80 w-[calc(50%-0.5rem)] sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-7.5rem)/6)] rounded-lg overflow-hidden cursor-pointer shadow-xl border border-gray-800"
                 >
-                  <img src={cat.image} alt={cat.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <Img src={cat.image} w={400} loading="lazy" alt={cat.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-6">
                     <h3 className="text-sm sm:text-lg font-serif font-bold text-white group-hover:text-[#D4AF37] transition">{cat.label}</h3>
                     <p className="text-[11px] sm:text-xs text-gray-300 mt-1 flex items-center gap-1">Shop Now <ChevronRight size={12} /></p>
@@ -134,7 +135,7 @@ export default function HomeView({ theme = 'classic', brandName = 'Dorzi', hideE
                   return (
                     <div key={product.id} className={`group rounded-lg overflow-hidden border flex flex-col ${isDarkMode ? 'bg-[#181818] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                       <div className="relative h-64 sm:h-72 overflow-hidden bg-gray-900 cursor-pointer" onClick={() => { setSelectedProduct(product); setCurrentView('product-detail'); }}>
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                        <Img src={product.image} w={400} loading="lazy" alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); toggleSaved(product.id); }}

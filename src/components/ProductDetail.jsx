@@ -1,5 +1,6 @@
 import PriceTag, { DiscountBadge } from './PriceTag';
 import React, { useState, useRef, useEffect } from 'react';
+import Img from './Img';
 import { Heart, ZoomIn, X, Truck, Clock, Wallet, ChevronUp } from 'lucide-react';
 import { deliveryFee, normalizeSettings, deliveryNote, freeDeliveryMissing, toBanglaDigits, bestDiscount, nextReward } from '../data/shopConfig';
 import WhatsAppButton, { WhatsAppIcon } from './WhatsAppButton';
@@ -83,7 +84,7 @@ function PhotoSlider({ photos, index, onIndex, alt, className, onTap, children }
       <div className="flex h-full" style={{ transform: `translateX(calc(${-index * 100}% + ${drag}px))`, transition: dragging ? 'none' : 'transform 420ms cubic-bezier(.22,.8,.28,1)', willChange: 'transform' }}>
         {photos.map((src, i) => (
           <div key={src + i} className="shrink-0 w-full h-full flex items-center justify-center" aria-hidden={i !== index}>
-            <img src={src} alt={i === index ? alt : ''} draggable={false} loading={Math.abs(i - index) <= 1 ? 'eager' : 'lazy'} className="block w-full h-full object-contain select-none" />
+            <Img src={src} w={800} alt={i === index ? alt : ''} draggable={false} loading={Math.abs(i - index) <= 1 ? 'eager' : 'lazy'} className="block w-full h-full object-contain select-none" />
           </div>
         ))}
       </div>
@@ -427,7 +428,7 @@ export default function ProductDetail({ product, products, addToCart, calculateD
               <div key={rp.id} onClick={() => { setSelectedProduct(rp); setCurrentView('product-detail'); }}
                 className={`cursor-pointer rounded-lg overflow-hidden border transition hover:shadow-lg hover:border-[#D4AF37] ${isDarkMode ? 'bg-[#161616] border-gray-800' : 'bg-white border-gray-200'}`}>
                 <div className={`relative aspect-square overflow-hidden ${isDarkMode ? 'bg-[#0f0f0f]' : 'bg-gray-100'}`}>
-                  <img src={rp.image} alt={rp.name} loading="lazy" className="w-full h-full object-contain" />
+                  <Img src={rp.image} w={300} alt={rp.name} loading="lazy" className="w-full h-full object-contain" />
                   <DiscountBadge price={rp.price} originalPrice={rp.originalPrice} className="absolute top-2 left-2" />
                 </div>
                 <div className="p-3">

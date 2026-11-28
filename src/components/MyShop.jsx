@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import Img from './Img';
 import { auth } from '../firebase';
 import { watchMyShop, watchMyShops, watchAllShops, watchShopOwners, createShop, saveShopItems, saveShopName, shopNameTaken, setShopActive, isPendingShop, acceptShop, rejectShop, shopLinkKey, cleanHandle, HANDLE_RE, handleTaken, setShopHandle, nextHandleChange, setMyShopLive } from '../shops';
 import { askConfirm } from './AlertCenter';
@@ -689,7 +690,7 @@ export default function MyShop({ part = 'all', view = 'all', readOnly = false, a
                     return (
                       <div key={p.id} className={`py-3 flex flex-wrap sm:flex-nowrap items-center gap-3 ${locked ? 'opacity-70' : ''}`}>
                         <input type="checkbox" checked={on} onChange={() => toggle(p)} className="accent-[#D4AF37] w-5 h-5 shrink-0" aria-label={`Sell ${p.name}`} />
-                        {p.image && <img src={p.image} alt="" className="w-12 h-12 object-cover rounded-lg border shrink-0" />}
+                        {p.image && <Img src={p.image} w={60} loading="lazy" alt="" className="w-12 h-12 object-cover rounded-lg border shrink-0" />}
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold line-clamp-2 sm:truncate">{locked && <span className="mr-1" title="Locked: customers do not see it on the Basic plan">🔒</span>}{p.name}</p>
                           <p className="text-gray-500">Store price {formatPrice(p.price)} · highest you can sell for {formatPrice(max)}</p>

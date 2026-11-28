@@ -1,4 +1,5 @@
 import React from 'react';
+import Img from './Img';
 
 // The products this team member added (shown in their own "My Products" tab)
 export default function MyProducts({ products, loggedInUserEmail, isDarkMode, formatPrice, startEditProduct, canEditProduct }) {
@@ -17,7 +18,7 @@ export default function MyProducts({ products, loggedInUserEmail, isDarkMode, fo
         <div className="divide-y text-sm">
           {mine.map((p) => (
             <div key={p.id} className="py-3 flex flex-wrap items-center gap-3">
-              {p.image && <img src={p.image} alt="" className="w-12 h-12 object-cover rounded border shrink-0" />}
+              {p.image && <Img src={p.image} w={60} loading="lazy" alt="" className="w-12 h-12 object-cover rounded border shrink-0" />}
               <div className="flex-1 min-w-[10rem]">
                 <p className="font-semibold">{p.name}</p>
                 <p className="text-xs text-gray-500">{[p.gender, p.category].filter(Boolean).join(' / ')}</p>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Img from './Img';
 import { ArrowLeft, ArrowRight, Check, Pause, Play, X } from 'lucide-react';
 import { watchLooks, getLookColor, tryLookColor } from '../looks';
 import { auth, googleProvider } from '../firebase';
@@ -22,7 +23,7 @@ function Piece({ n, p, pick, setPick, active, onHover, formatPrice, selected, on
     <div id={`look-piece-${p.id}`} onMouseEnter={onHover} className={`py-4 flex gap-3 transition max-lg:min-w-[86%] max-lg:snap-start max-lg:pr-4 max-lg:mr-4 max-lg:border-r lg:border-b border-black/10 ${active ? 'bg-[#D4AF37]/10 lg:-mx-3 lg:px-3 rounded-lg' : ''}`}>
       <div className="relative w-20 h-24 shrink-0 rounded-md overflow-hidden bg-[#f1f1f0]">
         <button type="button" onClick={onOpen} className="block w-full h-full" aria-label={`Open ${p.name}`}>
-          <img src={imageFor(p, color)} alt={p.name} loading="lazy" className={`w-full h-full object-cover hover:scale-105 transition ${out ? 'grayscale opacity-60' : ''}`} />
+          <Img src={imageFor(p, color)} w={200} alt={p.name} loading="lazy" className={`w-full h-full object-cover hover:scale-105 transition ${out ? 'grayscale opacity-60' : ''}`} />
         </button>
         <span className="absolute top-1 left-1 w-5 h-5 rounded-full bg-white text-black text-[10px] font-bold flex items-center justify-center shadow">{n}</span>
       </div>

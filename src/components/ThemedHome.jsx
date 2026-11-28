@@ -1,4 +1,5 @@
 import React from 'react';
+import Img from './Img';
 import { ArrowRight, Heart, Shield, Truck, RefreshCw, User } from 'lucide-react';
 import PriceTag, { DiscountBadge } from './PriceTag';
 import SlideTrack from './SlideTrack';
@@ -77,7 +78,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {featured.map((p) => (
               <div key={p.id} className="group">
                 <div className={`relative aspect-square overflow-hidden cursor-pointer ${isDarkMode ? 'bg-[#181818]' : 'bg-gray-100'}`} onClick={() => open(p)}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
+                  <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
                   {heart(p, 'bottom-2 right-2 !w-8 !h-8')}
                   <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-2 left-2" />
                 </div>
@@ -123,7 +124,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             {cats.map((c) => (
               <button key={c.name} type="button" onClick={() => goCat(c.name)} className="group relative h-44 sm:h-72 rounded-3xl overflow-hidden text-left">
-                <img src={c.image} alt={c.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                <Img src={c.image} w={400} alt={c.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                 <span className="absolute inset-0 bg-black/45 group-hover:bg-black/30 transition" />
                 <span className="absolute left-4 bottom-4 sm:left-6 sm:bottom-6 text-lg sm:text-3xl font-black uppercase text-white">{c.label}</span>
               </button>
@@ -140,7 +141,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
               {featured.map((p) => (
                 <div key={p.id} className={`group rounded-3xl overflow-hidden flex flex-col ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white shadow-sm'}`}>
                   <div className="relative aspect-[4/5] overflow-hidden cursor-pointer" onClick={() => open(p)}>
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     {heart(p, 'top-3 right-3')}
                     <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-3 left-3" />
                   </div>
@@ -191,7 +192,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
               <button key={c.name} type="button" onClick={() => goCat(c.name)} className={`group w-full flex items-center gap-4 sm:gap-8 py-4 border-b text-left ${line}`}>
                 <span className={`w-8 font-serif text-sm ${muted}`}>{String(i + 1).padStart(2, '0')}</span>
                 <span className={`flex-1 font-serif text-xl sm:text-3xl ${ink} group-hover:italic`}>{c.label}</span>
-                <img src={c.image} alt="" className="w-14 h-14 sm:w-20 sm:h-20 object-cover" />
+                <Img src={c.image} w={400} alt="" className="w-14 h-14 sm:w-20 sm:h-20 object-cover" />
                 <ArrowRight size={18} className={`${muted} group-hover:text-[#B8921F] group-hover:translate-x-1 transition`} />
               </button>
             ))}
@@ -206,7 +207,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {featured.slice(0, 6).map((p, i) => (
               <div key={p.id} className="group">
                 <div className={`relative overflow-hidden cursor-pointer ${i % 3 === 1 ? 'aspect-[3/4]' : 'aspect-square'} ${isDarkMode ? 'bg-[#181818]' : 'bg-gray-100'}`} onClick={() => open(p)}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
+                  <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
                   {heart(p, 'top-2 right-2 !w-8 !h-8')}
                   <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-2 left-2" />
                 </div>
@@ -254,7 +255,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           <div className="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
             {cats.map((c) => (
               <button key={c.name} type="button" onClick={() => goCat(c.name)} className={`group relative aspect-square overflow-hidden border-2 ${edge}`}>
-                <img src={c.image} alt={c.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                <Img src={c.image} w={400} alt={c.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" />
                 <span className="absolute inset-x-0 bottom-0 bg-black text-white text-[10px] sm:text-xs font-black uppercase tracking-wider py-1.5 text-center">{c.label}</span>
               </button>
             ))}
@@ -269,7 +270,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {featured.map((p) => (
               <div key={p.id} className={`group border-2 ${edge} flex flex-col`}>
                 <div className="relative aspect-square overflow-hidden cursor-pointer" onClick={() => open(p)}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   {heart(p, 'top-2 right-2 !rounded-none')}
                   <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-2 left-2" />
                 </div>
@@ -320,7 +321,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
             {cats.map((c) => (
               <button key={c.name} type="button" onClick={() => goCat(c.name)} className={`shrink-0 flex items-center gap-2 rounded-full pl-1.5 pr-4 py-1.5 ${cardBg} border ${isDarkMode ? 'border-gray-800' : 'border-transparent'} hover:ring-2 hover:ring-[#2E8B6A]/40 transition`}>
-                <img src={c.image} alt="" className="w-8 h-8 rounded-full object-cover" />
+                <Img src={c.image} w={400} alt="" className="w-8 h-8 rounded-full object-cover" />
                 <span className={`text-xs font-bold ${ink}`}>{c.label}</span>
               </button>
             ))}
@@ -335,7 +336,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {featured.map((p) => (
               <div key={p.id} className={`group rounded-3xl p-2.5 flex flex-col ${cardBg}`}>
                 <div className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => open(p)}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   {heart(p, 'top-2 right-2 !w-8 !h-8')}
                   <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-2 left-2" />
                 </div>
@@ -385,7 +386,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {cats.map((c) => (
               <button key={c.name} type="button" onClick={() => goCat(c.name)} className="group shrink-0 w-28 sm:w-36 text-center">
                 <span className="block h-40 sm:h-52 rounded-t-full overflow-hidden border border-[#D4AF37]/50 p-1">
-                  <img src={c.image} alt={c.label} className="w-full h-full rounded-t-full object-cover group-hover:scale-105 transition duration-700" />
+                  <Img src={c.image} w={400} alt={c.label} className="w-full h-full rounded-t-full object-cover group-hover:scale-105 transition duration-700" />
                 </span>
                 <span className="mt-3 block text-[11px] uppercase tracking-[0.25em] text-gray-300 group-hover:text-[#D4AF37] transition">{c.label}</span>
               </button>
@@ -399,7 +400,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
             {featured.map((p) => (
               <div key={p.id} className="group text-center">
                 <div className="relative aspect-[3/4] border border-[#D4AF37]/40 p-1 cursor-pointer" onClick={() => open(p)}>
-                  <div className="w-full h-full overflow-hidden"><img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" /></div>
+                  <div className="w-full h-full overflow-hidden"><Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" /></div>
                   {heart(p, 'top-3 right-3')}
                   <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-3 left-3" />
                 </div>
@@ -440,7 +441,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           {cats.map((c) => (
             <button key={c.name} type="button" onClick={() => goCat(c.name)} className="shrink-0 w-20 sm:w-24 text-center group">
               <span className={`block w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-2 ring-offset-2 ${isDarkMode ? 'ring-[#D4AF37]/40 ring-offset-[#0f0f0f]' : 'ring-[#D4AF37]/50 ring-offset-[#FBF7F0]'} group-hover:ring-[#D4AF37] transition`}>
-                <img src={c.image} alt={c.label} className="w-full h-full object-cover" />
+                <Img src={c.image} w={400} alt={c.label} className="w-full h-full object-cover" />
               </span>
               <span className={`mt-2 block text-xs font-serif ${ink}`}>{c.label}</span>
             </button>
@@ -453,7 +454,7 @@ export default function ThemedHome({ theme, brandName, heroImages, heroIdx, setH
           {featured.slice(0, 6).map((p) => (
             <div key={p.id} className="group text-center">
               <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden cursor-pointer" onClick={() => open(p)}>
-                <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-700" />
+                <Img src={p.image} w={400} loading="lazy" alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-700" />
                 {heart(p, 'top-3 right-3')}
                 <DiscountBadge price={p.price} originalPrice={p.originalPrice} className="absolute top-3 left-3" />
               </div>

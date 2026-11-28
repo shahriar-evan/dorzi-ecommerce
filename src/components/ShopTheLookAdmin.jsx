@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Img from './Img';
 import { Sparkles, Upload, Trash2, Pencil, Plus, X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft, Check, ZoomIn } from 'lucide-react';
 import { askConfirm } from './AlertCenter';
 import { lookNameIdeas } from '../data/lookNames';
@@ -423,7 +424,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                         <button type="button" onClick={() => setPinFor(i)} className={`w-6 h-6 rounded-full text-xs font-bold shrink-0 ${pinFor === i ? 'bg-[#D4AF37] text-black' : 'bg-gray-500/20'}`}>{i + 1}</button>
                         {p && (
                           <button type="button" onClick={() => setViewer({ name: p.name, photos: productPhotos(p) })} className="shrink-0" title="See the photos big" aria-label={`See ${p.name} photos`}>
-                            <img src={p.image} alt="" className="w-9 h-9 object-cover rounded hover:ring-2 hover:ring-[#D4AF37]" />
+                            <Img src={p.image} w={48} alt="" className="w-9 h-9 object-cover rounded hover:ring-2 hover:ring-[#D4AF37]" />
                           </button>
                         )}
                         <div className="min-w-0 flex-1 text-xs">
@@ -472,7 +473,7 @@ export default function ShopTheLookAdmin({ products = [], isDarkMode, formatPric
                       return (
                         <div key={p.id} className={`relative rounded-lg border overflow-hidden text-left ${inLook ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]' : isDarkMode ? 'border-gray-800' : 'border-gray-200'} ${full || out ? 'opacity-50' : ''}`}>
                           <button type="button" disabled={full} onClick={() => (inLook ? removeItem(idx) : addItem(p))} className="block w-full text-left disabled:cursor-not-allowed">
-                            <img src={p.image} alt="" loading="lazy" className="w-full aspect-square object-cover bg-gray-100" />
+                            <Img src={p.image} w={200} alt="" loading="lazy" className="w-full aspect-square object-cover bg-gray-100" />
                             <span className="block p-1.5">
                               <span className="block text-[11px] font-semibold leading-tight line-clamp-2">{p.name}</span>
                               <span className="block text-[11px] text-gray-500">{formatPrice(p.price)}{out ? ' · Out of stock' : ''}</span>

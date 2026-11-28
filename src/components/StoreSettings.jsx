@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Img from './Img';
 import { askConfirm } from './AlertCenter';
 import { saveStoreSettings } from '../storeSettings';
 import { countSubscribers, countPushDevices, sendOfferEmail } from '../subscribers';
@@ -328,7 +329,7 @@ export default function StoreSettings({ products = [], settings, isDarkMode, sta
                     {pickList.length === 0 && <p className={`p-3 text-xs ${muted}`}>No product found.</p>}
                     {pickList.map((p) => (
                       <button key={p.id} type="button" onClick={() => pickProduct(p)} className="w-full flex items-center gap-3 p-2 text-left hover:bg-indigo-500/10">
-                        <img src={p.image} alt="" className="w-10 h-10 rounded object-cover shrink-0" />
+                        <Img src={p.image} w={48} loading="lazy" alt="" className="w-10 h-10 rounded object-cover shrink-0" />
                         <span className="flex-1 min-w-0"><span className="block text-xs font-semibold truncate">{p.name}</span><span className={`block text-[11px] ${muted}`}>{formatPrice ? formatPrice(p.price) : p.price} &middot; {p.category}</span></span>
                       </button>
                     ))}

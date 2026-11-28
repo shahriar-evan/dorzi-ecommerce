@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Img from './Img';
 import { X } from 'lucide-react';
 import { hasSizeStock, hasColorStock, orderedSizes, productColors, imageFor, stockFor, stockForColor, stockForSize, totalStock } from '../data/catalog';
 
@@ -45,7 +46,7 @@ export default function QuickAdd({ product, goCheckout, onConfirm, onClose, form
         <button onClick={onClose} className="absolute top-3 right-3 p-1 text-gray-500 hover:text-[#D4AF37]" aria-label="Close"><X size={20} /></button>
 
         <div className="flex gap-3 pr-6">
-          <img src={imageFor(product, color)} alt={product.name} className="w-20 h-20 object-cover rounded" />
+          <Img src={imageFor(product, color)} w={100} alt={product.name} className="w-20 h-20 object-cover rounded" />
           <div className="min-w-0">
             <h3 className="font-serif font-bold leading-snug">{product.name}</h3>
             <p className="text-[#D4AF37] font-bold mt-1">{formatPrice(product.price)}</p>

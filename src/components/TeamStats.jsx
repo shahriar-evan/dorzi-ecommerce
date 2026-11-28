@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import Img from './Img';
 import { askConfirm } from './AlertCenter';
 import { orderMarkup } from '../data/priceCheck';
 import { loadStatsResets, resetAdminStats, listAdmins } from '../adminAuth';
@@ -390,7 +391,7 @@ export default function TeamStats({ productCosts = {}, productCommissions = {}, 
                           {mine.map((pr) => (
                             <div key={pr.id} className="py-2 flex flex-wrap items-center justify-between gap-2">
                               <span className="flex items-center gap-2 min-w-0">
-                                {pr.image && <img src={pr.image} alt="" className="w-8 h-8 object-cover rounded border shrink-0" />}
+                                {pr.image && <Img src={pr.image} w={40} alt="" className="w-8 h-8 object-cover rounded border shrink-0" />}
                                 <span className="truncate">{pr.name}</span>
                               </span>
                               <span className="flex items-center gap-3 text-gray-500">

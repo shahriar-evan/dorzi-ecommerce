@@ -255,17 +255,21 @@ export default async function stock(req, res) {
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const me = await teamMember(req);
+    const op = String(body.op || '');
+    const id = String(body.id || '');
+    // the team check and the product read run together (one wait instead of two)
+    const [me, pre] = await Promise.all([
+      teamMember(req),
+      op !== 'check' && /^[A-Za-z0-9_-]{1,60}$/.test(id) ? readOne(token, `products/${id}`) : Promise.resolve(null),
+    ]);
     if (me && me.denied === 'quota') return res.status(503).json({ error: quotaMsg() });
     if (!me || me.denied) return res.status(403).json({ error: `Only the team can use this.${me && me.denied ? ` (${me.denied})` : ''}` });
-    const op = String(body.op || '');
     if (op === 'check') {
       if (me.role === 'admin') return res.status(403).json({ error: 'Only the Owner or a Manager can run the stock check.' });
       return res.status(200).json(await runCheck(token, { manual: true }));
     }
-    const id = String(body.id || '');
     if (!/^[A-Za-z0-9_-]{1,60}$/.test(id)) return res.status(400).json({ error: 'Which product?' });
-    const p = await readOne(token, `products/${id}`);
+    const p = pre;
     if (!p) return res.status(404).json({ error: 'Product not found.' });
     const now = new Date().toISOString();
     if (op === 'hide') {
