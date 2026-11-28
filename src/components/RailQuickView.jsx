@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Img from './Img';
 import { X, ArrowLeft, ArrowRight } from 'lucide-react';
 import { hasSizeStock, hasColorStock, stockFor, stockForColor, stockForSize, totalStock, orderedSizes, productColors, colorOfPhoto } from '../data/catalog';
 import StockLabel from './StockLabel';
@@ -102,7 +103,7 @@ export default function RailQuickView({ items, index, setIndex, onClose, formatP
               pickPhoto((photo + (dx < 0 ? 1 : -1) + photos.length) % photos.length);
             }}
             onPointerCancel={() => { swipe.current = null; }}>
-            <img src={photos[photo] || p.image} alt={p.name} draggable={false}
+            <Img src={photos[photo] || p.image} w={700} alt={p.name} draggable={false}
               className={`h-full w-full object-contain ${isCut(photos[photo]) ? (hanging ? 'object-top' : 'object-center') : 'mix-blend-multiply'} drop-shadow-[0_28px_30px_rgba(0,0,0,.18)]`} />
           </div>
           {photos.length > 1 && (
@@ -110,7 +111,7 @@ export default function RailQuickView({ items, index, setIndex, onClose, formatP
               {photos.map((u, i) => (
                 <button key={u + i} type="button" onClick={() => pickPhoto(i)} aria-label={`Photo ${i + 1}`}
                   className={`h-14 w-14 overflow-hidden rounded-lg border bg-white ${photo === i ? 'border-black' : 'border-gray-200'}`}>
-                  <img src={u} alt="" className={`h-full w-full ${isCut(u) ? 'object-contain p-1' : 'object-cover'}`} loading="lazy" />
+                  <Img src={u} w={100} alt="" className={`h-full w-full ${isCut(u) ? 'object-contain p-1' : 'object-cover'}`} loading="lazy" />
                 </button>
               ))}
             </div>

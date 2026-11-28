@@ -1,5 +1,6 @@
 import PriceTag, { DiscountBadge } from './PriceTag';
 import React, { useState } from 'react';
+import Img from './Img';
 import { Heart } from 'lucide-react';
 import WhatsAppButton from './WhatsAppButton';
 import { waOrderLink, waProductLines } from '../whatsappOrder';
@@ -26,7 +27,7 @@ export default function ShopView({ requestAdd, addToCart, filteredProducts, form
   const card = (product) => (
                   <div key={product.id} className={`group rounded-lg overflow-hidden border flex flex-col ${isDarkMode ? 'bg-[#181818] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                     <div className="relative h-64 overflow-hidden bg-gray-900 cursor-pointer" onClick={() => { setSelectedProduct(product); setCurrentView('product-detail'); }}>
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      <Img src={product.image} w={400} loading="lazy" alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleSaved(product.id); }}

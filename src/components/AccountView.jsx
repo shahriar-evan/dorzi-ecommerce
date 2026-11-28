@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Img from './Img';
 import { askConfirm } from './AlertCenter';
 import { Heart, User, Package, Wallet, Settings, LogOut, Store } from 'lucide-react';
 import SellerDashboard from './SellerDashboard';
@@ -115,7 +116,7 @@ export default function AccountView({
             {savedProducts.map((p) => (
               <div key={p.id} className={`rounded-lg overflow-hidden border ${isDarkMode ? 'bg-[#181818] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                 <div className="h-44 bg-gray-900 cursor-pointer" onClick={() => { setSelectedProduct(p); setCurrentView('product-detail'); }}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  <Img src={p.image} w={250} loading="lazy" alt={p.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-3">
                   <p className="text-sm font-semibold line-clamp-1">{p.name}</p>
@@ -258,7 +259,7 @@ export default function AccountView({
             {savedProducts.map((p) => (
               <div key={p.id} className={`rounded-lg overflow-hidden border ${isDarkMode ? 'bg-[#181818] border-gray-800' : 'bg-white border-gray-200 shadow-sm'}`}>
                 <div className="h-44 bg-gray-900 cursor-pointer" onClick={() => { setSelectedProduct(p); setCurrentView('product-detail'); }}>
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  <Img src={p.image} w={250} loading="lazy" alt={p.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-3">
                   <p className="text-sm font-semibold line-clamp-1">{p.name}</p>

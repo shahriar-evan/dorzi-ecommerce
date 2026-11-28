@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Img from './Img';
 import { MessageCircle, X, Send, Truck, Clock, Wallet, RotateCcw, PackageSearch, ShoppingBag, Ruler, Boxes } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppButton';
 import { sendLead } from '../crmStore';
@@ -310,7 +311,7 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
                       return (
                         <div className={`mt-2 rounded-lg border p-2 text-xs ${isDarkMode ? 'border-gray-700 bg-[#121212]' : 'border-gray-300 bg-white'}`}>
                           <div className="flex gap-2">
-                            {imageFor(p, o.color) && <img src={imageFor(p, o.color)} alt="" className="h-16 w-16 rounded object-cover shrink-0" />}
+                            {imageFor(p, o.color) && <Img src={imageFor(p, o.color)} w={80} alt="" className="h-16 w-16 rounded object-cover shrink-0" />}
                             <div className="min-w-0">
                               <p className="font-semibold leading-tight line-clamp-2">{p.name}</p>
                               <p className="text-gray-500 mt-0.5">{[o.color, o.size && `Size ${o.size}`, `× ${o.qty}`].filter(Boolean).join(' · ')}</p>
@@ -342,7 +343,7 @@ export default function ChatWidget({ products = [], storeSettings, formatPrice, 
                         {m.ids.map(byId).filter(Boolean).map((p) => { const col = (m.colors && m.colors[String(p.id)]) || colourFromText(p, m.q); return (
                           <button key={p.id} type="button" onClick={() => { onOpenProduct(p); setOpen(window.innerWidth >= 640); }}
                             className={`text-left rounded-lg border overflow-hidden transition hover:border-[#D4AF37] ${isDarkMode ? 'border-gray-800 bg-[#121212]' : 'border-gray-200 bg-white'}`}>
-                            <div className={`aspect-square ${isDarkMode ? 'bg-[#161616]' : 'bg-gray-50'}`}>{imageFor(p, col) && <img src={imageFor(p, col)} alt="" loading="lazy" className="w-full h-full object-cover" />}</div>
+                            <div className={`aspect-square ${isDarkMode ? 'bg-[#161616]' : 'bg-gray-50'}`}>{imageFor(p, col) && <Img src={imageFor(p, col)} w={200} alt="" loading="lazy" className="w-full h-full object-cover" />}</div>
                             <p className="px-2 pt-1.5 text-[11px] leading-tight line-clamp-2">{p.name}{col && <span className="text-gray-500"> · {col}</span>}</p>
                             <p className="px-2 pb-1.5 text-xs font-bold text-[#B8941F]">{formatPrice(p.price)}</p>
                           </button>

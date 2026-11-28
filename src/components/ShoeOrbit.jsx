@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Img from './Img';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { hasSizeStock, hasColorStock, stockForSize, orderedSizes, productColors } from '../data/catalog';
 import { shortPrice } from './HangerRail';
@@ -125,7 +126,7 @@ export default function ShoeOrbit({ products, formatPrice, onOpen, addToCart, on
                 </span>
               ) : (
                 <span className="block h-full w-full overflow-hidden rounded-[22px] bg-white shadow-[0_24px_40px_-18px_rgba(0,0,0,.35)] ring-1 ring-black/5">
-                  <img src={p.image} alt="" draggable={false} className="h-full w-full object-cover" />
+                  <Img src={p.image} w={300} alt="" draggable={false} className="h-full w-full object-cover" />
                 </span>
               )}
             </button>

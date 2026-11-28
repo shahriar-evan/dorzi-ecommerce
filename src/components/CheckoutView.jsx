@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Img from './Img';
 import { Trash2 } from 'lucide-react';
 import { deliveryAreaFor, DELIVERY_AREAS, DELIVERY_AREA_BN, PAYMENT_METHODS, PAYMENT_METHOD_BN, ONLINE_PAY_ON, PAY_PROVIDER, CARD_PAY_ON, toBanglaDigits, deliveryNote, freeDeliveryApplies, freeDeliveryMissing, normalizeSettings } from '../data/shopConfig';
 
@@ -159,7 +160,7 @@ export default function CheckoutView({
             {cart.map((item) => (
               <div key={item.cartItemId} className={`flex gap-3 p-3 rounded border ${isDarkMode ? 'bg-[#121212] border-gray-800' : 'bg-white border-gray-200'}`}>
                 <div className="flex flex-col items-center gap-2 shrink-0">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
+                  <Img src={item.image} w={80} alt={item.name} className="w-16 h-16 object-cover rounded" />
                   <button type="button" onClick={() => removeFromCart(item.cartItemId)} aria-label="Remove from cart" className="w-16 inline-flex items-center justify-center gap-1 rounded bg-red-600 hover:bg-red-700 text-white text-[11px] font-semibold py-1 transition">
                     <Trash2 size={12} /> Remove
                   </button>

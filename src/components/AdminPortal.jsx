@@ -2,6 +2,7 @@ import { auth } from '../firebase';
 import { productIdsForLink } from '../data/supplierLink';
 import { callStock, outColours, backColours, colourLabel } from '../stockSync';
 import React from 'react';
+import Img from './Img';
 import { askConfirm } from './AlertCenter';
 import AdminLogin from './AdminLogin';
 import AdminManager from './AdminManager';
@@ -85,11 +86,14 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
   const backCount = products.filter((p) => backColours(p).length).length;
   const lowCount = products.filter(isLowStock).length;
   const noneCount = products.filter(isNoStock).length;
+  // several products can be approved / hidden at the same time: each button only waits for its own product
+  const [opBusy, setOpBusy] = React.useState({});
   const stockOp = async (op, p) => {
     if (op === 'hide' && !(await askConfirm(`Take "${p.name}" off the website? It comes back when someone approves it.`))) return;
-    setStockBusy(`${op}:${p.id}`);
+    const k = `${op}:${p.id}`;
+    setOpBusy((m) => ({ ...m, [k]: true }));
     try { await callStock(op, p.id); } catch (err) { alert(err.message); }
-    setStockBusy('');
+    setOpBusy((m) => { const n = { ...m }; delete n[k]; return n; });
   };
   // "Hide all": tick several stock-out products (or Select all) and take them off the website in one go.
   // A product only some colours of which are out still sells the other colours, so "Fully out" picks only the ones
@@ -135,11 +139,12 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
   const needsApprove = (p) => (p.status || 'approved') !== 'approved' || backColours(p).length > 0;
   const shownProducts = (catFilter === 'All' ? searched : searched.filter((p) => catLabel(p) === catFilter))
     .map((p, i) => [p, i]).sort((a, b) => (needsApprove(b[0]) - needsApprove(a[0])) || (a[1] - b[1])).map(([p]) => p);
-  const [approving, setApproving] = React.useState('');
+  const [approving, setApproving] = React.useState({});
   const approveNow = async (p) => {
-    if (approving) return;
-    setApproving(String(p.id));
-    try { await handleApproveProduct(p); } finally { setApproving(''); }
+    const k = String(p.id);
+    if (approving[k]) return;
+    setApproving((m) => ({ ...m, [k]: true }));
+    try { await handleApproveProduct(p); } finally { setApproving((m) => { const n = { ...m }; delete n[k]; return n; }); }
   };
   // what each Products row button will do, in plain words (Hint on hover; confirm box on phones)
   const whatHappens = (p, kind) => {
@@ -538,7 +543,7 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                             {stockFilter === 'out' && canHide(p) && (
                               <input type="checkbox" checked={!!hidePick[String(p.id)]} onChange={(e) => setHidePick((h) => ({ ...h, [String(p.id)]: e.target.checked }))} aria-label={`Select ${p.name} to hide`} className="w-4 h-4 accent-red-600 shrink-0" />
                             )}
-                            <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded" />
+                            <Img src={p.image} w={48} loading="lazy" alt={p.name} className="w-10 h-10 object-cover rounded" />
                             <div>
                               <span className="font-semibold">{p.name}</span>
                               {p.status === 'pending' && <span className="ml-2 bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-[10px] font-bold px-2 py-0.5 rounded inline-block whitespace-nowrap">PENDING</span>}
@@ -604,18 +609,18 @@ export default function AdminPortal({ adminCanCreateShop = false, adminTab, dele
                             {partOut(p) && <p className="mb-2 text-center text-[10px] text-gray-500 max-w-[11rem] mx-auto">Only the out colours show &quot;Out of stock&quot;; the other colours still sell. No need to hide.</p>}
                             {backColours(p).length > 0 && canApproveProduct({ ...p, status: 'pending' }) && (
                               <div className="mb-2 flex justify-center">
-                                <Hint text={whatHappens(p, 'back')}><button type="button" disabled={!!stockBusy} onClick={() => actHint(p, 'back', () => stockOp('approve', p))}
-                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition whitespace-nowrap disabled:opacity-60 inline-flex items-center gap-1.5">{stockBusy === `approve:${p.id}` ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : p.status === 'hidden' ? 'Approve · show on website' : 'Approve · sell again'}</button></Hint>
+                                <Hint text={whatHappens(p, 'back')}><button type="button" disabled={!!opBusy[`approve:${p.id}`] || stockBusy === 'check'} onClick={() => actHint(p, 'back', () => stockOp('approve', p))}
+                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition whitespace-nowrap disabled:opacity-60 inline-flex items-center gap-1.5">{opBusy[`approve:${p.id}`] ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : p.status === 'hidden' ? 'Approve · show on website' : 'Approve · sell again'}</button></Hint>
                               </div>
                             )}
                             {canHide(p) && (
                               <div className="mb-2 flex justify-center">
-                                <Hint text={whatHappens(p, 'hide')}><button type="button" disabled={!!stockBusy} onClick={() => stockOp('hide', p)}
-                                  className="px-3 py-1.5 rounded text-xs font-semibold border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition whitespace-nowrap disabled:opacity-50">{stockBusy === `hide:${p.id}` ? 'Hiding…' : 'Hide from website'}</button></Hint>
+                                <Hint text={whatHappens(p, 'hide')}><button type="button" disabled={!!opBusy[`hide:${p.id}`] || stockBusy === 'check'} onClick={() => stockOp('hide', p)}
+                                  className="px-3 py-1.5 rounded text-xs font-semibold border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition whitespace-nowrap disabled:opacity-50">{opBusy[`hide:${p.id}`] ? 'Hiding…' : 'Hide from website'}</button></Hint>
                               </div>
                             )}
                             <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
-                            {canApproveProduct(p) && !backColours(p).length && <Hint text={whatHappens(p, 'approve')}><button type="button" disabled={!!approving} onClick={() => actHint(p, 'approve', () => approveNow(p))} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving === String(p.id) ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button></Hint>}
+                            {canApproveProduct(p) && !backColours(p).length && <Hint text={whatHappens(p, 'approve')}><button type="button" disabled={!!approving[String(p.id)]} onClick={() => actHint(p, 'approve', () => approveNow(p))} className="px-3 py-1.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-60 inline-flex items-center gap-1.5">{approving[String(p.id)] ? <><span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />Approving…</> : 'Approve'}</button></Hint>}
                             {canEditProduct(p)
                               ? <button onClick={() => startEditProduct(p)} className="px-3 py-1.5 rounded text-xs font-semibold border bg-white text-gray-900 border-gray-400 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600 transition">Edit</button>
                               : <span className="text-[10px] text-gray-500 font-semibold" title="Only the Owner or the person who added it can edit">View only</span>}

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import Img from './Img';
 import { ArrowRight, BadgeCheck } from 'lucide-react';
 import { watchAllShops, shopLinkKey } from '../shops';
 import { effectiveTier, shopIsPaid, basicDue } from '../data/priceCheck';
@@ -44,7 +45,7 @@ export default function FeaturedShops({ plans, products, isDarkMode, formatPrice
                 <div className="grid grid-cols-3 gap-0.5 bg-gray-200/40">
                   {items.slice(0, 3).map((p) => (
                     <div key={p.id} className="aspect-square overflow-hidden">
-                      {p.image && <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />}
+                      {p.image && <Img src={p.image} w={300} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />}
                     </div>
                   ))}
                 </div>
