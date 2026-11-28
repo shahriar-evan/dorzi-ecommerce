@@ -8,7 +8,7 @@ import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
 import { auth } from '../firebase';
 
-// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, FraudShield, kept 24 h)
+// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, BD Courier, kept 24 h)
 export function courierVerdict(r) {
   if (!r) return null;
   if (!r.total) return { label: 'No courier history (new number)', tone: 'gray' };
@@ -51,7 +51,6 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
       {res && (
         <div className="mt-3 space-y-3">
           <div className={`rounded-lg border px-3 py-2 text-sm font-bold ${TONE[v.tone]}`}>{v.label}</div>
-          {res.risk && <p className="text-xs text-gray-500">FraudShield risk score: <strong className={res.risk.score >= 60 ? 'text-red-600' : res.risk.score >= 30 ? 'text-amber-700' : 'text-green-700'}>{res.risk.score} / 100</strong>{res.risk.label ? ` (${res.risk.label})` : ''} · lower is safer</p>}
           <div className="grid grid-cols-3 gap-2 text-center text-sm">
             {[['Parcels', res.total], ['Received', res.success], ['Returned / cancelled', res.cancel]].map(([k, n]) => (
               <div key={k} className={`rounded-lg border p-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}><div className="text-[11px] text-gray-500">{k}</div><div className="font-bold">{n}</div></div>
@@ -70,11 +69,11 @@ export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
               </tbody>
             </table>
           </div>
-          {(res.reviews || []).length > 0 && (
-            <div>
-              <div className="text-xs font-bold mb-1">What other shops said</div>
+          {(res.reports || []).length > 0 && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3">
+              <div className="text-xs font-bold text-red-600 mb-1">Fraud reports from other shops ({res.reports.length})</div>
               <ul className="space-y-1">
-                {res.reviews.map((r, i) => <li key={i} className="text-xs"><span className="text-[#B8921F]">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span> {r.comment} <span className="text-gray-500">{r.name ? `· ${r.name}` : ''}{r.at ? ` · ${r.at}` : ''}</span></li>)}
+                {res.reports.map((r, i) => <li key={i} className="text-xs">{r.text || 'Reported'} <span className="text-gray-500">{r.name ? `· ${r.name}` : ''}{r.courier ? ` · ${r.courier}` : ''}{r.at ? ` · ${r.at}` : ''}</span></li>)}
               </ul>
             </div>
           )}

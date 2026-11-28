@@ -1,37 +1,34 @@
 // Courier fraud check (Admin CRM → customer profile → "Courier check"): how many parcels this phone number got
 // across Bangladesh couriers (Steadfast, Pathao, RedX, Paperfly, CarryBee, Parceldex, CourrierFast) and how many it
-// sent back / cancelled, plus FraudShield's risk score and other shops' reviews of the number.
+// sent back / cancelled, plus fraud reports other shops made about the number.
 //   POST /api/plan?action=courier-check  team only, body { phone, fresh? }
-// Uses FraudShield (fraudshield.bd, POST /api/customer/check, needs FRAUDSHIELD_API_KEY). The answer is kept 24 h in
+// Uses BD Courier (app.courier.com.bd → Developer/API, POST https://api.bdcourier.com/courier-check, Bearer key,
+// needs BDCOURIER_API_KEY; free plan 80 checks a day). The answer is kept 24 h in
 // courierChecks/{phoneKey} (server only; no client rule allows it) so the same number does not use the daily limit twice.
 // Optional COURIER_CHECK_DAILY_LIMIT (default 100) caps new API calls per day for the whole team (courierUsage/{day}).
 import { FS, accessToken, val } from '../_sslc.js';
 import { teamCaller } from './aiphoto.js';
 
-const API = 'https://fraudshield.bd/api/customer/check';
+const API = 'https://api.bdcourier.com/courier-check';
 const KEEP_MS = 24 * 60 * 60 * 1000;
 
 const phoneKey = (p) => String(p || '').replace(/[\s()-]/g, '').replace(/^[+]/, '').replace(/^880/, '0').replace(/^1/, '01');
 const num = (v) => Math.max(0, Math.round(Number(v) || 0));
 const dayBD = () => new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10);
 
-// FraudShield answer → { couriers: [{ name, total, success, cancel }], total, success, cancel, rate,
-//   risk: { score, level, label } | null, reviews: [{ name, rating, comment, at }] (max 5) }
-export function shape(data) {
-  const cd = (data && data.courierData) || {};
+// BD Courier answer ({ status, data: { <courier>: {...}, summary }, reports }) →
+//   { couriers: [{ name, total, success, cancel }], total, success, cancel, rate, reports: [{ name, text, courier, at }] (max 5) }
+export function shape(out) {
+  const cd = (out && out.data) || {};
   const sum = cd.summary || {};
   const couriers = Object.entries(cd).filter(([k, c]) => k !== 'summary' && c && typeof c === 'object').map(([k, c]) => ({
     name: String(c.name || k).slice(0, 20), total: num(c.total_parcel), success: num(c.success_parcel), cancel: num(c.cancelled_parcel),
-  })).slice(0, 10);
+  })).sort((x, y) => y.total - x.total).slice(0, 10);
   const total = num(sum.total_parcel), success = num(sum.success_parcel), cancel = num(sum.cancelled_parcel);
-  const rs = data && data.fraudRiskScore;
-  const risk = rs && typeof rs === 'object'
-    ? { score: Math.min(100, num(rs.score)), level: String(rs.level || '').slice(0, 20), label: String(rs.label || '').slice(0, 30) }
-    : null;
-  const reviews = (Array.isArray(data && data.reviews) ? data.reviews : []).slice(0, 5).map((r) => ({
-    name: String(r.name || '').slice(0, 40), rating: Math.min(5, num(r.rating)), comment: String(r.comment || '').slice(0, 200), at: String(r.created_at || '').slice(0, 10),
+  const reports = (Array.isArray(out && out.reports) ? out.reports : []).slice(0, 5).map((r) => ({
+    name: String(r.name || '').slice(0, 40), text: String(r.details || '').slice(0, 200), courier: String(r.courierName || '').slice(0, 20), at: String(r.created_at || '').slice(0, 10),
   }));
-  return { couriers, total, success, cancel, rate: total ? Math.round((success / total) * 100) : null, risk, reviews };
+  return { couriers, total, success, cancel, rate: total ? Math.round((success / total) * 100) : null, reports };
 }
 
 async function readDoc(token, path) {
@@ -63,8 +60,8 @@ export default async function courierCheck(req, res) {
     try { return res.json({ ...JSON.parse(cached.result), at: cached.at, cached: true }); } catch (e) { /* old / bad copy: ask again */ }
   }
 
-  const apiKey = process.env.FRAUDSHIELD_API_KEY;
-  if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (FRAUDSHIELD_API_KEY in Vercel).' });
+  const apiKey = process.env.BDCOURIER_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (BDCOURIER_API_KEY in Vercel).' });
 
   const day = dayBD();
   const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 100;
@@ -82,9 +79,9 @@ export default async function courierCheck(req, res) {
       signal: ctrl.signal,
     }).finally(() => clearTimeout(t));
     out = await r.json().catch(() => ({}));
-    if (!r.ok || out.success === false || !out.courierData) {
+    if (!r.ok || out.status !== 'success' || !out.data) {
       console.error('courier-check', r.status, out && out.message);
-      const msg = r.status === 401 ? 'API key is wrong or expired (FRAUDSHIELD_API_KEY).' : String((out && (out.message || out.error)) || '').slice(0, 160);
+      const msg = r.status === 401 ? 'API key is wrong or expired (BDCOURIER_API_KEY).' : String((out && (out.message || out.error)) || '').slice(0, 160);
       return res.status(r.status === 429 ? 429 : 502).json({ error: msg ? `Courier check service: ${msg}` : 'Courier check service did not answer. Try again later.' });
     }
   } catch (e) {
