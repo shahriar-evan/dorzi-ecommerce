@@ -20,8 +20,8 @@ export default function Footer({ shopBrand = null, onStartSelling, sellLabel = '
                   <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
                   {/* Bangla name next to the logo, in the normal font */}
                   <span className={`flex items-center gap-2 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                    <span className="text-[28px] leading-none" aria-hidden="true">&middot;</span>
-                    <span className="text-[28px] font-normal" lang="bn">দর্জি</span>
+                    <span className="text-[44px] font-black leading-none" aria-hidden="true">&middot;</span>
+                    <span className="text-[34px] font-normal" lang="bn">দর্জি</span>
                   </span>
                 </>
               )}
