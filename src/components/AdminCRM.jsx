@@ -81,7 +81,7 @@ const DAY = 86400000;
 const VIP_SPEND = 5000;      // ৳ spent (delivered or open orders, not cancelled / returned)
 const VIP_ORDERS = 3;
 const INACTIVE_DAYS = 60;
-const PRESET_TAGS = ['VIP', 'Wholesale', 'Friend / Family', 'Prefers WhatsApp', 'Size issue', 'Fake order', 'Late payer'];
+const PRESET_TAGS = ['VIP', 'Wholesale', 'Fake order']; // more can be typed in "Other tag"
 const counted = (o) => o.status !== 'Cancelled' && !o.returned;
 const ms = (o) => { const d = toDate(o.createdAt); return d ? d.getTime() : 0; };
 const today = () => new Date().toISOString().slice(0, 10);
