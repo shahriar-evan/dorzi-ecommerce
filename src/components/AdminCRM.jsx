@@ -6,6 +6,7 @@ import { watchBlocked, blockPhone } from '../blocklist';
 import { watchCrm, saveCrm, MAX_TAGS } from '../crmStore';
 import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
+import OrdersPanel from './OrdersPanel';
 import { courierVerdict, checkCourier } from '../courierCheck';
 export { courierVerdict };
 
@@ -189,7 +190,8 @@ const toCsv = (rows) => {
   return [head, ...body].map((r) => r.map(esc).join(',')).join('\n');
 };
 
-function CustomerProfile({ c, onBack, isDarkMode, formatPrice, staff, canBlock, canExport }) {
+function CustomerProfile({ c, onBack, isDarkMode, formatPrice, staff, canBlock, canExport, allOrders = [], orderTools = {} }) {
+  const [openOrder, setOpenOrder] = useState('');
   const { card, input, chip } = useCls(isDarkMode);
   const [tags, setTags] = useState(c.tags);
   const [notes, setNotes] = useState(c.notes);
@@ -302,20 +304,28 @@ function CustomerProfile({ c, onBack, isDarkMode, formatPrice, staff, canBlock, 
       </div>
 
       <div className={card}>
-        <h3 className="text-sm font-bold mb-3">Order history ({c.orders.length})</h3>
+        <h3 className="text-sm font-bold mb-1">Order history ({c.orders.length})</h3>
+        <p className="text-[11px] text-gray-500 mb-3">Click an order to open it: confirm, mark paid, cancel or delete it here, same as in Orders.</p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead><tr className="text-left text-[10px] uppercase tracking-wider text-gray-500"><th className="py-2 pr-3">Order</th><th className="py-2 pr-3">Date</th><th className="py-2 pr-3">Status</th><th className="py-2 pr-3">Products</th><th className="py-2 pr-3">From</th><th className="py-2 text-right">Total</th></tr></thead>
             <tbody className="divide-y divide-gray-500/15">
               {c.orders.map((o) => (
-                <tr key={o.id || o.orderNumber} className="align-top">
-                  <td className="py-2 pr-3 font-bold text-[#B8921F] whitespace-nowrap">{o.orderNumber}</td>
+                <React.Fragment key={o.id || o.orderNumber}>
+                <tr onClick={() => o.id && setOpenOrder(openOrder === o.id ? '' : o.id)} className={`align-top cursor-pointer ${openOrder === o.id ? 'bg-[#D4AF37]/10' : 'hover:bg-gray-500/5'}`} title="Open this order">
+                  <td className="py-2 pr-3 font-bold text-[#B8921F] whitespace-nowrap">{openOrder === o.id ? '▲' : '▼'} {o.orderNumber}</td>
                   <td className="py-2 pr-3 whitespace-nowrap">{formatDateTime(o.createdAt)}</td>
                   <td className="py-2 pr-3 whitespace-nowrap">{o.returned ? 'Returned' : o.status}{o.paymentStatus === 'Paid' ? ' · Paid' : ''}</td>
                   <td className="py-2 pr-3 min-w-[12rem]">{(o.items || []).map((it, k) => <div key={k}>{it.name}{it.size && it.size !== 'Standard' ? ` · ${it.size}` : ''}{it.color ? ` · ${it.color}` : ''} × {it.quantity}</div>)}</td>
                   <td className="py-2 pr-3 whitespace-nowrap">{o.shop ? `Shop: ${o.shop}` : 'Main store'}</td>
                   <td className="py-2 text-right font-bold whitespace-nowrap">{formatPrice(o.total)}</td>
                 </tr>
+                {openOrder === o.id && (
+                  <tr><td colSpan={6} className="py-3">
+                    <OrdersPanel key={o.id} focusId={o.id} orders={allOrders} isDarkMode={isDarkMode} formatPrice={formatPrice} adminName={staff.name} loggedInUserEmail={staff.email} {...orderTools} />
+                  </td></tr>
+                )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -326,7 +336,7 @@ function CustomerProfile({ c, onBack, isDarkMode, formatPrice, staff, canBlock, 
   );
 }
 
-export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRole, adminName, loggedInUserEmail, startTab = 'customers' }) {
+export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRole, adminName, loggedInUserEmail, startTab = 'customers', orderTools = {} }) {
   const { card, input, chip } = useCls(isDarkMode);
   const [tab, setTab] = useState(startTab);
   const [crm, setCrm] = useState({});
@@ -370,7 +380,7 @@ export default function AdminCRM({ orders = [], formatPrice, isDarkMode, adminRo
   };
 
   const open = customers.find((c) => c.key === openKey);
-  if (open) return <CustomerProfile key={open.key} c={open} onBack={() => setOpenKey('')} isDarkMode={isDarkMode} formatPrice={formatPrice} staff={staff} canBlock canExport={canExport} />;
+  if (open) return <CustomerProfile key={open.key} c={open} onBack={() => setOpenKey('')} isDarkMode={isDarkMode} formatPrice={formatPrice} staff={staff} canBlock canExport={canExport} allOrders={orders} orderTools={orderTools} />;
 
   const TABS = [['customers', 'Customers'], ['followups', `Follow-ups${dueNow ? ` (${dueNow})` : ''}`], ['segments', 'Segments'], ['analytics', 'Analytics']];
   const realC = customers.filter((c) => c.real > 0);
