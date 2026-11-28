@@ -1,11 +1,89 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Users, UserPlus, Repeat, Crown, Moon, AlertTriangle, Ban, Search, ArrowLeft, Phone, MessageCircle, Copy, Download, CalendarClock, StickyNote, Tag, X, Check, Wallet, TrendingUp } from 'lucide-react';
+import { Users, UserPlus, Repeat, Crown, Moon, AlertTriangle, Ban, Search, ArrowLeft, Phone, MessageCircle, Copy, Download, CalendarClock, StickyNote, Tag, X, Check, Wallet, TrendingUp, Truck, RefreshCw } from 'lucide-react';
 import { toDate, formatDateTime } from '../utils/dates';
 import { phoneKey } from '../data/shopConfig';
 import { watchBlocked, blockPhone } from '../blocklist';
 import { watchCrm, saveCrm, MAX_TAGS } from '../crmStore';
 import { askConfirm } from './AlertCenter';
 import { AdminAnalytics } from './AdminDashboard';
+import { auth } from '../firebase';
+
+// Courier history of a number across Bangladesh couriers (server: api/plan.js?action=courier-check, BD Courier, kept 24 h)
+export function courierVerdict(r) {
+  if (!r) return null;
+  if (!r.total) return { label: 'No courier history (new number)', tone: 'gray' };
+  if (r.rate >= 80) return { label: `Good: ${r.rate}% of parcels received`, tone: 'green' };
+  if (r.rate >= 50) return { label: `Careful: only ${r.rate}% received, call before sending`, tone: 'amber' };
+  return { label: `Risky: only ${r.rate}% received, ask for advance payment`, tone: 'red' };
+}
+const TONE = { green: 'bg-green-600/10 text-green-700 border-green-600/30', amber: 'bg-amber-500/10 text-amber-700 border-amber-500/30', red: 'bg-red-500/10 text-red-600 border-red-500/30', gray: 'bg-gray-500/10 text-gray-600 border-gray-500/30' };
+
+export function CourierCheck({ phone, isDarkMode, card, fetcher }) {
+  const [res, setRes] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const run = async (fresh = false) => {
+    setBusy(true); setErr('');
+    try {
+      let data;
+      if (fetcher) data = await fetcher(phone, fresh);
+      else {
+        const idToken = await auth.currentUser.getIdToken();
+        const r = await fetch('/api/plan?action=courier-check', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` }, body: JSON.stringify({ phone, fresh }) });
+        data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+      }
+      setRes(data);
+    } catch (e) { setErr(e.message || String(e)); }
+    setBusy(false);
+  };
+  const v = courierVerdict(res);
+  return (
+    <div className={card}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-bold flex items-center gap-2"><Truck size={15} /> Courier check <span className="font-normal text-xs text-gray-500">Steadfast, Pathao, RedX, Paperfly, CarryBee +2</span></h3>
+        {!res
+          ? <button type="button" disabled={busy} onClick={() => run(false)} className="px-4 py-2 rounded bg-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider disabled:opacity-50">{busy ? 'Checking…' : 'Check this number'}</button>
+          : <button type="button" disabled={busy} onClick={() => run(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded border text-xs font-semibold disabled:opacity-50"><RefreshCw size={13} className={busy ? 'animate-spin' : ''} /> Check again</button>}
+      </div>
+      {!res && !err && <p className="mt-2 text-xs text-gray-500">Shows how many parcels this number received or sent back with other shops too, so a first-time fake order can be caught before sending.</p>}
+      {err && <p className="mt-3 text-xs text-red-600">{err}</p>}
+      {res && (
+        <div className="mt-3 space-y-3">
+          <div className={`rounded-lg border px-3 py-2 text-sm font-bold ${TONE[v.tone]}`}>{v.label}</div>
+          <div className="grid grid-cols-3 gap-2 text-center text-sm">
+            {[['Parcels', res.total], ['Received', res.success], ['Returned / cancelled', res.cancel]].map(([k, n]) => (
+              <div key={k} className={`rounded-lg border p-2 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}><div className="text-[11px] text-gray-500">{k}</div><div className="font-bold">{n}</div></div>
+            ))}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="text-gray-500 text-left"><th className="py-1 pr-2 font-semibold">Courier</th><th className="py-1 px-2 font-semibold text-right">Parcels</th><th className="py-1 px-2 font-semibold text-right">Received</th><th className="py-1 pl-2 font-semibold text-right">Returned</th></tr></thead>
+              <tbody>
+                {(res.couriers || []).map((c) => (
+                  <tr key={c.name} className={`border-t ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                    <td className="py-1.5 pr-2 font-semibold">{c.name}</td>
+                    <td className="py-1.5 px-2 text-right">{c.total}</td><td className="py-1.5 px-2 text-right text-green-700">{c.success}</td><td className="py-1.5 pl-2 text-right text-red-600">{c.cancel}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {(res.reports || []).length > 0 && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3">
+              <div className="text-xs font-bold text-red-600 mb-1">Fraud reports from other shops ({res.reports.length})</div>
+              <ul className="space-y-1">
+                {res.reports.map((r, i) => <li key={i} className="text-xs">{r.text || 'Reported'} <span className="text-gray-500">{r.name ? `· ${r.name}` : ''}{r.courier ? ` · ${r.courier}` : ''}{r.at ? ` · ${r.at}` : ''}</span></li>)}
+              </ul>
+            </div>
+          )}
+          {!(res.couriers || []).length && <p className="text-xs text-gray-500">No courier has a parcel for this number yet.</p>}
+          <p className="text-[11px] text-gray-500">Checked {res.at ? new Date(res.at).toLocaleString('en-GB') : ''}{res.cached ? ' (saved copy, under 24 h old)' : ''}. Courier data can be late or miss small couriers: use it as a hint, not proof.</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Admin Portal > CRM. The customer list is built from the orders (one customer = one phone number); the team adds
 // tags, notes and a follow-up date (crmCustomers/<phoneKey>). Tabs: Customers, Follow-ups, Segments, Analytics
@@ -194,6 +272,8 @@ function CustomerProfile({ c, onBack, isDarkMode, formatPrice, staff, canBlock, 
         </div>
         {c.address && <p className="mt-3 text-xs text-gray-500 whitespace-pre-line"><strong>Last address:</strong> {c.address}</p>}
       </div>
+
+      <CourierCheck phone={c.key} isDarkMode={isDarkMode} card={card} />
 
       <div className="grid lg:grid-cols-2 gap-5">
         <div className={card}>
