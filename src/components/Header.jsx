@@ -36,10 +36,11 @@ export default function Header({ shopBrand = null, onStartSelling, sellLabel = '
               onClick={() => { setCurrentView('home'); setSelectedCategory('All'); }}
               className="cursor-pointer flex items-center gap-1 min-w-0"
             >
-              {/* the full Dorzi logo (the name is part of it); a Premium shop shows only the needle-D mark next to its own name */}
+              {/* the full Dorzi logo (the name is part of it); a Premium shop shows only the needle-D mark next to its own name;
+                  a shop with its own logo shows only that logo (no Dorzi mark) */}
               {shopBrand && shopBrand.logo && <img src={shopBrand.logo} alt="" className="h-9 w-9 sm:h-11 sm:w-11 rounded object-cover border border-gray-300/40" />}
-              <DorziMark dark={isDarkMode} icon={!!(shopBrand && shopBrand.wordmark)} title="Dorzi logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-10 min-[400px]:h-11 sm:h-14'} w-auto shrink-0`} />
-              {shopBrand && shopBrand.wordmark ? (
+              {!(shopBrand && shopBrand.logo) && <DorziMark dark={isDarkMode} icon={!!(shopBrand && shopBrand.wordmark)} title="Dorzi logo" className={`${shopBrand && shopBrand.wordmark ? 'h-7 sm:h-9' : 'h-10 min-[400px]:h-11 sm:h-14'} w-auto shrink-0`} />}
+              {shopBrand && (shopBrand.wordmark || shopBrand.logo) ? (
                 <div className="flex flex-col items-start min-w-0">
                   <span className="text-lg sm:text-2xl font-serif font-bold tracking-wide truncate max-w-[9rem] sm:max-w-[16rem]" style={{ color: shopBrand.color }}>{shopBrand.name}</span>
                   <span className="text-[9px] tracking-[0.2em] font-sans -mt-0.5 text-gray-500">POWERED BY DORZI</span>

@@ -1,7 +1,7 @@
 import React from 'react';
 import DorziMark from './DorziMark';
 
-export default function Footer({ onStartSelling, sellLabel = 'Start your own business', navHas = () => true, isDarkMode, setCurrentView, setSelectedCategory, customerUser, onSignIn, goAccount }) {
+export default function Footer({ shopBrand = null, onStartSelling, sellLabel = 'Start your own business', navHas = () => true, isDarkMode, setCurrentView, setSelectedCategory, customerUser, onSignIn, goAccount }) {
   return (
     <>
       <footer className={`border-t pt-12 sm:pt-16 pb-12 mt-auto ${isDarkMode ? 'bg-[#121212] border-gray-800 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`}>
@@ -9,12 +9,22 @@ export default function Footer({ onStartSelling, sellLabel = 'Start your own bus
           <div className="space-y-4">
             {/* logo + name: centered on a phone (one column), left from 640px (grid columns) */}
             <div className="flex items-center justify-center sm:justify-start gap-1.5">
-              <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
-              {/* Bangla name next to the logo, in the normal font */}
-              <span className={`flex items-center gap-2 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                <span className="text-[28px] leading-none" aria-hidden="true">&middot;</span>
-                <span className="text-[28px] font-normal" lang="bn">দর্জি</span>
-              </span>
+              {shopBrand && shopBrand.logo ? (
+                <>
+                  {/* a shop with its own logo: its logo + name, no Dorzi mark */}
+                  <img src={shopBrand.logo} alt="" className="h-14 w-14 rounded object-cover border border-gray-300/40 shrink-0" />
+                  <span className="ml-2 text-2xl font-serif font-bold truncate" style={{ color: shopBrand.color }}>{shopBrand.name}</span>
+                </>
+              ) : (
+                <>
+                  <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-16 w-auto shrink-0" />
+                  {/* Bangla name next to the logo, in the normal font */}
+                  <span className={`flex items-center gap-2 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
+                    <span className="text-[28px] leading-none" aria-hidden="true">&middot;</span>
+                    <span className="text-[28px] font-normal" lang="bn">দর্জি</span>
+                  </span>
+                </>
+              )}
             </div>
             <p className="leading-relaxed">
               Dorzi offers stylish, comfortable, and affordable clothing made for everyday wear. Discover premium fabrics, modern designs, and perfect fits.

@@ -27,7 +27,7 @@ const JacketIcon = mk(<>
   <path d="M12 5.8V21" />
 </>);
 
-export default function MobileMenu({ navHas = () => true, isDarkMode, setIsDarkMode, setCurrentView, setIsMobileMenuOpen, setSelectedCategory }) {
+export default function MobileMenu({ shopBrand = null, navHas = () => true, isDarkMode, setIsDarkMode, setCurrentView, setIsMobileMenuOpen, setSelectedCategory }) {
   const close = () => setIsMobileMenuOpen(false);
   const items = ([
     { label: 'Home', sub: 'Back to the front page', icon: Home, go: () => setCurrentView('home') },
@@ -45,9 +45,19 @@ export default function MobileMenu({ navHas = () => true, isDarkMode, setIsDarkM
           <div>
             <div className={`flex justify-between items-center px-6 pt-6 pb-5 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
               <div className={`flex items-center gap-1.5 whitespace-nowrap leading-none ${isDarkMode ? 'text-[#D4AF37]' : 'text-black'}`}>
-                <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-12 w-auto shrink-0" />
-                <span className="text-2xl" aria-hidden="true">&bull;</span>
-                <span className="text-xl font-bold" lang="bn">দর্জি</span>
+                {shopBrand && shopBrand.logo ? (
+                  <>
+                    {/* a shop with its own logo: its logo + name, no Dorzi mark */}
+                    <img src={shopBrand.logo} alt="" className="h-11 w-11 rounded object-cover border border-gray-300/40 shrink-0" />
+                    <span className="ml-1.5 text-lg font-serif font-bold truncate max-w-[11rem]" style={{ color: shopBrand.color }}>{shopBrand.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <DorziMark dark={isDarkMode} title="Dorzi logo" className="h-12 w-auto shrink-0" />
+                    <span className="text-2xl" aria-hidden="true">&bull;</span>
+                    <span className="text-xl font-bold" lang="bn">দর্জি</span>
+                  </>
+                )}
               </div>
               <button onClick={close} aria-label="Close menu" className={`w-10 h-10 rounded-full flex items-center justify-center transition ${isDarkMode ? 'bg-white/10 text-gray-300 hover:bg-white/20' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
                 <X size={20} />

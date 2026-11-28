@@ -178,7 +178,7 @@ After plan-setting changes, the Owner presses **Save plans** once. Vercel env: `
 
 - Website logo = **Evan's own Dorzi logo picture** (flat yellow + white: needle + crescent "D", button "O", "RZ", needle "I", stitched thread, spool), cut out of his black-background picture: `public/brand/dorzi-logo-gold.webp` (dark mode, as drawn) and `dorzi-logo-black.webp` (light mode: white parts turned black, yellow a bit deeper). `dorzi-mark-*.webp` = only the needle "D" (next to a Premium shop's own name). `src/components/DorziMark.jsx` shows them (both on the page, one hidden, so light / dark switches at once); bump `V` when the pictures change. Size it with a height class.
 - Favicons (16–192, `favicon.ico`), `apple-touch-icon.png`, `dorzi-icon.png` (share + push; `kyvro-icon.png` is the same picture, kept for old notifications) = the needle "D" on a black rounded square. Sources + the 2048px social profile picture: untracked `.claude/logo-export/dorzi/traced/`.
-- Header: logo only (the name is in it). Footer / phone menu: logo + `· দর্জি`.
+- Header: logo only (the name is in it). Footer / phone menu: logo + `· দর্জি`. On a shop link whose shop has its own logo (logo feature on + uploaded): header, footer and phone menu show **only the shop's logo + name** (no Dorzi mark; header keeps the small POWERED BY DORZI line).
 
 ## Key files
 
