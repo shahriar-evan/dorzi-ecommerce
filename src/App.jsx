@@ -1606,7 +1606,7 @@ export default function App() {
       })()}
 
       {/* MOBILE MENU DRAWER */}
-      {isMobileMenuOpen && <MobileMenu navHas={navHas} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setCurrentView={setCurrentView} setIsMobileMenuOpen={setIsMobileMenuOpen} setSelectedCategory={selectCategory} />}
+      {isMobileMenuOpen && <MobileMenu shopBrand={shopBrand} navHas={navHas} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setCurrentView={setCurrentView} setIsMobileMenuOpen={setIsMobileMenuOpen} setSelectedCategory={selectCategory} />}
 
       {/* CART SLIDE-OVER DRAWER */}
       {quickAdd && <QuickAdd product={quickAdd.product} goCheckout={quickAdd.goCheckout} onConfirm={confirmQuickAdd} onClose={() => setQuickAdd(null)} formatPrice={formatPrice} isDarkMode={isDarkMode} />}
@@ -1698,7 +1698,7 @@ export default function App() {
             onOpenProduct={(p) => { setSelectedProduct(p); setCurrentView('product-detail'); window.scrollTo(0, 0); }} />
         </Suspense>
       )}
-      <Footer onStartSelling={sellAction} sellLabel={sellLabel} navHas={navHas} isDarkMode={isDarkMode} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} customerUser={customerUser} onSignIn={handleCustomerSignIn} goAccount={goAccount} />
+      <Footer shopBrand={shopBrand} onStartSelling={sellAction} sellLabel={sellLabel} navHas={navHas} isDarkMode={isDarkMode} setCurrentView={setCurrentView} setSelectedCategory={selectCategory} customerUser={customerUser} onSignIn={handleCustomerSignIn} goAccount={goAccount} />
 
     </div>
   );
