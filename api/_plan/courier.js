@@ -5,7 +5,7 @@
 // Uses BD Courier (app.courier.com.bd → Developer/API, POST https://api.bdcourier.com/courier-check, Bearer key,
 // needs BDCOURIER_API_KEY; free plan 80 checks a day). The answer is kept 24 h in
 // courierChecks/{phoneKey} (server only; no client rule allows it) so the same number does not use the daily limit twice.
-// Optional COURIER_CHECK_DAILY_LIMIT (default 100) caps new API calls per day for the whole team (courierUsage/{day}).
+// Optional COURIER_CHECK_DAILY_LIMIT (default 80, the free plan) caps new API calls per day for the whole team (courierUsage/{day}).
 import { FS, accessToken, val } from '../_sslc.js';
 import { teamCaller } from './aiphoto.js';
 
@@ -64,7 +64,7 @@ export default async function courierCheck(req, res) {
   if (!apiKey) return res.status(503).json({ error: 'Courier check is not set up yet (BDCOURIER_API_KEY in Vercel).' });
 
   const day = dayBD();
-  const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 100;
+  const limit = Number(process.env.COURIER_CHECK_DAILY_LIMIT) || 80;
   const used = num((await readDoc(token, `courierUsage/${day}`) || {}).count);
   if (used >= limit) return res.status(429).json({ error: `Today's courier check limit (${limit}) is used up. Try again tomorrow.` });
 
